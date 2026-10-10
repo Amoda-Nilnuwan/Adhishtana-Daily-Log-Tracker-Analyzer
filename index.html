@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="si" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>අධිෂ්ඨාන දෛනික වාර්තාව සහ විශ්ලේෂකය | Adhishtana Tracker & Analyzer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', '"Noto Sans Sinhala"', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        gold: {
+                            400: '#FCD34D',
+                            500: '#F59E0B',
+                            600: '#D97706',
+                        },
+                        darkBg: '#090B10',
+                        cardBg: '#111522',
+                        subCard: '#151A2B',
+                        subCardHover: '#1B2136',
+                        borderMuted: 'rgba(255, 255, 255, 0.08)',
+                        borderActive: 'rgba(245, 158, 11, 0.5)',
+                    },
+                    boxShadow: {
+                        'amber-soft': '0 4px 20px -2px rgba(245, 158, 11, 0.15)',
+                        'emerald-soft': '0 4px 20px -2px rgba(16, 185, 129, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans Sinhala', sans-serif;
+            background-color: #090B10;
+            color: #E2E8F0;
+            background-image: 
+                radial-gradient(at 15% 15%, rgba(217, 119, 6, 0.08) 0px, transparent 45%),
+                radial-gradient(at 85% 85%, rgba(180, 83, 9, 0.06) 0px, transparent 50%),
+                radial-gradient(at 50% 30%, rgba(99, 102, 241, 0.03) 0px, transparent 65%);
+            background-attachment: fixed;
+        }
+
+        .glass-panel {
+            background: rgba(17, 21, 34, 0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .glass-panel-accent {
+            background: linear-gradient(145deg, rgba(245, 158, 11, 0.07) 0%, rgba(17, 21, 34, 0.95) 100%);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+        }
+
+        /* Calibrated selector active state: Deep, readable, eye-friendly */
+        .option-pill-active {
+            background: linear-gradient(145deg, #1E2538 0%, #252D42 100%) !important;
+            border-color: #F59E0B !important;
+            box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.5), 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+        }
+        .option-pill-active .pill-title {
+            color: #FDE68A !important;
+            font-weight: 700;
+        }
+        .option-pill-active .pill-sub {
+            color: #FBBF24 !important;
+        }
+        .option-pill-active .pill-indicator {
+            display: inline-flex !important;
+        }
+
+        .interactive-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .interactive-card:hover {
+            border-color: rgba(245, 158, 11, 0.35);
+            background-color: #161D2E;
+        }
+
+        /* Task check card selected state */
+        .task-card-active {
+            background: linear-gradient(145deg, rgba(245, 158, 11, 0.12) 0%, rgba(21, 26, 43, 0.9) 100%) !important;
+            border-color: rgba(245, 158, 11, 0.45) !important;
+            box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.2) !important;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090B10;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #252D42;
+            border-radius: 999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D97706;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950">
+
+<div class="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10">
+
+    <!-- Header bar -->
+    <header class="text-center mb-8 relative">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs font-semibold mb-3 tracking-wide">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            අධිෂ්ඨාන දෛනික සාධන පද්ධතිය
+        </div>
+
+        <h1 class=" text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-5 flex items-center justify-center gap-3  md:leading-[1.4]">
+            <span class="bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 bg-clip-text text-transparent">
+                අධිෂ්ඨාන වැඩපිළිවෙල
+            </span>
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto font-normal leading-relaxed">
+            දෛනික සටහන පිළියෙල කිරීම සහ ලැබෙන වාර්තා ක්ෂණිකව විශ්ලේෂණය කිරීමේ පද්ධතිය
+        </p>
+
+        <!-- Segmented Tab switcher with comfortable contrast -->
+        <div class="mt-7 max-w-md mx-auto p-1.5 rounded-2xl glass-panel border border-white/10 flex items-center justify-center gap-1.5 shadow-lg">
+            <button id="tabBtnGenerator" onclick="switchTab('generator')"
+                    class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm">
+                <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                <span>වාර්තාව සකසන්න</span>
+            </button>
+            <button id="tabBtnAnalyzer" onclick="switchTab('analyzer')"
+                    class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 text-slate-400 hover:text-white border border-transparent">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <span>වාර්තාව විශ්ලේෂණය</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: GENERATE / MARK REPORT                            -->
+    <!-- ======================================================== -->
+    <main id="tabGeneratorView" class="space-y-6">
+
+        <!-- Top Live Score Banner -->
+        <div class="glass-panel-accent rounded-3xl p-5 sm:p-6 shadow-amber-soft flex flex-col sm:flex-row items-center justify-between gap-5 relative overflow-hidden">
+            <div class="flex items-center gap-4 w-full sm:w-auto">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-amber-500/25 to-amber-600/15 border border-amber-500/40 flex flex-col items-center justify-center shadow-inner text-amber-200 shrink-0">
+                    <span id="genLiveTotalScore" class="text-2xl sm:text-3xl leading-none font-extrabold text-white">0</span>
+                    <span class="text-[10px] tracking-widest uppercase font-bold text-amber-300 mt-1">ලකුණු</span>
+                </div>
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                        <span>දෛනික ලකුණු එකතුව</span>
+                        <span id="genBonusIndicator" class="hidden px-2.5 py-0.5 rounded-full text-[10px] bg-emerald-500/15 text-emerald-300 border border-emerald-500/35 font-bold tracking-wide">
+                            +1 05:00 AM Bonus
+                        </span>
+                    </h2>
+                    <p class="text-xs text-slate-400">ඔබ සලකුණු කරන අවස්ථා අනුව ලකුණු ගණනය වේ</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-2 sm:gap-3 text-center w-full sm:w-auto bg-black/40 p-2.5 sm:p-3 rounded-2xl border border-white/5">
+                <div class="px-2">
+                    <span class="text-[10px] text-slate-400 block">උදෑසන</span>
+                    <span id="genScoreMorn" class="text-xs sm:text-sm font-bold text-amber-300">0/3</span>
+                </div>
+                <div class="px-2 border-l border-white/10">
+                    <span class="text-[10px] text-slate-400 block">දහවල</span>
+                    <span id="genScoreNoon" class="text-xs sm:text-sm font-bold text-amber-300">0/2</span>
+                </div>
+                <div class="px-2 border-l border-white/10">
+                    <span class="text-[10px] text-slate-400 block">රාත්‍රිය</span>
+                    <span id="genScoreNight" class="text-xs sm:text-sm font-bold text-amber-300">0/3</span>
+                </div>
+                <div class="px-2 border-l border-white/10">
+                    <span class="text-[10px] text-slate-400 block">අමතර</span>
+                    <span id="genScoreExtra" class="text-xs sm:text-sm font-bold text-emerald-400">+0.0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. Morning Section Card -->
+        <section class="glass-panel rounded-3xl p-5 sm:p-6 shadow-xl">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center justify-center font-bold text-sm">
+                        1
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                            උදෑසන (Morning Routine)
+                        </h3>
+                        <span class="text-xs text-slate-400">අවදිවීම, පන්සිල්, සත්‍යක්‍රියාව, හඬපටය (උපරිම 3 + විශේෂ 1)</span>
+                    </div>
+                </div>
+                <span id="badgeMornTotal" class="text-xs font-semibold px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/25">
+                    0 / 3 ලකුණු
+                </span>
+            </div>
+
+            <!-- Wake Up Time Control -->
+            <div class="bg-subCard/90 border border-white/5 rounded-2xl p-4 mb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-200 mb-0.5">
+                            අවදි වූ වේලාව (Wake-up Time):
+                        </label>
+                        <p class="text-[11px] text-slate-400">05:00 AM විශේෂයි. 05:00ට අවදි වී සියලු කාර්යයන් 3 කර ඇත්නම් අමතර +1 ලකුණක්!</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="wakeInput" value="05.00 AM" oninput="recomputeGenerator()"
+                               class="w-32 bg-[#0C101A] border border-slate-700 focus:border-amber-500 rounded-xl px-3 py-2 text-center text-xs sm:text-sm font-mono text-amber-300 font-bold focus:outline-none focus:ring-1 focus:ring-amber-500">
+                        <button type="button" onclick="setMorningTime('05.00 AM')"
+                                class="px-3 py-2 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95 shadow-sm">
+                            ⭐ 05.00 AM
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Toggle Cards for Tasks -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <!-- i) Pansil -->
+                <div onclick="toggleTask('pansil')" id="cardTaskPansil"
+                     class="interactive-card cursor-pointer p-4 rounded-2xl bg-subCard/80 border border-white/5 flex flex-col justify-between select-none">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-400">කාර්යය i</span>
+                        <span id="pillTaskPansil" class="w-7 h-7 rounded-lg bg-slate-800/90 border border-slate-700/80 flex items-center justify-center text-xs font-bold text-slate-400">❌</span>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-white mb-0.5">පන්සිල් සමාදන් වීම</h4>
+                        <span class="text-[11px] text-slate-400">පංචශීලය ආරක්ෂා කිරීම (+1)</span>
+                    </div>
+                </div>
+
+                <!-- ii) Sathyakriyawa -->
+                <div onclick="toggleTask('sathya')" id="cardTaskSathya"
+                     class="interactive-card cursor-pointer p-4 rounded-2xl bg-subCard/80 border border-white/5 flex flex-col justify-between select-none">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-400">කාර්යය ii</span>
+                        <span id="pillTaskSathya" class="w-7 h-7 rounded-lg bg-slate-800/90 border border-slate-700/80 flex items-center justify-center text-xs font-bold text-slate-400">❌</span>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-white mb-0.5">සත්‍යක්‍රියාව කිරීම</h4>
+                        <span class="text-[11px] text-slate-400">අධිෂ්ඨාන සත්‍යක්‍රියාව (+1)</span>
+                    </div>
+                </div>
+
+                <!-- iii) Morning Audio -->
+                <div onclick="toggleTask('audioMorn')" id="cardTaskAudioMorn"
+                     class="interactive-card cursor-pointer p-4 rounded-2xl bg-subCard/80 border border-white/5 flex flex-col justify-between select-none">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-400">කාර්යය iii</span>
+                        <span id="pillTaskAudioMorn" class="w-7 h-7 rounded-lg bg-slate-800/90 border border-slate-700/80 flex items-center justify-center text-xs font-bold text-slate-400">❌</span>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-white mb-0.5">හඬපටය ශ්‍රවණය</h4>
+                        <span class="text-[11px] text-slate-400">උදෑසන 1 වරක් ඇසීම (+1)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic 5:00 AM Bonus Card -->
+            <div id="morningBonusCallout" class="hidden mt-4 p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-3">
+                <span class="text-xl">🌟</span>
+                <div>
+                    <span class="font-bold text-white">විශේෂ ප්‍රසාද ලකුණ හිමිවිය! (+1)</span>
+                    <span class="block text-emerald-300/80 text-[11px]">උදෑසන 05.00ට අවදි වී කාර්යයන් ත්‍රිත්වයම සම්පූර්ණ කිරීම නිසා අමතර +1 ලකුණක් ලැබිණි.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Daytime Section -->
+        <section class="glass-panel rounded-3xl p-5 sm:p-6 shadow-xl">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center justify-center font-bold text-sm">
+                        2
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-white">දහවල (Afternoon Audio)</h3>
+                        <span class="text-xs text-slate-400">හඬපටය දෙවරක් ශ්‍රවණය කිරීම (උපරිම ලකුණු 2)</span>
+                    </div>
+                </div>
+                <span id="badgeNoonTotal" class="text-xs font-semibold px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/25">
+                    0 / 2 ලකුණු
+                </span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2.5 sm:gap-3">
+                <button type="button" onclick="setNoonAudio(0)" id="noonChoice0"
+                        class="p-3 sm:p-4 rounded-2xl border text-center transition-all bg-subCard/80 border-white/10 text-slate-400 hover:text-white relative">
+                    <div class="text-base sm:text-lg font-mono mb-1 pill-icon">❌❌</div>
+                    <div class="text-xs font-bold text-slate-200 pill-title">නොඇසුවෙමි</div>
+                    <span class="text-[10px] text-slate-400 pill-sub block mt-0.5">0 ලකුණු</span>
+                </button>
+                <button type="button" onclick="setNoonAudio(1)" id="noonChoice1"
+                        class="p-3 sm:p-4 rounded-2xl border text-center transition-all bg-subCard/80 border-white/10 text-slate-400 hover:text-white relative">
+                    <div class="text-base sm:text-lg font-mono mb-1 pill-icon">✅❌</div>
+                    <div class="text-xs font-bold text-slate-200 pill-title">1 වතාවක්</div>
+                    <span class="text-[10px] text-slate-400 pill-sub block mt-0.5">1 ලකුණයි</span>
+                </button>
+                <button type="button" onclick="setNoonAudio(2)" id="noonChoice2"
+                        class="p-3 sm:p-4 rounded-2xl border text-center transition-all bg-subCard/80 border-white/10 text-slate-400 hover:text-white relative">
+                    <div class="text-base sm:text-lg font-mono mb-1 pill-icon">✅✅</div>
+                    <div class="text-xs font-bold text-slate-200 pill-title">2 වතාවක්</div>
+                    <span class="text-[10px] text-slate-400 pill-sub block mt-0.5">2 ලකුණු</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 3. Night Section -->
+        <section class="glass-panel rounded-3xl p-5 sm:p-6 shadow-xl">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center justify-center font-bold text-sm">
+                        3
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-white">රාත්‍රිය (Night Audio)</h3>
+                        <span class="text-xs text-slate-400">හඬපටය තෙවරක් ශ්‍රවණය කිරීම (උපරිම ලකුණු 3)</span>
+                    </div>
+                </div>
+                <span id="badgeNightTotal" class="text-xs font-semibold px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/25">
+                    0 / 3 ලකුණු
+                </span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+                <button type="button" onclick="setNightAudio(0)" id="nightChoice0"
+                        class="p-3 sm:p-3.5 rounded-2xl border text-center transition-all bg-subCard/80 border-white/10 text-slate-400 hover:text-white">
+                    <div class="text-sm sm:text-base font-mono mb-1 pill-icon">❌❌❌</div>
+                    <div class="text-xs font-bold text-slate-200 pill-title">0 වතාවක්</div>
+                    <span class="text-[10px] text-slate-400 pill-sub block mt-0.5">0 ලකුණු</span>
+                </button>
+                <button type="button" onclick="setNightAudio(1)" id="nightChoice1"
+                        class="p-3 sm:p-3.5 rounded-2xl border text-center transition-all bg-subCard/80 border-white/10 text-slate-400 hover:text-white">
+                    <div class="text-sm sm:text-base font-mono mb-1 pill-icon">✅❌❌</div>
+                    <div class="text-xs font-bold text-slate-200 pill-title">1 වතාවක්</div>
+                    <span class="text-[10px] text-slate-400 pill-sub block mt-0.5">1 ලකුණයි</span>
+                </button>
+                <button type="button" onclick="setNightAudio(2)" id="nightChoice2"
+                        class="p-3 sm:p-3.5 rounded-2xl border text-center transition-all bg-subCard/80 border-white/10 text-slate-400 hover:text-white">
+                    <div class="text-sm sm:text-base font-mono mb-1 pill-icon">✅✅❌</div>
+                    <div class="text-xs font-bold text-slate-200 pill-title">2 වතාවක්</div>
+                    <span class="text-[10px] text-slate-400 pill-sub block mt-0.5">2 ලකුණු</span>
+                </button>
+                <button type="button" onclick="setNightAudio(3)" id="nightChoice3"
+                        class="p-3 sm:p-3.5 rounded-2xl border text-center transition-all bg-subCard/80 border-white/10 text-slate-400 hover:text-white">
+                    <div class="text-sm sm:text-base font-mono mb-1 pill-icon">✅✅✅</div>
+                    <div class="text-xs font-bold text-slate-200 pill-title">3 වතාවක්</div>
+                    <span class="text-[10px] text-slate-400 pill-sub block mt-0.5">3 ලකුණු</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 4. Extra Audio Section -->
+        <section class="glass-panel rounded-3xl p-5 sm:p-6 shadow-xl">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center justify-center font-bold text-sm">
+                        4
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-white">අමතර ශ්‍රවණයන් (Extra Sessions)</h3>
+                        <span class="text-xs text-slate-400">නියමිත වාරවලට අමතරව ඇසූ සෑම වාරයකටම ලකුණු 0.5 බැගින්</span>
+                    </div>
+                </div>
+                <span id="badgeExtraTotal" class="text-xs font-semibold px-2.5 py-1 rounded-xl bg-emerald-500/10 text-emerald-300 border border-emerald-500/25">
+                    +0.0 ලකුණු
+                </span>
+            </div>
+
+            <div class="flex items-center justify-between bg-subCard/90 border border-white/5 p-4 rounded-2xl">
+                <div>
+                    <span class="text-xs sm:text-sm font-bold text-white block mb-0.5">අමතරව ඇසූ වාර ගණන:</span>
+                    <span class="text-[11px] text-slate-400">සම්පූර්ණයෙන් ශ්‍රවණය කළ වාර</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="stepExtraAudio(-1)"
+                            class="w-11 h-11 rounded-xl bg-slate-800/90 hover:bg-slate-700/80 active:scale-95 text-white font-bold text-xl flex items-center justify-center border border-white/10 transition shadow-sm">
+                        -
+                    </button>
+                    <span id="counterExtraVal" class="w-12 text-center text-2xl font-black font-mono text-amber-300">0</span>
+                    <button type="button" onclick="stepExtraAudio(1)"
+                            class="w-11 h-11 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 active:scale-95 text-amber-200 font-bold text-xl flex items-center justify-center border border-amber-500/40 transition shadow-sm">
+                        +
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Output Preformatted Text Card -->
+        <section class="glass-panel-accent rounded-3xl p-5 sm:p-7 shadow-xl relative">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                <div class="flex items-center gap-2.5">
+                    <span class="p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-sm">📋</span>
+                    <div>
+                        <h3 class="text-base font-bold text-white">පිටපත් කළ හැකි වාර්තාව (Output Format)</h3>
+                        <p class="text-[11px] text-slate-400">කණ්ඩායමට යැවීම සඳහා සකස් වූ ආකෘතිය</p>
+                    </div>
+                </div>
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-300 select-none bg-black/40 px-3 py-1.5 rounded-xl border border-white/5">
+                    <input type="checkbox" id="chkIncludeScore" onchange="recomputeGenerator()" checked
+                           class="w-4 h-4 rounded text-amber-500 focus:ring-0 bg-slate-900 border-slate-700">
+                    <span>ලකුණු එකතුව ඇතුළත් කරන්න</span>
+                </label>
+            </div>
+
+            <!-- Terminal-style Code Box -->
+            <div class="relative group">
+                <pre id="textReportOutput"
+                     class="w-full bg-[#080B12] border border-amber-500/25 text-amber-200/90 font-mono text-xs sm:text-sm p-4 sm:p-5 rounded-2xl overflow-x-auto whitespace-pre leading-relaxed shadow-inner select-all"></pre>
+            </div>
+
+            <div class="mt-4 flex flex-col sm:flex-row gap-3">
+                <button type="button" onclick="copyGeneratorOutput()"
+                        class="flex-1 py-3 px-6 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 font-bold text-sm tracking-wide border border-amber-500/50 hover:border-amber-400 shadow-amber-soft active:scale-[0.98] transition flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    <span>වාර්තාව පිටපත් කරගන්න (Copy Report)</span>
+                </button>
+                <button type="button" onclick="resetGeneratorForm()"
+                        class="px-5 py-3 rounded-2xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 font-semibold text-xs sm:text-sm border border-white/10 transition active:scale-95">
+                    නැවත මුල සිට
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: ANALYZE REPORT (STANDALONE UI)                    -->
+    <!-- ======================================================== -->
+    <main id="tabAnalyzerView" class="space-y-6 hidden">
+
+        <!-- Paste Text Card -->
+        <section class="glass-panel rounded-3xl p-5 sm:p-6 shadow-xl">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center justify-center font-bold text-sm">
+                        📥
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-white">වාර්තාව අලවන්න (Paste Report Text)</h3>
+                        <p class="text-xs text-slate-400">WhatsApp / Viber හරහා ලැබුණු ඕනෑම ආකෘතියක සටහනක් මෙතැනට දමන්න</p>
+                    </div>
+                </div>
+            </div>
+
+            <textarea id="analyzerInputArea" rows="8"
+                      placeholder="1) 05.00 AM&#10;    i)     ✅&#10;    ii)    ✅&#10;    iii)   ✅&#10;&#10;2) ✅✅&#10;&#10;3) ✅✅✅&#10;&#10;4) 4"
+                      class="w-full bg-[#080B12] border border-slate-800 focus:border-amber-500/50 rounded-2xl p-4 font-mono text-xs sm:text-sm text-amber-200/90 focus:outline-none focus:ring-1 focus:ring-amber-500/30 transition resize-y"></textarea>
+
+            <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="injectSample(1)"
+                            class="px-3 py-1.5 bg-subCard hover:bg-subCardHover text-amber-300 border border-amber-500/25 rounded-xl text-xs font-semibold transition active:scale-95">
+                        ආදර්ශ 1 (සම්පූර්ණ)
+                    </button>
+                    <button type="button" onclick="injectSample(2)"
+                            class="px-3 py-1.5 bg-subCard hover:bg-subCardHover text-amber-300 border border-amber-500/25 rounded-xl text-xs font-semibold transition active:scale-95">
+                        ආදර්ශ 2 (අඩක්)
+                    </button>
+                    <button type="button" onclick="clearAnalyzerInput()"
+                            class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-xs font-semibold transition">
+                        මකන්න
+                    </button>
+                </div>
+
+                <button type="button" onclick="parseAndAnalyzeText()"
+                        class="px-6 py-2.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 font-bold text-xs sm:text-sm rounded-xl shadow-amber-soft transition active:scale-95 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <span>ක්ෂණික විශ්ලේෂණය</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Dynamic Visual Analytics Dashboard -->
+        <section id="parsedDashboardWrap" class="space-y-6">
+
+            <!-- Hero Score & Progress Ring Banner -->
+            <div class="glass-panel-accent rounded-3xl p-6 sm:p-7 shadow-amber-soft flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                <div class="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+                    <!-- Progress Radial Display -->
+                    <div class="relative w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center shrink-0">
+                        <svg class="w-full h-full -rotate-90" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="50" class="text-white/10" stroke-width="8" stroke="currentColor" fill="transparent" />
+                            <circle id="radialScoreCircle" cx="60" cy="60" r="50" class="text-amber-400 transition-all duration-700 ease-out"
+                                    stroke-width="8" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314" stroke="currentColor" fill="transparent" />
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span id="pTotalScoreDisplay" class="text-3xl sm:text-4xl font-black text-white leading-none">0</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300 mt-1">මුළු ලකුණු</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs font-semibold mb-1">
+                            📊 සාධන මට්ටම (Achievement Analysis)
+                        </div>
+                        <h3 id="pPerformanceGrade" class="text-xl sm:text-2xl font-extrabold text-white">විශ්ලේෂණය කරමින්...</h3>
+                        <p id="pPerformanceDesc" class="text-xs text-slate-300 mt-1 max-w-sm">වාර්තාවේ දත්ත සාරාංශය පහතින් දැක්වේ.</p>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-auto bg-black/45 p-4 rounded-2xl border border-white/5 space-y-2 text-xs">
+                    <div class="flex items-center justify-between gap-6">
+                        <span class="text-slate-400">මූලික ලකුණු (Base):</span>
+                        <span id="pBaseScoreVal" class="font-bold text-amber-300 font-mono">0 / 8</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-6">
+                        <span class="text-slate-400">05.00 AM බෝනස්:</span>
+                        <span id="pWakeBonusVal" class="font-bold text-emerald-300 font-mono">+0</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-6">
+                        <span class="text-slate-400">අමතර ශ්‍රවණයන්:</span>
+                        <span id="pExtraBonusVal" class="font-bold text-emerald-300 font-mono">+0.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bonus Banner Alert -->
+            <div id="pBonusStatusCard" class="p-4 rounded-2xl text-xs flex items-center gap-3 border transition-all">
+                <!-- Dynamically populated in JavaScript -->
+            </div>
+
+            <!-- Breakdown Grid: 4 Periods -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                <!-- 1. Morning Inspection -->
+                <div class="glass-panel rounded-2xl p-4 sm:p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-white/10 pb-2.5 mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-white text-sm">1. උදෑසන සැසිය</span>
+                                <span id="pWakeTimeChip" class="px-2 py-0.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-mono font-bold">--</span>
+                            </div>
+                            <span id="pMorningScoreBadge" class="text-xs font-bold text-amber-300">0 / 3</span>
+                        </div>
+
+                        <div class="space-y-2 text-xs">
+                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-subCard/80 border border-white/5">
+                                <span class="text-slate-300">i) පන්සිල් සමාදන් වීම</span>
+                                <span id="pIconPansil" class="font-mono font-bold">❌</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-subCard/80 border border-white/5">
+                                <span class="text-slate-300">ii) සත්‍යක්‍රියාව</span>
+                                <span id="pIconSathya" class="font-mono font-bold">❌</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-subCard/80 border border-white/5">
+                                <span class="text-slate-300">iii) හඬපටය (1 වරක්)</span>
+                                <span id="pIconAudioM" class="font-mono font-bold">❌</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Daytime Inspection -->
+                <div class="glass-panel rounded-2xl p-4 sm:p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-white/10 pb-2.5 mb-3">
+                            <span class="font-bold text-white text-sm">2. දහවල් සැසිය</span>
+                            <span id="pNoonScoreBadge" class="text-xs font-bold text-amber-300">0 / 2</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-2">හඬපටය ශ්‍රවණය:</p>
+                        <div class="p-4 bg-subCard/80 border border-white/5 rounded-2xl text-center">
+                            <div id="pNoonSymbols" class="text-2xl font-mono tracking-widest font-black text-amber-300 mb-1">❌❌</div>
+                            <span id="pNoonDesc" class="text-xs text-slate-300">නොඇසුවෙමි (0 වරක්)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Night Inspection -->
+                <div class="glass-panel rounded-2xl p-4 sm:p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-white/10 pb-2.5 mb-3">
+                            <span class="font-bold text-white text-sm">3. රාත්‍රී සැසිය</span>
+                            <span id="pNightScoreBadge" class="text-xs font-bold text-amber-300">0 / 3</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-2">හඬපටය ශ්‍රවණය:</p>
+                        <div class="p-4 bg-subCard/80 border border-white/5 rounded-2xl text-center">
+                            <div id="pNightSymbols" class="text-2xl font-mono tracking-widest font-black text-amber-300 mb-1">❌❌❌</div>
+                            <span id="pNightDesc" class="text-xs text-slate-300">නොඇසුවෙමි (0 වරක්)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Extra Sessions Inspection -->
+                <div class="glass-panel rounded-2xl p-4 sm:p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-white/10 pb-2.5 mb-3">
+                            <span class="font-bold text-white text-sm">4. අමතර ශ්‍රවණයන්</span>
+                            <span id="pExtraScoreBadge" class="text-xs font-bold text-emerald-300">+0.0</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-2">අමතර වාර ගණන:</p>
+                        <div class="p-4 bg-emerald-950/20 border border-emerald-500/20 rounded-2xl text-center">
+                            <div id="pExtraCountDisplay" class="text-3xl font-black font-mono text-emerald-300 mb-0.5">0</div>
+                            <span class="text-xs text-emerald-300/80">අමතර වාර (වරකට 0.5 ලකුණු)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export / Share Analysis Card -->
+            <div class="glass-panel-accent rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-xs text-slate-300">
+                    <span class="font-bold text-white block text-sm">විශ්ලේෂණ ප්‍රතිඵලය බෙදාගැනීමට:</span>
+                    ලබාගත් ලකුණු සහ සැසි සාරාංශය කෙටි පණිවිඩයක් ලෙස පිටපත් කරගන්න.
+                </div>
+                <button type="button" onclick="copyAnalysisSummaryText()"
+                        class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-subCard hover:bg-subCardHover text-amber-200 border border-amber-500/35 text-xs font-bold transition flex items-center justify-center gap-2 active:scale-95 shadow-sm">
+                    <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/>
+                    </svg>
+                    <span>සාරාංශය පිටපත් කරන්න</span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 text-center text-xs text-slate-500 pb-8 border-t border-white/5 pt-6">
+        <p class="font-medium text-slate-400">අධිෂ්ඨාන වැඩපිළිවෙල • අධ්‍යාත්මික පුහුණු වැඩසටහන</p>
+        <p class="text-[11px] text-slate-600 mt-1"></p>
+    </footer>
+</div>
+
+<!-- Toast Component -->
+<div id="globalToast"
+     class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-xl border border-amber-500/40 text-amber-200 px-5 py-3 rounded-2xl shadow-lg flex items-center gap-3 text-xs sm:text-sm z-50 transform transition-all duration-300 opacity-0 pointer-events-none translate-y-3">
+    <span class="text-amber-400 font-bold">✓</span>
+    <span id="globalToastMsg">පිටපත් කරගන්නා ලදී</span>
+</div>
+
+<script>
+    // Tab switching
+    function switchTab(tab) {
+        const genView = document.getElementById('tabGeneratorView');
+        const anaView = document.getElementById('tabAnalyzerView');
+        const genBtn = document.getElementById('tabBtnGenerator');
+        const anaBtn = document.getElementById('tabBtnAnalyzer');
+
+        if (tab === 'generator') {
+            genView.classList.remove('hidden');
+            anaView.classList.add('hidden');
+            genBtn.className = "flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm";
+            anaBtn.className = "flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 text-slate-400 hover:text-white border border-transparent";
+        } else {
+            genView.classList.add('hidden');
+            anaView.classList.remove('hidden');
+            anaBtn.className = "flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm";
+            genBtn.className = "flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 text-slate-400 hover:text-white border border-transparent";
+
+            const currentInput = document.getElementById('analyzerInputArea').value;
+            if (currentInput.trim()) {
+                parseAndAnalyzeText();
+            }
+        }
+    }
+
+    // Generator State Management
+    const genState = {
+        wakeTime: '05.00 AM',
+        pansil: false,
+        sathya: false,
+        audioMorn: false,
+        noonCount: 0,
+        nightCount: 0,
+        extraCount: 0
+    };
+
+    function isFiveAmNormalized(timeStr) {
+        if (!timeStr) return false;
+        const norm = timeStr.trim().toLowerCase().replace(/\s+/g, '').replace(':', '.');
+        return norm === '05.00am' || norm === '5.00am' || norm === '05.00' || norm === '5.00';
+    }
+
+    function setMorningTime(timeStr) {
+        document.getElementById('wakeInput').value = timeStr;
+        genState.wakeTime = timeStr;
+        recomputeGenerator();
+        showToast(`වේලාව ${timeStr} ලෙස සකසන ලදී`);
+    }
+
+    function toggleTask(taskKey) {
+        genState[taskKey] = !genState[taskKey];
+        updateTaskCardUI(taskKey);
+        recomputeGenerator();
+    }
+
+    function updateTaskCardUI(taskKey) {
+        const isDone = genState[taskKey];
+        let cardId, pillId;
+        if (taskKey === 'pansil') { cardId = 'cardTaskPansil'; pillId = 'pillTaskPansil'; }
+        if (taskKey === 'sathya') { cardId = 'cardTaskSathya'; pillId = 'pillTaskSathya'; }
+        if (taskKey === 'audioMorn') { cardId = 'cardTaskAudioMorn'; pillId = 'pillTaskAudioMorn'; }
+
+        const card = document.getElementById(cardId);
+        const pill = document.getElementById(pillId);
+
+        if (isDone) {
+            card.classList.add('task-card-active');
+            card.classList.remove('bg-subCard/80', 'border-white/5');
+            pill.innerHTML = '✅';
+            pill.className = 'w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-xs font-bold text-emerald-300';
+        } else {
+            card.classList.remove('task-card-active');
+            card.classList.add('bg-subCard/80', 'border-white/5');
+            pill.innerHTML = '❌';
+            pill.className = 'w-7 h-7 rounded-lg bg-slate-800/90 border border-slate-700/80 flex items-center justify-center text-xs font-bold text-slate-400';
+        }
+    }
+
+    function setNoonAudio(count) {
+        genState.noonCount = count;
+        [0, 1, 2].forEach(n => {
+            const btn = document.getElementById(`noonChoice${n}`);
+            if (n === count) {
+                btn.classList.add('option-pill-active');
+                btn.classList.remove('bg-subCard/80', 'border-white/10', 'text-slate-400');
+            } else {
+                btn.classList.remove('option-pill-active');
+                btn.classList.add('bg-subCard/80', 'border-white/10', 'text-slate-400');
+            }
+        });
+        recomputeGenerator();
+    }
+
+    function setNightAudio(count) {
+        genState.nightCount = count;
+        [0, 1, 2, 3].forEach(n => {
+            const btn = document.getElementById(`nightChoice${n}`);
+            if (n === count) {
+                btn.classList.add('option-pill-active');
+                btn.classList.remove('bg-subCard/80', 'border-white/10', 'text-slate-400');
+            } else {
+                btn.classList.remove('option-pill-active');
+                btn.classList.add('bg-subCard/80', 'border-white/10', 'text-slate-400');
+            }
+        });
+        recomputeGenerator();
+    }
+
+    function stepExtraAudio(delta) {
+        let val = genState.extraCount + delta;
+        if (val < 0) val = 0;
+        genState.extraCount = val;
+        document.getElementById('counterExtraVal').innerText = val;
+        recomputeGenerator();
+    }
+
+    function recomputeGenerator() {
+        genState.wakeTime = document.getElementById('wakeInput').value.trim() || '05.00 AM';
+
+        // Calculation
+        const mornTasksSum = (genState.pansil ? 1 : 0) + (genState.sathya ? 1 : 0) + (genState.audioMorn ? 1 : 0);
+        const hasFiveAmBonus = (isFiveAmNormalized(genState.wakeTime) && mornTasksSum === 3) ? 1 : 0;
+
+        const mornTotal = mornTasksSum + hasFiveAmBonus;
+        const noonTotal = genState.noonCount;
+        const nightTotal = genState.nightCount;
+        const extraTotal = genState.extraCount * 0.5;
+
+        const grandTotal = mornTasksSum + noonTotal + nightTotal + hasFiveAmBonus + extraTotal;
+
+        // UI Badges
+        document.getElementById('genScoreMorn').innerText = `${mornTasksSum}/3`;
+        document.getElementById('genScoreNoon').innerText = `${noonTotal}/2`;
+        document.getElementById('genScoreNight').innerText = `${nightTotal}/3`;
+        document.getElementById('genScoreExtra').innerText = `+${extraTotal.toFixed(1)}`;
+
+        document.getElementById('badgeMornTotal').innerText = `${mornTasksSum} / 3 ලකුණු ${hasFiveAmBonus ? '(+1 ප්‍රසාද)' : ''}`;
+        document.getElementById('badgeNoonTotal').innerText = `${noonTotal} / 2 ලකුණු`;
+        document.getElementById('badgeNightTotal').innerText = `${nightTotal} / 3 ලකුණු`;
+        document.getElementById('badgeExtraTotal').innerText = `+${extraTotal.toFixed(1)} ලකුණු (${genState.extraCount} වරක්)`;
+
+        const totalFormatted = Number.isInteger(grandTotal) ? grandTotal : grandTotal.toFixed(1);
+        document.getElementById('genLiveTotalScore').innerText = totalFormatted;
+
+        const bonusIndicator = document.getElementById('genBonusIndicator');
+        const bonusCallout = document.getElementById('morningBonusCallout');
+        if (hasFiveAmBonus === 1) {
+            bonusIndicator.classList.remove('hidden');
+            bonusCallout.classList.remove('hidden');
+        } else {
+            bonusIndicator.classList.add('hidden');
+            bonusCallout.classList.add('hidden');
+        }
+
+        buildReportText(grandTotal);
+    }
+
+    function getNoonPattern(count) {
+        if (count === 2) return '✅✅';
+        if (count === 1) return '✅❌';
+        return '❌❌';
+    }
+
+    function getNightPattern(count) {
+        if (count === 3) return '✅✅✅';
+        if (count === 2) return '✅✅❌';
+        if (count === 1) return '✅❌❌';
+        return '❌❌❌';
+    }
+
+    function buildReportText(grandTotal) {
+        const timeVal = genState.wakeTime || '05.00 AM';
+        const p1 = genState.pansil ? '✅' : '❌';
+        const p2 = genState.sathya ? '✅' : '❌';
+        const p3 = genState.audioMorn ? '✅' : '❌';
+
+        const noonPattern = getNoonPattern(genState.noonCount);
+        const nightPattern = getNightPattern(genState.nightCount);
+        const extraCount = genState.extraCount;
+
+        const includeScore = document.getElementById('chkIncludeScore').checked;
+
+        let output = `1) ${timeVal}\n    i)     ${p1}\n    ii)    ${p2}\n    iii)   ${p3}\n\n2) ${noonPattern}\n\n3) ${nightPattern}\n\n4) ${extraCount}`;
+
+        if (includeScore) {
+            const formatted = Number.isInteger(grandTotal) ? grandTotal : grandTotal.toFixed(1);
+            output += `\n\n🔹 මුළු ලකුණු: ${formatted}`;
+        }
+
+        document.getElementById('textReportOutput').innerText = output;
+        return output;
+    }
+
+    function copyGeneratorOutput() {
+        const text = document.getElementById('textReportOutput').innerText;
+        executeClipboardCopy(text, "වාර්තාව පිටපත් කරගන්නා ලදී! (Copied to Clipboard)");
+    }
+
+    function resetGeneratorForm() {
+        genState.wakeTime = '05.00 AM';
+        document.getElementById('wakeInput').value = '05.00 AM';
+        genState.pansil = false;
+        genState.sathya = false;
+        genState.audioMorn = false;
+        updateTaskCardUI('pansil');
+        updateTaskCardUI('sathya');
+        updateTaskCardUI('audioMorn');
+        setNoonAudio(0);
+        setNightAudio(0);
+        genState.extraCount = 0;
+        document.getElementById('counterExtraVal').innerText = '0';
+        recomputeGenerator();
+        showToast("සියලු සටහන් නැවත සකසන ලදී");
+    }
+
+    // ========================================================
+    // ANALYZER PARSING & VISUAL RENDERING
+    // ========================================================
+    function injectSample(type) {
+        let sample = '';
+        if (type === 1) {
+            sample = `1) 05.00 AM\n    i)     ✅\n    ii)    ✅\n    iii)   ✅\n\n2) ✅✅\n\n3) ✅✅✅\n\n4) 4\n\n🔹 මුළු ලකුණු: 11`;
+        } else {
+            sample = `1) 05.25 AM\n    i)     ✅\n    ii)    ❌\n    iii)   ✅\n\n2) ✅❌\n\n3) ✅✅❌\n\n4) 2`;
+        }
+        document.getElementById('analyzerInputArea').value = sample;
+        parseAndAnalyzeText();
+        showToast(`ආදර්ශ ${type} ඇතුළත් කරන ලදී`);
+    }
+
+    function clearAnalyzerInput() {
+        document.getElementById('analyzerInputArea').value = '';
+        showToast("පෙළ මකා දමන ලදී");
+    }
+
+    function parseTextReport(raw) {
+        const lines = raw.split('\n');
+
+        let wakeTime = '05.00 AM';
+        let pansil = false;
+        let sathya = false;
+        let audioM = false;
+
+        let noonSuccess = 0;
+        let nightSuccess = 0;
+        let extraCount = 0;
+
+        // Morning Header
+        const mornLine = lines.find(l => /^\s*1\)/i.test(l));
+        if (mornLine) {
+            const timeMatch = mornLine.match(/1\)\s*([0-9.:\s]+(?:AM|PM|am|pm)?)/i);
+            if (timeMatch && timeMatch[1]) {
+                wakeTime = timeMatch[1].trim();
+            }
+        }
+
+        // Sub items
+        lines.forEach(line => {
+            if (/i\)/i.test(line) && !/ii\)/i.test(line) && !/iii\)/i.test(line)) {
+                pansil = line.includes('✅');
+            } else if (/ii\)/i.test(line) && !/iii\)/i.test(line)) {
+                sathya = line.includes('✅');
+            } else if (/iii\)/i.test(line)) {
+                audioM = line.includes('✅');
+            }
+        });
+
+        // Daytime
+        const noonLine = lines.find(l => /^\s*2\)/i.test(l));
+        if (noonLine) {
+            noonSuccess = (noonLine.match(/✅/g) || []).length;
+            if (noonSuccess > 2) noonSuccess = 2;
+        }
+
+        // Night
+        const nightLine = lines.find(l => /^\s*3\)/i.test(l));
+        if (nightLine) {
+            nightSuccess = (nightLine.match(/✅/g) || []).length;
+            if (nightSuccess > 3) nightSuccess = 3;
+        }
+
+        // Extra
+        const extraLine = lines.find(l => /^\s*4\)/i.test(l));
+        if (extraLine) {
+            const numMatch = extraLine.match(/4\)\s*([0-9]+)/);
+            if (numMatch && numMatch[1]) {
+                extraCount = parseInt(numMatch[1], 10);
+            }
+        }
+
+        const mornSum = (pansil ? 1 : 0) + (sathya ? 1 : 0) + (audioM ? 1 : 0);
+        const wakeBonus = (isFiveAmNormalized(wakeTime) && mornSum === 3) ? 1 : 0;
+        const extraBonus = extraCount * 0.5;
+
+        const baseTotal = mornSum + noonSuccess + nightSuccess;
+        const totalBonus = wakeBonus + extraBonus;
+        const grandTotal = baseTotal + totalBonus;
+
+        return {
+            wakeTime,
+            pansil,
+            sathya,
+            audioM,
+            mornSum,
+            wakeBonus,
+            noonSuccess,
+            nightSuccess,
+            extraCount,
+            extraBonus,
+            baseTotal,
+            totalBonus,
+            grandTotal
+        };
+    }
+
+    function parseAndAnalyzeText() {
+        const text = document.getElementById('analyzerInputArea').value;
+        if (!text.trim()) {
+            showToast("විශ්ලේෂණය සඳහා කරුණාකර වාර්තාව අලවන්න");
+            return;
+        }
+
+        const data = parseTextReport(text);
+
+        // Radial Circle Animation (314 is circumference for r=50)
+        const circle = document.getElementById('radialScoreCircle');
+        const percentage = Math.min(Math.max(data.grandTotal / 10, 0), 1);
+        const offset = 314 - (percentage * 314);
+        circle.style.strokeDashoffset = offset;
+
+        const formattedTotal = Number.isInteger(data.grandTotal) ? data.grandTotal : data.grandTotal.toFixed(1);
+        document.getElementById('pTotalScoreDisplay').innerText = formattedTotal;
+
+        // Performance assessment
+        const gradeTitle = document.getElementById('pPerformanceGrade');
+        const gradeDesc = document.getElementById('pPerformanceDesc');
+
+        if (data.grandTotal >= 8) {
+            gradeTitle.innerText = "විශිෂ්ට සාධනයක්! (Outstanding)";
+            gradeDesc.innerText = "සියලු මූලික අධිෂ්ඨාන සම්පූර්ණ කර හෝ ප්‍රසාද ලකුණු ලබාගෙන ඇත.";
+        } else if (data.grandTotal >= 5) {
+            gradeTitle.innerText = "යහපත් මට්ටමක් (Good Progress)";
+            gradeDesc.innerText = "අධිෂ්ඨානයේ බහුතර කාර්යයන් සාර්ථකව සිදු කර ඇත.";
+        } else {
+            gradeTitle.innerText = "තවදුරටත් උත්සාහවන්ත වෙමු (Keep Going)";
+            gradeDesc.innerText = "දවසේ අතපසු වූ අවස්ථා හඳුනාගෙන අධිෂ්ඨානය ශක්තිමත් කරගන්න.";
+        }
+
+        // Base & Bonus Stats
+        document.getElementById('pBaseScoreVal').innerText = `${data.baseTotal} / 8`;
+        document.getElementById('pWakeBonusVal').innerText = `+${data.wakeBonus}`;
+        document.getElementById('pExtraBonusVal').innerText = `+${data.extraBonus.toFixed(1)}`;
+
+        // Bonus Callout Box
+        const bonusCard = document.getElementById('pBonusStatusCard');
+        if (data.wakeBonus === 1) {
+            bonusCard.className = "p-4 rounded-2xl text-xs flex items-center gap-3 bg-emerald-500/10 border-emerald-500/30 text-emerald-300";
+            bonusCard.innerHTML = `
+                <span class="text-2xl">🌟</span>
+                <div>
+                    <span class="font-bold text-white block text-sm">උදෑසන 05.00 ප්‍රසාද ලකුණ හිමිවී ඇත! (+1 Bonus)</span>
+                    <span class="text-emerald-300/80">හරියටම 05.00 AM අවදි වී පන්සිල්, සත්‍යක්‍රියාව සහ හඬපටය සම්පූර්ණ කර ඇත.</span>
+                </div>
+            `;
+        } else {
+            bonusCard.className = "p-4 rounded-2xl text-xs flex items-center gap-3 bg-amber-500/10 border-amber-500/25 text-amber-200/90";
+            const reason = isFiveAmNormalized(data.wakeTime) ? "උදෑසන කාර්යයන් 3 ම සම්පූර්ණ කර නොමැත." : `අවදි වූ වේලාව 05.00 AM නොවේ (${data.wakeTime}).`;
+            bonusCard.innerHTML = `
+                <span class="text-2xl">ℹ️</span>
+                <div>
+                    <span class="font-bold text-white block text-sm">උදෑසන 05.00 ප්‍රසාද ලකුණ හිමිවී නැත</span>
+                    <span class="text-amber-300/80">${reason}</span>
+                </div>
+            `;
+        }
+
+        // Morning Card Details
+        document.getElementById('pWakeTimeChip').innerText = data.wakeTime;
+        document.getElementById('pMorningScoreBadge').innerText = `${data.mornSum} / 3` + (data.wakeBonus ? ' (+1)' : '');
+        document.getElementById('pIconPansil').innerText = data.pansil ? '✅' : '❌';
+        document.getElementById('pIconSathya').innerText = data.sathya ? '✅' : '❌';
+        document.getElementById('pIconAudioM').innerText = data.audioM ? '✅' : '❌';
+
+        // Daytime Card Details
+        document.getElementById('pNoonScoreBadge').innerText = `${data.noonSuccess} / 2`;
+        document.getElementById('pNoonSymbols').innerText = getNoonPattern(data.noonSuccess);
+        document.getElementById('pNoonDesc').innerText = `${data.noonSuccess} වතාවක් ශ්‍රවණය කර ඇත`;
+
+        // Night Card Details
+        document.getElementById('pNightScoreBadge').innerText = `${data.nightSuccess} / 3`;
+        document.getElementById('pNightSymbols').innerText = getNightPattern(data.nightSuccess);
+        document.getElementById('pNightDesc').innerText = `${data.nightSuccess} වතාවක් ශ්‍රවණය කර ඇත`;
+
+        // Extra Card Details
+        document.getElementById('pExtraScoreBadge').innerText = `+${data.extraBonus.toFixed(1)}`;
+        document.getElementById('pExtraCountDisplay').innerText = data.extraCount;
+
+        showToast("විශ්ලේෂණය සාර්ථකව අවසන් විය!");
+    }
+
+    function copyAnalysisSummaryText() {
+        const total = document.getElementById('pTotalScoreDisplay').innerText;
+        const wakeTime = document.getElementById('pWakeTimeChip').innerText;
+        const mornScore = document.getElementById('pMorningScoreBadge').innerText;
+        const noonScore = document.getElementById('pNoonScoreBadge').innerText;
+        const nightScore = document.getElementById('pNightScoreBadge').innerText;
+        const extraCount = document.getElementById('pExtraCountDisplay').innerText;
+
+        const text = `📊 අධිෂ්ඨාන වාර්තා විශ්ලේෂණය:\n• අවදි වූ වේලාව: ${wakeTime}\n• උදෑසන සැසිය: ${mornScore}\n• දහවල් සැසිය: ${noonScore}\n• රාත්‍රී සැසිය: ${nightScore}\n• අමතර ශ්‍රවණයන්: ${extraCount} වතාවක්\n⭐ මුළු ලකුණු: ${total}`;
+
+        executeClipboardCopy(text, "විශ්ලේෂණ සාරාංශය පිටපත් කරගන්නා ලදී!");
+    }
+
+    // Fallback-safe clipboard copy function
+    function executeClipboardCopy(textToCopy, successMsg) {
+        let isCopied = false;
+        try {
+            const tempEl = document.createElement("textarea");
+            tempEl.value = textToCopy;
+            tempEl.style.position = "fixed";
+            tempEl.style.opacity = "0";
+            document.body.appendChild(tempEl);
+            tempEl.focus();
+            tempEl.select();
+            isCopied = document.execCommand('copy');
+            document.body.removeChild(tempEl);
+        } catch (e) {
+            isCopied = false;
+        }
+
+        if (isCopied) {
+            showToast(successMsg);
+        } else if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                showToast(successMsg);
+            }).catch(() => {
+                showToast("පෙළ තෝරාගෙන පිටපත් කරගන්න");
+            });
+        }
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('globalToast');
+        const msgEl = document.getElementById('globalToastMsg');
+        msgEl.innerText = message;
+        toast.classList.remove('opacity-0', 'translate-y-3', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+
+        setTimeout(() => {
+            toast.classList.remove('opacity-100', 'translate-y-0');
+            toast.classList.add('opacity-0', 'translate-y-3', 'pointer-events-none');
+        }, 2400);
+    }
+
+    window.onload = function() {
+        setNoonAudio(0);
+        setNightAudio(0);
+        recomputeGenerator();
+    };
+</script>
+</body>
+</html>

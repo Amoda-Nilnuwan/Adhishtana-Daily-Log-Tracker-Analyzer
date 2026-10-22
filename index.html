@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>අධිෂ්ඨාන දෛනික වාර්තාව සහ විශ්ලේෂකය | Adhishtana Tracker & Analyzer</title>
+    <title>අධිෂ්ඨාන දෛනික වාර්තාව සහ විශ්ලේෂකය | Adhishtana Tracker & Portal</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for Visual Analytics & Trends -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,7 +66,6 @@
             border: 1px solid rgba(245, 158, 11, 0.25);
         }
 
-        /* Calibrated selector active state: Deep, readable, eye-friendly */
         .option-pill-active {
             background: linear-gradient(145deg, #1E2538 0%, #252D42 100%) !important;
             border-color: #F59E0B !important;
@@ -77,9 +78,6 @@
         .option-pill-active .pill-sub {
             color: #FBBF24 !important;
         }
-        .option-pill-active .pill-indicator {
-            display: inline-flex !important;
-        }
 
         .interactive-card {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -89,7 +87,6 @@
             background-color: #161D2E;
         }
 
-        /* Task check card selected state */
         .task-card-active {
             background: linear-gradient(145deg, rgba(245, 158, 11, 0.12) 0%, rgba(21, 26, 43, 0.9) 100%) !important;
             border-color: rgba(245, 158, 11, 0.45) !important;
@@ -115,26 +112,56 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950">
 
-<div class="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10">
+<div class="w-full max-w-5xl mx-auto px-4 sm:px-6 pt-5 sm:pt-8">
+
+    <!-- Top Account Bar -->
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl glass-panel border border-white/10 text-xs">
+        <div id="userStatusContainer" class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-300 font-bold">
+                👤
+            </div>
+            <div>
+                <div class="font-bold text-white flex items-center gap-1.5" id="userGreetingText">
+                    සාදරයෙන් පිළිගනිමු!
+                </div>
+                <div class="text-[11px] text-slate-400" id="userSubText">
+                    වාර්තා ඇතුළත් කිරීමට කරුණාකර පිවිසෙන්න
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <!-- Sync Indicator -->
+            <span id="syncIndicator" class="hidden px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                සම්බන්ධයි (Online)
+            </span>
+
+            <button type="button" id="btnAuthAction" onclick="handleAuthAction()"
+                    class="px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 font-bold transition flex items-center gap-1.5 active:scale-95 shadow-sm">
+                <span>🔐 පිවිසෙන්න (Login)</span>
+            </button>
+        </div>
+    </div>
 
     <!-- Header bar -->
-    <header class="text-center mb-8 relative">
+    <header class="text-center mb-6 relative">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs font-semibold mb-3 tracking-wide">
             <span class="w-2 h-2 rounded-full bg-amber-400"></span>
             අධිෂ්ඨාන දෛනික සාධන පද්ධතිය
         </div>
 
-        <h1 class=" text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-5 flex items-center justify-center gap-3  md:leading-[1.4]">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-3 flex items-center justify-center gap-3 md:leading-[1.3]">
             <span class="bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 bg-clip-text text-transparent">
                 අධිෂ්ඨාන වැඩපිළිවෙල
             </span>
         </h1>
         <p class="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto font-normal leading-relaxed">
-            දෛනික සටහන පිළියෙල කිරීම සහ ලැබෙන වාර්තා ක්ෂණිකව විශ්ලේෂණය කිරීමේ පද්ධතිය
+            දෛනික සටහන පිළියෙල කිරීම, සුරැකීම සහ සමස්ත සාධනය අධීක්ෂණය කිරීමේ පද්ධතිය
         </p>
 
         <!-- Daily Wish Callout -->
-        <div class="mt-6 max-w-2xl mx-auto p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 shadow-amber-soft text-center relative overflow-hidden">
+        <div class="mt-5 max-w-2xl mx-auto p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 shadow-amber-soft text-center relative overflow-hidden">
             <div class="absolute -top-4 -right-4 text-amber-500/10 text-6xl rotate-12 select-none pointer-events-none">✨</div>
             <div class="relative z-10">
                 <h3 class="text-sm sm:text-base font-bold text-amber-400 mb-2">
@@ -146,29 +173,67 @@
             </div>
         </div>
 
-        <!-- Segmented Tab switcher with comfortable contrast -->
-        <div class="mt-7 max-w-md mx-auto p-1.5 rounded-2xl glass-panel border border-white/10 flex items-center justify-center gap-1.5 shadow-lg">
+        <!-- Main Tab Switcher -->
+        <div class="mt-6 max-w-xl mx-auto p-1.5 rounded-2xl glass-panel border border-white/10 grid grid-cols-3 gap-1.5 shadow-lg">
             <button id="tabBtnGenerator" onclick="switchTab('generator')"
-                    class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm">
-                <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-                <span>වාර්තාව සකසන්න</span>
+                    class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm">
+                <span>📝 දෛනික සටහන</span>
+            </button>
+            <button id="tabBtnAdmin" onclick="switchTab('admin')"
+                    class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 text-slate-400 hover:text-white border border-transparent">
+                <span>🛡️ පරිපාලන පුවරුව</span>
             </button>
             <button id="tabBtnAnalyzer" onclick="switchTab('analyzer')"
-                    class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 text-slate-400 hover:text-white border border-transparent">
-                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                </svg>
-                <span>වාර්තාව විශ්ලේෂණය</span>
+                    class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 text-slate-400 hover:text-white border border-transparent">
+                <span>📊 පෙළ විශ්ලේෂකය</span>
             </button>
         </div>
     </header>
 
     <!-- ======================================================== -->
-    <!-- TAB 1: GENERATE / MARK REPORT                            -->
+    <!-- TAB 1: GENERATE & SUBMIT DAILY LOG                       -->
     <!-- ======================================================== -->
     <main id="tabGeneratorView" class="space-y-6">
+
+        <!-- Log Entry Date Selector Card -->
+        <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-300 text-lg font-bold shrink-0">
+                    📅
+                </div>
+                <div>
+                    <label for="logEntryDate" class="font-bold text-white block text-sm">වාර්තාවට අදාළ දිනය (Log Date):</label>
+                    <span class="text-[11px] text-slate-400">අද හෝ අතපසු වූ පසුගිය දිනයක වාර්තාවක් ඇතුළත් කිරීමට දිනය තෝරන්න</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+                <input type="date" id="logEntryDate" onchange="handleLogDateChange()"
+                       class="bg-[#0C101A] border border-slate-700 focus:border-amber-500 rounded-xl px-3 py-2 text-xs sm:text-sm font-mono text-amber-300 font-bold focus:outline-none">
+                <button type="button" onclick="setLogDate('today')" id="btnDateToday"
+                        class="px-3.5 py-2 bg-amber-500/20 text-amber-200 border border-amber-500/40 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">
+                    අද (Today)
+                </button>
+                <button type="button" onclick="setLogDate('yesterday')" id="btnDateYesterday"
+                        class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 rounded-xl text-xs font-bold transition active:scale-95">
+                    ඊයේ (Yesterday)
+                </button>
+            </div>
+        </div>
+
+        <!-- Member Submission Status Banner -->
+        <div id="memberSubmissionNotice" class="hidden p-4 rounded-2xl glass-panel-accent border border-amber-500/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">✅</span>
+                <div>
+                    <span class="font-bold text-white block text-sm" id="submittedNoticeTitle">අද දින වාර්තාව ඇතුළත් කර ඇත!</span>
+                    <span class="text-slate-300" id="submittedNoticeSub">ඔබට අවශ්‍ය නම් පහතින් වෙනස්කම් සිදු කර නැවත යාවත්කාලීන කළ හැක.</span>
+                </div>
+            </div>
+            <span id="submittedTimestampBadge" class="px-2.5 py-1 rounded-xl bg-black/40 text-amber-300 font-mono text-[11px] border border-white/5">
+                --:--
+            </span>
+        </div>
 
         <!-- Top Live Score Banner -->
         <div class="glass-panel-accent rounded-3xl p-5 sm:p-6 shadow-amber-soft flex flex-col sm:flex-row items-center justify-between gap-5 relative overflow-hidden">
@@ -184,7 +249,7 @@
                             +1 05:00 AM Bonus
                         </span>
                     </h2>
-                    <p class="text-xs text-slate-400">ඔබ සලකුණු කරන අවස්ථා අනුව ලකුණු ගණනය වේ</p>
+                    <p class="text-xs text-slate-400" id="genScoreSubtitle">ඔබ සලකුණු කරන අවස්ථා අනුව ලකුණු ගණනය වේ</p>
                 </div>
             </div>
 
@@ -419,14 +484,34 @@
             </div>
         </section>
 
-        <!-- Output Preformatted Text Card -->
-        <section class="glass-panel-accent rounded-3xl p-5 sm:p-7 shadow-xl relative">
+        <!-- PRIMARY DATABASE SUBMISSION ACTION -->
+        <section class="glass-panel-accent rounded-3xl p-6 sm:p-7 shadow-amber-soft text-center">
+            <h3 class="text-base sm:text-lg font-extrabold text-white mb-2">
+                අද දින වාර්තාව පද්ධතියට ඇතුළත් කිරීම (Submit Daily Log)
+            </h3>
+            <p class="text-xs text-slate-300 mb-5 max-w-md mx-auto">
+                ඔබේ ලකුණු සහ සටහන් සෘජුවම මධ්‍යම දත්ත පද්ධතියට සුරැකී පරිපාලකවරුන් වෙත වාර්තා වේ.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
+                <button type="button" id="btnSubmitDailyLog" onclick="submitDailyLogToDatabase()"
+                        class="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold text-sm tracking-wide shadow-lg shadow-amber-500/25 active:scale-95 transition flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5 text-slate-950" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    <span id="btnSubmitDailyLogText">වාර්තාව සුරකින්න (Submit Log)</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Output Preformatted Text Card (Retained for WhatsApp copy) -->
+        <section class="glass-panel rounded-3xl p-5 sm:p-7 shadow-xl relative">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2.5">
                     <span class="p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-sm">📋</span>
                     <div>
-                        <h3 class="text-base font-bold text-white">පිටපත් කළ හැකි වාර්තාව (Output Format)</h3>
-                        <p class="text-[11px] text-slate-400">කණ්ඩායමට යැවීම සඳහා සකස් වූ ආකෘතිය</p>
+                        <h3 class="text-base font-bold text-white">කණ්ඩායමට යැවිය හැකි කෙටි පණිවිඩය (Text Format)</h3>
+                        <p class="text-[11px] text-slate-400">WhatsApp / Viber සමූහයට පිටපත් කර යැවීමට අවශ්‍ය නම්</p>
                     </div>
                 </div>
                 <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-300 select-none bg-black/40 px-3 py-1.5 rounded-xl border border-white/5">
@@ -439,7 +524,7 @@
             <!-- Terminal-style Code Box -->
             <div class="relative group">
                 <pre id="textReportOutput"
-                     class="w-full bg-[#080B12] border border-amber-500/25 text-amber-200/90 font-mono text-xs sm:text-sm p-4 sm:p-5 rounded-2xl overflow-x-auto whitespace-pre leading-relaxed shadow-inner select-all"></pre>
+                     class="w-full bg-[#080B12] border border-slate-800 text-amber-200/90 font-mono text-xs sm:text-sm p-4 sm:p-5 rounded-2xl overflow-x-auto whitespace-pre leading-relaxed shadow-inner select-all"></pre>
             </div>
 
             <div class="mt-4 flex flex-col sm:flex-row gap-3">
@@ -448,7 +533,7 @@
                     <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
-                    <span>වාර්තාව පිටපත් කරගන්න (Copy Report)</span>
+                    <span>පෙළ පිටපත් කරගන්න (Copy Text)</span>
                 </button>
                 <button type="button" onclick="resetGeneratorForm()"
                         class="px-5 py-3 rounded-2xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 font-semibold text-xs sm:text-sm border border-white/10 transition active:scale-95">
@@ -459,7 +544,500 @@
     </main>
 
     <!-- ======================================================== -->
-    <!-- TAB 2: ANALYZE REPORT (STANDALONE UI)                    -->
+    <!-- TAB 2: ADMIN DASHBOARD & REPORTS                         -->
+    <!-- ======================================================== -->
+    <main id="tabAdminView" class="space-y-6 hidden">
+
+        <!-- Admin Sub-Navigation Tabs -->
+        <div class="max-w-2xl mx-auto p-1.5 rounded-2xl glass-panel border border-white/10 grid grid-cols-3 gap-1.5 shadow-lg mb-6">
+            <button id="adminSubBtnRoster" onclick="switchAdminSubTab('roster')"
+                    class="py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm">
+                <span>📋 දෛනික නාමලේඛනය</span>
+            </button>
+            <button id="adminSubBtnDateRange" onclick="switchAdminSubTab('daterange')"
+                    class="py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all duration-200 text-slate-400 hover:text-white border border-transparent">
+                <span>🗓️ දින පරාස වාර්තා</span>
+            </button>
+            <button id="adminSubBtnAnalytics" onclick="switchAdminSubTab('analytics')"
+                    class="py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all duration-200 text-slate-400 hover:text-white border border-transparent">
+                <span>📈 සාධන විශ්ලේෂණය</span>
+            </button>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- SUB-VIEW 1: DAILY ROSTER (SINGLE DAY CHECKLIST)          -->
+        <!-- ======================================================== -->
+        <div id="adminSubViewRoster" class="space-y-6">
+            <!-- Admin Date & Controls Bar -->
+            <section class="glass-panel-accent rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-bold mb-1">
+                    🛡️ පරිපාලන පාලක පුවරුව (Admin Portal)
+                </span>
+                <h2 class="text-xl sm:text-2xl font-black text-white">දෛනික වාර්තා සහ සාමාජික තත්ත්වය</h2>
+                <p class="text-xs text-slate-300">සාමාජිකයින්ගේ දෛනික වාර්තා අධීක්ෂණය සහ සාරාංශ වාර්තා</p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+                <div class="flex items-center gap-2 bg-black/40 p-1.5 rounded-2xl border border-white/10">
+                    <label for="adminDateFilter" class="text-xs text-slate-400 pl-2 font-medium">දිනය:</label>
+                    <input type="date" id="adminDateFilter" onchange="loadAdminDashboardData()"
+                           class="bg-transparent text-amber-300 text-xs sm:text-sm font-mono font-bold focus:outline-none pr-2">
+                </div>
+
+                <button type="button" onclick="refreshAdminDashboard()"
+                        class="p-2.5 rounded-xl bg-subCard hover:bg-subCardHover text-amber-300 border border-amber-500/30 transition active:scale-95" title="නැවුම් කරන්න">
+                    🔄
+                </button>
+                
+                <button type="button" onclick="exportDataToCSV()"
+                        class="px-3.5 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition flex items-center gap-1.5 active:scale-95">
+                    📥 CSV බාගන්න
+                </button>
+            </div>
+        </section>
+
+        <!-- KPI Metric Cards Grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div class="glass-panel p-4 rounded-2xl border border-white/10">
+                <span class="text-[11px] font-semibold text-slate-400 block mb-1">සමස්ත සාමාජිකයින්</span>
+                <div class="flex items-baseline gap-2">
+                    <span id="kpiTotalMembers" class="text-2xl sm:text-3xl font-black text-white">0</span>
+                    <span class="text-xs text-slate-400">දෙනෙක්</span>
+                </div>
+            </div>
+
+            <div class="glass-panel p-4 rounded-2xl border border-white/10">
+                <span class="text-[11px] font-semibold text-emerald-400 block mb-1">වාර්තා එවූ පිරිස (Submitted)</span>
+                <div class="flex items-baseline gap-2">
+                    <span id="kpiSubmittedToday" class="text-2xl sm:text-3xl font-black text-emerald-400">0</span>
+                    <span id="kpiSubmittedPercent" class="text-xs text-emerald-300/80 font-bold">0%</span>
+                </div>
+            </div>
+
+            <div class="glass-panel p-4 rounded-2xl border border-white/10">
+                <span class="text-[11px] font-semibold text-amber-400 block mb-1">වාර්තා නොඑවූ පිරිස (Pending)</span>
+                <div class="flex items-baseline gap-2">
+                    <span id="kpiPendingToday" class="text-2xl sm:text-3xl font-black text-amber-400">0</span>
+                    <span class="text-xs text-slate-400">දෙනෙක්</span>
+                </div>
+            </div>
+
+            <div class="glass-panel p-4 rounded-2xl border border-white/10">
+                <span class="text-[11px] font-semibold text-amber-300 block mb-1">05:00 AM බෝනස් ලැබූ</span>
+                <div class="flex items-baseline gap-2">
+                    <span id="kpiBonusAchievers" class="text-2xl sm:text-3xl font-black text-amber-300">0</span>
+                    <span class="text-xs text-amber-300/80">දෙනෙක්</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Filter Row -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl glass-panel border border-white/10 text-xs">
+            <!-- Filter Pills -->
+            <div class="flex items-center gap-1.5 w-full sm:w-auto">
+                <button type="button" onclick="setAdminFilter('all')" id="btnFilterAll"
+                        class="px-3 py-1.5 rounded-xl font-bold bg-amber-500/20 text-amber-200 border border-amber-500/40">
+                    සියල්ල (<span id="countFilterAll">0</span>)
+                </button>
+                <button type="button" onclick="setAdminFilter('submitted')" id="btnFilterSubmitted"
+                        class="px-3 py-1.5 rounded-xl font-bold text-slate-400 hover:text-white border border-transparent">
+                    එවූ (<span id="countFilterSubmitted">0</span>)
+                </button>
+                <button type="button" onclick="setAdminFilter('pending')" id="btnFilterPending"
+                        class="px-3 py-1.5 rounded-xl font-bold text-slate-400 hover:text-white border border-transparent">
+                    නොඑවූ (<span id="countFilterPending">0</span>)
+                </button>
+            </div>
+
+            <!-- WhatsApp Pending Reminder Generator -->
+            <button type="button" onclick="copyPendingWhatsAppMessage()"
+                    class="w-full sm:w-auto px-4 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/35 font-bold transition flex items-center justify-center gap-2 active:scale-95 shadow-sm">
+                <span>💬 නොඑවූ පිරිස WhatsApp පණිවිඩයක් ලෙස පිටපත් කරන්න</span>
+            </button>
+        </div>
+
+        <!-- Roster Submissions Table -->
+        <section class="glass-panel rounded-3xl p-4 sm:p-6 shadow-xl overflow-hidden">
+            <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <span>සාමාජික වාර්තා ලැයිස්තුව</span>
+                    <span id="adminTableShowingCount" class="text-xs px-2 py-0.5 rounded-lg bg-black/40 text-slate-300 font-mono">0 පෙන්වයි</span>
+                </h3>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="openChangeAdminPasswordModal()"
+                            class="px-3 py-1.5 rounded-xl bg-subCard hover:bg-subCardHover text-amber-300 border border-amber-500/30 text-xs font-bold transition flex items-center gap-1"
+                            title="පරිපාලක මුරපදය වෙනස් කරන්න">
+                        🔑 මුරපදය වෙනස් කරන්න
+                    </button>
+                    <button type="button" onclick="openMemberManagementModal()"
+                            class="px-3 py-1.5 rounded-xl bg-subCard hover:bg-subCardHover text-amber-300 border border-amber-500/30 text-xs font-bold transition flex items-center gap-1">
+                        👥 සාමාජික කළමනාකරණය
+                    </button>
+                </div>
+            </div>
+
+            <!-- Responsive Table Wrap -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs whitespace-nowrap">
+                    <thead>
+                        <tr class="border-b border-white/10 text-slate-400 font-semibold">
+                            <th class="py-3 px-3">සාමාජිකයා</th>
+                            <th class="py-3 px-3">තත්ත්වය</th>
+                            <th class="py-3 px-3">අවදි වූ වේලාව</th>
+                            <th class="py-3 px-3 text-center">උදෑසන</th>
+                            <th class="py-3 px-3 text-center">දහවල</th>
+                            <th class="py-3 px-3 text-center">රාත්‍රිය</th>
+                            <th class="py-3 px-3 text-center">අමතර</th>
+                            <th class="py-3 px-3 text-right">මුළු ලකුණු</th>
+                            <th class="py-3 px-3 text-center">ක්‍රියා</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminRosterTableBody" class="divide-y divide-white/5">
+                        <!-- Populated by JavaScript -->
+                        <tr>
+                            <td colspan="9" class="py-8 text-center text-slate-500">
+                                දත්ත පූරණය වෙමින් පවතී...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Empty State Notice (If no members in DB) -->
+        <section id="demoSeedNoticeCard" class="hidden glass-panel-accent rounded-3xl p-5 border border-amber-500/30 text-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">👥</span>
+                <div>
+                    <span class="font-bold text-white block text-sm">සාමාජිකයින් කිසිවෙකු ලියාපදිංචි කර නොමැත</span>
+                    <span class="text-slate-300">පද්ධතිය ක්‍රියාත්මක කිරීම සඳහා කරුණාකර පළමු සාමාජිකයා ලියාපදිංචි කරන්න.</span>
+                </div>
+            </div>
+            <button type="button" onclick="openMemberManagementModal()"
+                    class="px-4 py-2.5 rounded-xl bg-amber-500/25 hover:bg-amber-500/40 text-amber-200 border border-amber-500/50 font-bold transition active:scale-95 shrink-0 flex items-center gap-2">
+                ➕ පළමු සාමාජිකයා එක් කරන්න (Add Member)
+            </button>
+        </section>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- SUB-VIEW 2: DATE RANGE RECORDS TABLE                     -->
+        <!-- ======================================================== -->
+        <div id="adminSubViewDateRange" class="space-y-6 hidden">
+            <!-- Date Range Controls Bar -->
+            <section class="glass-panel-accent rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-4">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-bold mb-1">
+                        🗓️ දින පරාස වාර්තා නිරීක්ෂණය (Date Range Logs)
+                    </span>
+                    <h2 class="text-xl sm:text-2xl font-black text-white">දින පරාස වාර්තා ලේඛනය</h2>
+                    <p class="text-xs text-slate-300">ඕනෑම දින පරාසයක් අතර සාමාජිකයින්ගේ වාර්තා එකතුව එකම තැනකින්</p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+                    <button type="button" onclick="loadDateRangeData()"
+                            class="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 text-xs font-bold transition flex items-center gap-1.5 active:scale-95 shadow-sm">
+                        🔍 වාර්තා සොයන්න
+                    </button>
+                    <button type="button" onclick="exportDateRangeCSV()"
+                            class="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition flex items-center gap-1.5 active:scale-95">
+                        📥 පරාසය CSV බාගන්න
+                    </button>
+                </div>
+            </section>
+
+            <!-- Date Range Filter Selector Card -->
+            <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-white/10 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 text-xs">
+                <!-- Inputs -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="flex items-center gap-2 bg-black/40 px-3 py-2 rounded-xl border border-white/10">
+                        <label for="dateRangeFrom" class="text-slate-400 font-semibold">සිට (From):</label>
+                        <input type="date" id="dateRangeFrom" onchange="loadDateRangeData()"
+                               class="bg-transparent text-amber-300 font-mono font-bold focus:outline-none text-xs sm:text-sm">
+                    </div>
+                    <div class="flex items-center gap-2 bg-black/40 px-3 py-2 rounded-xl border border-white/10">
+                        <label for="dateRangeTo" class="text-slate-400 font-semibold">දක්වා (To):</label>
+                        <input type="date" id="dateRangeTo" onchange="loadDateRangeData()"
+                               class="bg-transparent text-amber-300 font-mono font-bold focus:outline-none text-xs sm:text-sm">
+                    </div>
+
+                    <!-- Member Filter Dropdown -->
+                    <div class="flex items-center gap-2 bg-black/40 px-3 py-2 rounded-xl border border-white/10">
+                        <label for="dateRangeMemberFilter" class="text-slate-400 font-semibold">සාමාජිකයා:</label>
+                        <select id="dateRangeMemberFilter" onchange="filterDateRangeTableLocally()"
+                                class="bg-transparent text-amber-300 font-bold focus:outline-none text-xs sm:text-sm cursor-pointer">
+                            <option value="all" class="bg-[#111522] text-white">සියලු සාමාජිකයින්</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Quick Presets -->
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="text-slate-500 font-medium text-[11px] mr-1">කෙටි මඟ:</span>
+                    <button type="button" onclick="setDateRangePreset('7d')"
+                            class="px-2.5 py-1.5 bg-subCard hover:bg-subCardHover text-amber-300 border border-amber-500/25 rounded-xl font-bold transition active:scale-95">
+                        දින 7
+                    </button>
+                    <button type="button" onclick="setDateRangePreset('14d')"
+                            class="px-2.5 py-1.5 bg-subCard hover:bg-subCardHover text-amber-300 border border-amber-500/25 rounded-xl font-bold transition active:scale-95">
+                        දින 14
+                    </button>
+                    <button type="button" onclick="setDateRangePreset('30d')"
+                            class="px-2.5 py-1.5 bg-subCard hover:bg-subCardHover text-amber-300 border border-amber-500/25 rounded-xl font-bold transition active:scale-95">
+                        දින 30
+                    </button>
+                    <button type="button" onclick="setDateRangePreset('month')"
+                            class="px-2.5 py-1.5 bg-subCard hover:bg-subCardHover text-amber-300 border border-amber-500/25 rounded-xl font-bold transition active:scale-95">
+                        මෙම මාසය
+                    </button>
+                </div>
+            </div>
+
+            <!-- Date Range Summary KPI Chips -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="glass-panel p-4 rounded-2xl border border-white/10">
+                    <span class="text-[11px] font-semibold text-slate-400 block mb-1">පරාසයේ වාර්තා එකතුව</span>
+                    <div class="flex items-baseline gap-2">
+                        <span id="rangeKpiTotalLogs" class="text-2xl sm:text-3xl font-black text-amber-300">0</span>
+                        <span class="text-xs text-slate-400">වාර්තා</span>
+                    </div>
+                </div>
+                <div class="glass-panel p-4 rounded-2xl border border-white/10">
+                    <span class="text-[11px] font-semibold text-emerald-400 block mb-1">සහභාගී වූ සාමාජිකයින්</span>
+                    <div class="flex items-baseline gap-2">
+                        <span id="rangeKpiActiveMembers" class="text-2xl sm:text-3xl font-black text-emerald-400">0</span>
+                        <span class="text-xs text-slate-400">දෙනෙක්</span>
+                    </div>
+                </div>
+                <div class="glass-panel p-4 rounded-2xl border border-white/10">
+                    <span class="text-[11px] font-semibold text-amber-400 block mb-1">සාමාන්‍ය ලකුණු (Average)</span>
+                    <div class="flex items-baseline gap-2">
+                        <span id="rangeKpiAvgScore" class="text-2xl sm:text-3xl font-black text-amber-400">0.0</span>
+                        <span class="text-xs text-slate-400">/ 10</span>
+                    </div>
+                </div>
+                <div class="glass-panel p-4 rounded-2xl border border-white/10">
+                    <span class="text-[11px] font-semibold text-amber-300 block mb-1">05:00 AM බෝනස් එකතුව</span>
+                    <div class="flex items-baseline gap-2">
+                        <span id="rangeKpiBonusCount" class="text-2xl sm:text-3xl font-black text-amber-300">0</span>
+                        <span class="text-xs text-slate-400">වතාවක්</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Range Logs Table Section -->
+            <section class="glass-panel rounded-3xl p-4 sm:p-6 shadow-xl overflow-hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-white/10 mb-4 gap-3">
+                    <div class="flex items-center gap-2">
+                        <h3 class="text-base font-bold text-white">වාර්තා ලැයිස්තුව</h3>
+                        <span id="dateRangeTableCountBadge" class="text-xs px-2.5 py-0.5 rounded-lg bg-black/40 text-amber-300 font-mono font-bold">0 වාර්තා</span>
+                    </div>
+
+                    <!-- Instant Search -->
+                    <div class="relative w-full sm:w-64">
+                        <input type="text" id="dateRangeSearchInput" oninput="filterDateRangeTableLocally()" placeholder="නම හෝ ID සොයන්න..."
+                               class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs whitespace-nowrap">
+                        <thead>
+                            <tr class="border-b border-white/10 text-slate-400 font-semibold">
+                                <th class="py-3 px-3">දිනය</th>
+                                <th class="py-3 px-3">සාමාජිකයා</th>
+                                <th class="py-3 px-3">අවදි වූ වේලාව</th>
+                                <th class="py-3 px-3 text-center">උදෑසන</th>
+                                <th class="py-3 px-3 text-center">දහවල</th>
+                                <th class="py-3 px-3 text-center">රාත්‍රිය</th>
+                                <th class="py-3 px-3 text-center">අමතර</th>
+                                <th class="py-3 px-3 text-right">මුළු ලකුණු</th>
+                                <th class="py-3 px-3 text-center">සටහන් කළ වේලාව</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dateRangeTableBody" class="divide-y divide-white/5">
+                            <tr>
+                                <td colspan="9" class="py-8 text-center text-slate-500">
+                                    දින පරාසයක් තෝරා 'වාර්තා සොයන්න' ඔබන්න.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- SUB-VIEW 3: DETAILED ANALYTICS & REPORTS                 -->
+        <!-- ======================================================== -->
+        <div id="adminSubViewAnalytics" class="space-y-6 hidden">
+            <!-- Analytics Header Bar -->
+            <section class="glass-panel-accent rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-bold mb-1">
+                        📈 සාධන විශ්ලේෂණය සහ ප්‍රස්ථාර (Analytics Dashboard)
+                    </span>
+                    <h2 class="text-xl sm:text-2xl font-black text-white">සමස්ත සාධන විශ්ලේෂණ වාර්තාව</h2>
+                    <p class="text-xs text-slate-300">සාමාජිකයින්ගේ දෛනික අධිෂ්ඨාන පුරුදු සහ සාධන ප්‍රවණතා</p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="setAnalyticsPreset('7d')" id="btnAna7d"
+                            class="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-200 border border-amber-500/40">
+                        පසුගිය දින 7
+                    </button>
+                    <button type="button" onclick="setAnalyticsPreset('30d')" id="btnAna30d"
+                            class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white border border-transparent">
+                        පසුගිය දින 30
+                    </button>
+                    <button type="button" onclick="setAnalyticsPreset('all')" id="btnAnaAll"
+                            class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white border border-transparent">
+                        සමස්තය
+                    </button>
+                </div>
+            </section>
+
+            <!-- 4 KPI Highlight Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="glass-panel p-4 rounded-2xl border border-white/10">
+                    <span class="text-[11px] font-semibold text-slate-400 block mb-1">සමස්ත වාර්තා සංඛ්‍යාව</span>
+                    <div class="flex items-baseline gap-2">
+                        <span id="anaKpiTotalLogs" class="text-2xl sm:text-3xl font-black text-white">0</span>
+                        <span class="text-xs text-slate-400">වාර්තා</span>
+                    </div>
+                    <span id="anaKpiActiveSubtext" class="text-[11px] text-emerald-400 mt-1 block">0 ක්‍රියාකාරී සාමාජිකයින්</span>
+                </div>
+
+                <div class="glass-panel p-4 rounded-2xl border border-white/10">
+                    <span class="text-[11px] font-semibold text-amber-400 block mb-1">සමූහ සාමාන්‍ය ලකුණු</span>
+                    <div class="flex items-baseline gap-2">
+                        <span id="anaKpiAvgScore" class="text-2xl sm:text-3xl font-black text-amber-300">0.0</span>
+                        <span class="text-xs text-slate-400">/ 10</span>
+                    </div>
+                    <span id="anaKpiScoreGrade" class="text-[11px] text-slate-300 mt-1 block">විශ්ලේෂණය කරමින්...</span>
+                </div>
+
+                <div class="glass-panel p-4 rounded-2xl border border-white/10">
+                    <span class="text-[11px] font-semibold text-emerald-400 block mb-1">05:00 AM අවදිවීම් අනුපාතය</span>
+                    <div class="flex items-baseline gap-2">
+                        <span id="anaKpiFiveAmRate" class="text-2xl sm:text-3xl font-black text-emerald-400">0%</span>
+                    </div>
+                    <span id="anaKpiFiveAmCount" class="text-[11px] text-emerald-300/80 mt-1 block">0 වතාවක් බෝනස් හිමිවිය</span>
+                </div>
+
+                <div class="glass-panel p-4 rounded-2xl border border-white/10">
+                    <span class="text-[11px] font-semibold text-amber-300 block mb-1">අමතර ශ්‍රවණයන් එකතුව</span>
+                    <div class="flex items-baseline gap-2">
+                        <span id="anaKpiTotalExtra" class="text-2xl sm:text-3xl font-black text-amber-300">0</span>
+                        <span class="text-xs text-slate-400">වාරයක්</span>
+                    </div>
+                    <span id="anaKpiExtraPts" class="text-[11px] text-amber-300/80 mt-1 block">+0.0 ප්‍රසාද ලකුණු</span>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- Chart 1: Daily Submissions & Average Score Trend -->
+                <div class="glass-panel rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col justify-between">
+                    <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+                        <div>
+                            <h3 class="text-sm sm:text-base font-bold text-white">දෛනික වාර්තා සහ ලකුණු ප්‍රවණතාවය</h3>
+                            <span class="text-[11px] text-slate-400">දිනෙන් දින ලැබුණු වාර්තා ගණන සහ සාමාන්‍ය ලකුණු</span>
+                        </div>
+                        <span class="text-xs text-amber-300 font-mono">📊 Trend</span>
+                    </div>
+                    <div class="relative h-64 w-full">
+                        <canvas id="chartDailyTrendCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Routine Tasks Compliance Breakdown -->
+                <div class="glass-panel rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col justify-between">
+                    <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+                        <div>
+                            <h3 class="text-sm sm:text-base font-bold text-white">දෛනික කාර්යයන් සාධන අනුපාතය (%)</h3>
+                            <span class="text-[11px] text-slate-400">පන්සිල්, සත්‍යක්‍රියාව, උදෑසන/දහවල්/රාත්‍රී හඬපට</span>
+                        </div>
+                        <span class="text-xs text-emerald-300 font-mono">🎯 Compliance</span>
+                    </div>
+                    <div class="relative h-64 w-full">
+                        <canvas id="chartRoutineCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score Level Categories & Leaderboard Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <!-- Score Level Distribution Card -->
+                <div class="glass-panel rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col justify-between">
+                    <div class="pb-3 border-b border-white/10 mb-4">
+                        <h3 class="text-sm sm:text-base font-bold text-white">සාධන මට්ටම් ව්‍යාප්තිය</h3>
+                        <span class="text-[11px] text-slate-400">ලබාගත් ලකුණු කාණ්ඩ අනුව ප්‍රතිශතය</span>
+                    </div>
+                    <div class="relative h-56 w-full flex items-center justify-center">
+                        <canvas id="chartScoreDistCanvas"></canvas>
+                    </div>
+                    <div class="space-y-2 text-xs pt-3 border-t border-white/10 mt-2">
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center gap-1.5 text-emerald-300 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> විශිෂ්ටයි (8 - 11):</span>
+                            <span id="distOutstandingVal" class="font-bold text-white font-mono">0 (0%)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center gap-1.5 text-amber-300 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> යහපත් (5 - 7.5):</span>
+                            <span id="distGoodVal" class="font-bold text-white font-mono">0 (0%)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center gap-1.5 text-slate-400 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span> උත්සාහවන්ත වෙමු (&lt; 5):</span>
+                            <span id="distNeedEffortVal" class="font-bold text-white font-mono">0 (0%)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leaderboard: Most Consistent Members (2 Columns wide) -->
+                <div class="glass-panel rounded-3xl p-5 sm:p-6 shadow-xl lg:col-span-2 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+                            <div>
+                                <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                                    <span>🏆 විශිෂ්ටතම සාමාජිකයින් (Leaderboard)</span>
+                                </h3>
+                                <span class="text-[11px] text-slate-400">නිරන්තරයෙන්ම වාර්තා යොමු කර ඉහළම ලකුණු ලබාගත් සාමාජිකයින්</span>
+                            </div>
+                            <span class="text-xs text-amber-300 font-bold px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/30">Top Consistency</span>
+                        </div>
+
+                        <!-- Leaderboard Table Wrap -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs whitespace-nowrap">
+                                <thead>
+                                    <tr class="border-b border-white/10 text-slate-400 font-semibold">
+                                        <th class="py-2.5 px-3">ස්ථානය</th>
+                                        <th class="py-2.5 px-3">සාමාජිකයා</th>
+                                        <th class="py-2.5 px-3 text-center">වාර්තා එවූ දින</th>
+                                        <th class="py-2.5 px-3 text-center">05 AM බෝනස්</th>
+                                        <th class="py-2.5 px-3 text-center">සාමාන්‍ය ලකුණු</th>
+                                        <th class="py-2.5 px-3 text-right">මුළු ලකුණු එකතුව</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="anaLeaderboardBody" class="divide-y divide-white/5">
+                                    <tr>
+                                        <td colspan="6" class="py-6 text-center text-slate-500">
+                                            දත්ත ගණනය වෙමින් පවතී...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: ANALYZE REPORT (PRESERVED TOOL)                   -->
     <!-- ======================================================== -->
     <main id="tabAnalyzerView" class="space-y-6 hidden">
 
@@ -653,44 +1231,334 @@
     <!-- Footer -->
     <footer class="mt-12 text-center text-xs text-slate-500 pb-8 border-t border-white/5 pt-6">
         <p class="font-medium text-slate-400">අධිෂ්ඨාන වැඩපිළිවෙල • අධ්‍යාත්මික පුහුණු වැඩසටහන</p>
-        <p class="text-[11px] text-slate-600 mt-1"></p>
+        <p class="text-[11px] text-slate-600 mt-1">දත්ත පද්ධතිය: Firebase Firestore Cloud Platform</p>
     </footer>
 </div>
 
-<!-- Toast Component -->
+<!-- ======================================================== -->
+<!-- MODAL 1: AUTHENTICATION (MEMBER ID + 4-DIGIT PIN)        -->
+<!-- ======================================================== -->
+<div id="modalAuth" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel-accent max-w-sm w-full rounded-3xl p-6 sm:p-7 border border-amber-500/40 shadow-2xl relative">
+        <button type="button" onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+        <div class="text-center mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center text-xl mx-auto mb-3">
+                🔐
+            </div>
+            <h3 class="text-lg font-extrabold text-white">පද්ධතියට පිවිසෙන්න</h3>
+            <p class="text-xs text-slate-300 mt-1">ඔබට ලබාදී ඇති සාමාජික අංකය සහ රහස් අංකය ඇතුළත් කරන්න</p>
+        </div>
+
+        <form id="authForm" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-200 mb-1">සාමාජික අංකය / පරිපාලක ID (ID):</label>
+                <input type="text" id="authInputId" placeholder="උදා: AD-01" required uppercase
+                       class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white font-mono uppercase focus:outline-none focus:ring-1 focus:ring-amber-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-200 mb-1">රහස් අංකය / මුරපදය (PIN / Password):</label>
+                <div class="relative">
+                    <input type="password" id="authInputPin" maxlength="100" placeholder="••••••••" required
+                           class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3.5 py-2.5 pr-10 text-xs sm:text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-amber-500">
+                    <button type="button" onclick="togglePasswordVisibility('authInputPin', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">👁️</button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 pt-1">
+                <input type="checkbox" id="authRememberMe" checked class="w-4 h-4 rounded text-amber-500 focus:ring-0 bg-slate-900 border-slate-700">
+                <label for="authRememberMe" class="text-xs text-slate-300 cursor-pointer select-none">
+                    මගේ තොරතුරු මතක තබාගන්න (Remember Me)
+                </label>
+            </div>
+
+            <button type="submit" id="btnAuthSubmit"
+                    class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold text-xs sm:text-sm shadow-amber-soft active:scale-95 transition">
+                පිවිසෙන්න (Sign In)
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL 2: MEMBER MANAGEMENT (ADD / EDIT MEMBERS)          -->
+<!-- ======================================================== -->
+<div id="modalMemberMgmt" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel max-w-lg w-full rounded-3xl p-6 border border-white/10 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <button type="button" onclick="closeMemberManagementModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+        <div class="flex items-center gap-2.5 mb-5 border-b border-white/10 pb-3">
+            <span class="text-xl">👥</span>
+            <div>
+                <h3 class="text-base font-bold text-white">සාමාජික කළමනාකරණය</h3>
+                <span class="text-xs text-slate-400">නව සාමාජිකයින් එක්කිරීම සහ පවතින විස්තර බැලීම</span>
+            </div>
+        </div>
+
+        <!-- Add New Member Form -->
+        <form onsubmit="handleAddNewMember(event)" class="space-y-3 bg-subCard/80 p-4 rounded-2xl border border-white/5 mb-5">
+            <h4 class="text-xs font-bold text-amber-300 uppercase tracking-wide">නව සාමාජිකයෙකු එක් කරන්න</h4>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-[11px] text-slate-400 mb-0.5">සාමාජික ID</label>
+                    <input type="text" id="newMemberId" placeholder="AD-01" required
+                           class="w-full bg-[#080B12] border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white uppercase font-mono">
+                </div>
+                <div>
+                    <label class="block text-[11px] text-slate-400 mb-0.5">රහස් අංකය (PIN)</label>
+                    <input type="text" id="newMemberPin" placeholder="1234" required maxlength="6"
+                           class="w-full bg-[#080B12] border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white font-mono text-center">
+                </div>
+            </div>
+            <div>
+                <label class="block text-[11px] text-slate-400 mb-0.5">සම්පූර්ණ නම (Name)</label>
+                <input type="text" id="newMemberName" placeholder="නම සඳහන් කරන්න" required
+                       class="w-full bg-[#080B12] border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
+            </div>
+
+            <button type="submit"
+                    class="w-full py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 rounded-xl text-xs font-bold transition">
+                + සාමාජිකයා ලියාපදිංචි කරන්න
+            </button>
+        </form>
+
+        <!-- Current Registered Members List -->
+        <div>
+            <h4 class="text-xs font-bold text-slate-300 mb-2">ලියාපදිංචි සාමාජිකයින් (<span id="mgmtMemberListCount">0</span>)</h4>
+            <div id="mgmtMemberList" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                <!-- Populated in JS -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL 3: MEMBER HISTORY / STREAK VIEW                    -->
+<!-- ======================================================== -->
+<div id="modalMemberHistory" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel max-w-lg w-full rounded-3xl p-6 border border-white/10 shadow-2xl relative max-h-[85vh] overflow-y-auto">
+        <button type="button" onclick="closeMemberHistoryModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+        <div class="mb-4 pb-3 border-b border-white/10 flex items-center justify-between gap-3">
+            <div>
+                <span class="text-xs text-amber-300 font-mono font-bold" id="historyModalMemberId">AD-01</span>
+                <h3 class="text-base font-bold text-white" id="historyModalMemberName">සාමාජික ඉතිහාසය</h3>
+                <span class="text-xs text-slate-400">පසුගිය දිනවල වාර්තා සටහන්</span>
+            </div>
+            <button type="button" id="btnDeleteFromHistoryModal"
+                    class="px-2.5 py-1.5 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 text-xs font-bold transition flex items-center gap-1 active:scale-95 shrink-0"
+                    title="සාමාජිකයා සහ සියලු වාර්තා මකා දමන්න">
+                🗑️ සාමාජිකයා ඉවත් කරන්න
+            </button>
+        </div>
+
+        <div id="historyModalList" class="space-y-2.5 text-xs">
+            <!-- Populated in JS -->
+            <div class="text-center py-6 text-slate-500">පූරණය වෙමින්...</div>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL 4: DELETE MEMBER CONFIRMATION WITH ADMIN PIN CHECK -->
+<!-- ======================================================== -->
+<div id="modalDeleteMemberConfirm" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel max-w-md w-full rounded-3xl p-6 border border-red-500/30 shadow-2xl relative text-left">
+        <button type="button" onclick="closeDeleteMemberConfirmation()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-11 h-11 rounded-2xl bg-red-500/15 border border-red-500/30 flex items-center justify-center text-xl text-red-400 shrink-0">
+                ⚠️
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-white">සාමාජිකයා ඉවත් කිරීම</h3>
+                <span class="text-xs text-red-300/80">ස්ථිරවම මකා දැමීම (Permanent Deletion)</span>
+            </div>
+        </div>
+
+        <div class="bg-red-500/10 border border-red-500/25 rounded-2xl p-4 text-xs text-red-200/90 space-y-2 mb-4">
+            <div class="flex items-center justify-between pb-2 border-b border-red-500/20">
+                <span class="text-slate-400">සාමාජිකයා:</span>
+                <span class="font-bold text-white text-sm" id="delModalMemberName">සාමාජිකයා</span>
+            </div>
+            <div class="flex items-center justify-between pb-2 border-b border-red-500/20">
+                <span class="text-slate-400">සාමාජික ID:</span>
+                <span class="font-mono font-bold text-amber-300" id="delModalMemberId">--</span>
+            </div>
+            <p class="text-[11px] text-red-300 pt-1 leading-relaxed">
+                🚨 <strong>අවධානයයි:</strong> මෙම සාමාජිකයාගේ ගිණුම සහ මෙතෙක් පද්ධතියට ඇතුළත් කළ <strong>සියලුම දෛනික වාර්තා (Daily Logs)</strong> දත්ත ගබඩාවෙන් සදහටම මකා දැමෙනු ඇත. මෙම ක්‍රියාව නැවත හැරවිය නොහැක!
+            </p>
+        </div>
+
+        <div class="space-y-3 mb-5">
+            <label class="block text-xs font-semibold text-slate-300">
+                තහවුරු කිරීම සඳහා ඔබගේ <strong>පරිපාලක මුරපදය (Admin Password)</strong> ඇතුළත් කරන්න:
+            </label>
+            <div class="relative">
+                <input type="password" id="deleteConfirmAdminPin" placeholder="Admin Password" maxlength="100"
+                       class="w-full bg-[#080B12] border border-red-500/40 focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-xl px-4 py-2.5 pr-10 text-sm font-mono text-white outline-none">
+                <button type="button" onclick="togglePasswordVisibility('deleteConfirmAdminPin', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">👁️</button>
+            </div>
+            <div id="deleteConfirmErrorMsg" class="text-xs text-red-400 font-medium hidden"></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+            <button type="button" onclick="closeDeleteMemberConfirmation()"
+                    class="py-2.5 px-4 rounded-xl bg-subCard hover:bg-subCardHover text-slate-300 text-xs font-bold border border-white/10 transition">
+                අවලංගු කරන්න
+            </button>
+            <button type="button" id="btnConfirmDeleteMember" onclick="executeDeleteMember()"
+                    class="py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-lg shadow-red-600/30 transition flex items-center justify-center gap-1.5 active:scale-95">
+                <span>🗑️ ස්ථිරවම මකන්න</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL 5: CHANGE ADMIN PASSWORD                           -->
+<!-- ======================================================== -->
+<div id="modalChangeAdminPassword" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel-accent max-w-sm w-full rounded-3xl p-6 border border-amber-500/40 shadow-2xl relative text-left">
+        <button type="button" onclick="closeChangeAdminPasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xl text-amber-300 shrink-0">
+                🔑
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-white">මුරපදය වෙනස් කිරීම</h3>
+                <span class="text-xs text-slate-300">පරිපාලක (Super Admin) මුරපදය</span>
+            </div>
+        </div>
+
+        <form onsubmit="handleChangeAdminPasswordSubmit(event)" class="space-y-3.5">
+            <div>
+                <label class="block text-xs font-semibold text-slate-200 mb-1">වත්මන් මුරපදය (Current Password):</label>
+                <div class="relative">
+                    <input type="password" id="adminCurrentPassInput" required
+                           class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3.5 py-2.5 pr-10 text-xs sm:text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-amber-500">
+                    <button type="button" onclick="togglePasswordVisibility('adminCurrentPassInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">👁️</button>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-200 mb-1">නව සංකීර්ණ මුරපදය (New Password):</label>
+                <div class="relative">
+                    <input type="password" id="adminNewPassInput" minlength="6" required placeholder="අවම අකුරු 6ක් හෝ වැඩි"
+                           class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3.5 py-2.5 pr-10 text-xs sm:text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-amber-500">
+                    <button type="button" onclick="togglePasswordVisibility('adminNewPassInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">👁️</button>
+                </div>
+                <span class="text-[10px] text-slate-400 mt-1 block">ඉලක්කම්, අකුරු සහ සංකේත භාවිත කිරීම වඩාත් ආරක්ෂිතය.</span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-200 mb-1">නව මුරපදය නැවත තහවුරු කරන්න (Confirm New):</label>
+                <div class="relative">
+                    <input type="password" id="adminConfirmPassInput" minlength="6" required
+                           class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3.5 py-2.5 pr-10 text-xs sm:text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-amber-500">
+                    <button type="button" onclick="togglePasswordVisibility('adminConfirmPassInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">👁️</button>
+                </div>
+            </div>
+
+            <div id="changeAdminPassErrorMsg" class="text-xs text-red-400 font-medium hidden"></div>
+
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <button type="button" onclick="closeChangeAdminPasswordModal()"
+                        class="py-2.5 px-4 rounded-xl bg-subCard hover:bg-subCardHover text-slate-300 text-xs font-bold border border-white/10 transition">
+                    අවලංගු කරන්න
+                </button>
+                <button type="submit" id="btnSubmitChangeAdminPass"
+                        class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-extrabold shadow-amber-soft transition flex items-center justify-center gap-1.5 active:scale-95">
+                    <span>සුරකින්න (Update)</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Global Toast Notification -->
 <div id="globalToast"
      class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-xl border border-amber-500/40 text-amber-200 px-5 py-3 rounded-2xl shadow-lg flex items-center gap-3 text-xs sm:text-sm z-50 transform transition-all duration-300 opacity-0 pointer-events-none translate-y-3">
     <span class="text-amber-400 font-bold">✓</span>
     <span id="globalToastMsg">පිටපත් කරගන්නා ලදී</span>
 </div>
 
-<script>
-    // Tab switching
-    function switchTab(tab) {
-        const genView = document.getElementById('tabGeneratorView');
-        const anaView = document.getElementById('tabAnalyzerView');
-        const genBtn = document.getElementById('tabBtnGenerator');
-        const anaBtn = document.getElementById('tabBtnAnalyzer');
+<!-- ======================================================== -->
+<!-- FIREBASE SDK & APPLICATION SCRIPTS (ES MODULE)           -->
+<!-- ======================================================== -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { 
+        getFirestore, 
+        initializeFirestore,
+        persistentLocalCache,
+        persistentMultipleTabManager,
+        doc, 
+        getDoc, 
+        setDoc, 
+        updateDoc, 
+        deleteDoc,
+        collection, 
+        query, 
+        where, 
+        getDocs, 
+        onSnapshot, 
+        orderBy, 
+        serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        if (tab === 'generator') {
-            genView.classList.remove('hidden');
-            anaView.classList.add('hidden');
-            genBtn.className = "flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm";
-            anaBtn.className = "flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 text-slate-400 hover:text-white border border-transparent";
-        } else {
-            genView.classList.add('hidden');
-            anaView.classList.remove('hidden');
-            anaBtn.className = "flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm";
-            genBtn.className = "flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 text-slate-400 hover:text-white border border-transparent";
+    // 1. Firebase Configuration (Configured for Adhishtana Tracker)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDKXengu_YTKoUG4l3Kse9JX9cHOKy1X6k",
+        authDomain: "adhishtana-tracker.firebaseapp.com",
+        projectId: "adhishtana-tracker",
+        storageBucket: "adhishtana-tracker.firebasestorage.app",
+        messagingSenderId: "732707793876",
+        appId: "1:732707793876:web:25c1f3b1c904fb53afc441",
+        measurementId: "G-SVTR068F1Y"
+    };
 
-            const currentInput = document.getElementById('analyzerInputArea').value;
-            if (currentInput.trim()) {
-                parseAndAnalyzeText();
-            }
-        }
+    // Initialize Firebase & Firestore with Persistent Offline-First Cache
+    const app = initializeApp(firebaseConfig);
+    let db;
+    try {
+        db = initializeFirestore(app, {
+            localCache: persistentLocalCache({
+                tabManager: persistentMultipleTabManager()
+            })
+        });
+    } catch (e) {
+        db = getFirestore(app);
     }
 
-    // Generator State Management
+    // Provide globally for helper calls if needed
+    window.db = db;
+
+    // Show online sync indicator
+    const syncInd = document.getElementById('syncIndicator');
+    if (syncInd) syncInd.classList.remove('hidden');
+
+    // ========================================================
+    // GLOBAL STATE
+    // ========================================================
+    const state = {
+        currentUser: null, // { id: 'AD-01', name: 'කසුන්', pin: '1234', role: 'member' }
+        activeTab: 'generator',
+        todayDateStr: getTodayDateString(),
+        selectedLogDate: getTodayDateString(),
+        membersCache: [],
+        todayLogsMap: new Map(), // memberId -> logDoc
+        adminFilter: 'all', // 'all', 'submitted', 'pending'
+        activeAdminSubTab: 'roster',
+        dateRangeData: [],
+        analyticsData: [],
+        analyticsPreset: '7d',
+        pendingDeleteMember: null
+    };
+
+    // Generator Form State
     const genState = {
         wakeTime: '05.00 AM',
         pansil: false,
@@ -698,27 +1566,430 @@
         audioMorn: false,
         noonCount: 0,
         nightCount: 0,
-        extraCount: 0
+        extraCount: 0,
+        isSubmittedToday: false,
+        submittedAt: null
     };
 
-    function isFiveAmNormalized(timeStr) {
+    function getTodayDateString(dateObj = new Date()) {
+        const y = dateObj.getFullYear();
+        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const d = String(dateObj.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    // ========================================================
+    // TAB NAVIGATION
+    // ========================================================
+    window.switchTab = function(tab) {
+        state.activeTab = tab;
+        const genView = document.getElementById('tabGeneratorView');
+        const adminView = document.getElementById('tabAdminView');
+        const anaView = document.getElementById('tabAnalyzerView');
+
+        const genBtn = document.getElementById('tabBtnGenerator');
+        const adminBtn = document.getElementById('tabBtnAdmin');
+        const anaBtn = document.getElementById('tabBtnAnalyzer');
+
+        const activeClass = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm";
+        const inactiveClass = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 text-slate-400 hover:text-white border border-transparent";
+
+        genView.classList.add('hidden');
+        adminView.classList.add('hidden');
+        anaView.classList.add('hidden');
+
+        genBtn.className = inactiveClass;
+        adminBtn.className = inactiveClass;
+        anaBtn.className = inactiveClass;
+
+        if (tab === 'generator') {
+            genView.classList.remove('hidden');
+            genBtn.className = activeClass;
+        } else if (tab === 'admin') {
+            // Require Admin verification
+            if (!state.currentUser || state.currentUser.role !== 'admin') {
+                showToast("පරිපාලක පුවරුවට පිවිසීමට කරුණාකර Admin ගිණුමෙන් පිවිසෙන්න");
+                window.openAuthModal('ADMIN');
+                return;
+            }
+            adminView.classList.remove('hidden');
+            adminBtn.className = activeClass;
+            window.switchAdminSubTab(state.activeAdminSubTab || 'roster');
+        } else if (tab === 'analyzer') {
+            anaView.classList.remove('hidden');
+            anaBtn.className = activeClass;
+            const currentInput = document.getElementById('analyzerInputArea').value;
+            if (currentInput && currentInput.trim()) {
+                window.parseAndAnalyzeText();
+            }
+        }
+    };
+
+    // ========================================================
+    // AUTHENTICATION & SESSION MANAGEMENT
+    // ========================================================
+    window.handleAuthAction = function() {
+        if (state.currentUser) {
+            // Logout
+            localStorage.removeItem('adhishtana_auth_user');
+            state.currentUser = null;
+            updateUserStatusUI();
+            showToast("පද්ධතියෙන් ඉවත් විය (Logged out)");
+            if (state.activeTab === 'admin') {
+                window.switchTab('generator');
+            }
+            checkTodaySubmissionForCurrentUser();
+        } else {
+            window.openAuthModal();
+        }
+    };
+
+    window.openAuthModal = function(prefillId = '') {
+        const modal = document.getElementById('modalAuth');
+        const idInput = document.getElementById('authInputId');
+        const pinInput = document.getElementById('authInputPin');
+        if (prefillId) idInput.value = prefillId;
+        pinInput.value = '';
+        modal.classList.remove('hidden');
+        if (prefillId) {
+            pinInput.focus();
+        } else {
+            idInput.focus();
+        }
+    };
+
+    window.closeAuthModal = function() {
+        document.getElementById('modalAuth').classList.add('hidden');
+    };
+
+    window.handleLoginSubmit = async function(event) {
+        event.preventDefault();
+        const idRaw = document.getElementById('authInputId').value.trim().toUpperCase();
+        const pinRaw = document.getElementById('authInputPin').value.trim();
+        const rememberMe = document.getElementById('authRememberMe').checked;
+
+        if (!idRaw || !pinRaw) {
+            showToast("කරුණාකර සාමාජික ID සහ PIN අංකය ඇතුළත් කරන්න");
+            return;
+        }
+
+        const submitBtn = document.getElementById('btnAuthSubmit');
+        submitBtn.disabled = true;
+        submitBtn.innerText = "තහවුරු කරමින්...";
+
+        try {
+            let authenticatedUser = null;
+
+            // 1. For non-admin members, check local member cache first for fast offline/mobile login
+            if (idRaw !== 'ADMIN') {
+                const cachedMembersStr = localStorage.getItem('adhishtana_members_cache');
+                if (cachedMembersStr) {
+                    try {
+                        const localList = JSON.parse(cachedMembersStr);
+                        const match = localList.find(m => m.id === idRaw && String(m.pin).trim() === pinRaw);
+                        if (match) {
+                            authenticatedUser = {
+                                id: match.id,
+                                name: match.name || match.id,
+                                pin: match.pin,
+                                role: match.role || 'member'
+                            };
+                        }
+                    } catch (e) {
+                        console.warn("Local member cache check failed", e);
+                    }
+                }
+            }
+
+            // 2. Query Firestore directly (always queries Firestore for ADMIN to verify live complex password)
+            if (!authenticatedUser) {
+                const memberDocRef = doc(db, 'members', idRaw);
+                const memberSnap = await getDoc(memberDocRef);
+
+                if (memberSnap.exists()) {
+                    const data = memberSnap.data();
+                    const storedSecret = String(data.pin || data.password || '').trim();
+                    if (storedSecret && storedSecret === pinRaw) {
+                        authenticatedUser = {
+                            id: idRaw,
+                            name: data.name || (data.role === 'admin' || idRaw === 'ADMIN' ? 'ප්‍රධාන පරිපාලක (Super Admin)' : idRaw),
+                            pin: storedSecret,
+                            role: data.role || (idRaw === 'ADMIN' ? 'admin' : 'member')
+                        };
+                    }
+                }
+            }
+
+            if (authenticatedUser) {
+                state.currentUser = authenticatedUser;
+                if (rememberMe) {
+                    localStorage.setItem('adhishtana_auth_user', JSON.stringify(authenticatedUser));
+                } else {
+                    localStorage.removeItem('adhishtana_auth_user');
+                }
+
+                updateUserStatusUI();
+                window.closeAuthModal();
+                showToast(`ආයුබෝවන්, ${authenticatedUser.name}!`);
+
+                if (authenticatedUser.role === 'admin' && state.activeTab === 'admin') {
+                    document.getElementById('tabAdminView').classList.remove('hidden');
+                    document.getElementById('tabBtnAdmin').className = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm";
+                    loadAdminDashboardData();
+                } else {
+                    checkTodaySubmissionForCurrentUser();
+                }
+            } else {
+                showToast("සාමාජික අංකය හෝ PIN අංකය වැරදියි!");
+            }
+        } catch (err) {
+            console.error("Login Error:", err);
+            showToast("සම්බන්ධතා දෝෂයකි. කරුණාකර නැවත උත්සාහ කරන්න.");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "පිවිසෙන්න (Sign In)";
+        }
+    };
+
+    function updateUserStatusUI() {
+        const greeting = document.getElementById('userGreetingText');
+        const sub = document.getElementById('userSubText');
+        const authBtn = document.getElementById('btnAuthAction');
+
+        if (state.currentUser) {
+            const roleBadge = state.currentUser.role === 'admin' ? '🛡️ Admin' : '👤 සාමාජික';
+            greeting.innerHTML = `ආයුබෝවන්, <span class="text-amber-300 font-extrabold">${state.currentUser.name}</span> <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono">${roleBadge}</span>`;
+            sub.innerText = `සාමාජික අංකය: ${state.currentUser.id} • අද දිනය: ${state.todayDateStr}`;
+            authBtn.innerHTML = `<span>🚪 ඉවත් වන්න (${state.currentUser.id})</span>`;
+            authBtn.className = "px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 text-xs font-semibold transition active:scale-95";
+        } else {
+            greeting.innerText = "සාදරයෙන් පිළිගනිමු!";
+            sub.innerText = "වාර්තා ඇතුළත් කිරීමට කරුණාකර පිවිසෙන්න";
+            authBtn.innerHTML = `<span>🔐 පිවිසෙන්න (Login)</span>`;
+            authBtn.className = "px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 font-bold transition flex items-center gap-1.5 active:scale-95 shadow-sm";
+        }
+    }
+
+    // ========================================================
+    // MEMBER TODAY SUBMISSION CHECK & SYNC
+    // ========================================================
+    // ========================================================
+    // MEMBER LOG DATE MANAGEMENT & SUBMISSION CHECK
+    // ========================================================
+    function getYesterdayDateString() {
+        const d = new Date();
+        d.setDate(d.getDate() - 1);
+        return getTodayDateString(d);
+    }
+
+    window.setLogDate = function(target) {
+        const dateInput = document.getElementById('logEntryDate');
+        if (target === 'today') {
+            state.selectedLogDate = state.todayDateStr;
+        } else if (target === 'yesterday') {
+            state.selectedLogDate = getYesterdayDateString();
+        }
+        if (dateInput) dateInput.value = state.selectedLogDate;
+        highlightDateButtons(target);
+        checkSubmissionForSelectedDate();
+    };
+
+    window.handleLogDateChange = function() {
+        const dateInput = document.getElementById('logEntryDate');
+        if (dateInput && dateInput.value) {
+            state.selectedLogDate = dateInput.value;
+            if (state.selectedLogDate === state.todayDateStr) {
+                highlightDateButtons('today');
+            } else if (state.selectedLogDate === getYesterdayDateString()) {
+                highlightDateButtons('yesterday');
+            } else {
+                highlightDateButtons('other');
+            }
+            checkSubmissionForSelectedDate();
+        }
+    };
+
+    function highlightDateButtons(activeType) {
+        const btnToday = document.getElementById('btnDateToday');
+        const btnYesterday = document.getElementById('btnDateYesterday');
+        if (!btnToday || !btnYesterday) return;
+
+        const activeClass = "px-3.5 py-2 bg-amber-500/20 text-amber-200 border border-amber-500/40 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm";
+        const inactiveClass = "px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 rounded-xl text-xs font-bold transition active:scale-95";
+
+        btnToday.className = activeType === 'today' ? activeClass : inactiveClass;
+        btnYesterday.className = activeType === 'yesterday' ? activeClass : inactiveClass;
+    }
+
+    window.checkSubmissionForSelectedDate = async function() {
+        const noticeCard = document.getElementById('memberSubmissionNotice');
+        const submitBtnText = document.getElementById('btnSubmitDailyLogText');
+        const targetDate = state.selectedLogDate || state.todayDateStr;
+
+        if (!state.currentUser) {
+            noticeCard.classList.add('hidden');
+            submitBtnText.innerText = "වාර්තාව සුරකින්න (Submit Log)";
+            return;
+        }
+
+        const logId = `${targetDate}_${state.currentUser.id}`;
+        try {
+            const logRef = doc(db, 'daily_logs', logId);
+            const snap = await getDoc(logRef);
+
+            if (snap.exists()) {
+                const logData = snap.data();
+                genState.wakeTime = logData.wakeTime || '05.00 AM';
+                genState.pansil = !!logData.pansil;
+                genState.sathya = !!logData.sathya;
+                genState.audioMorn = !!logData.audioMorn;
+                genState.noonCount = logData.noonCount || 0;
+                genState.nightCount = logData.nightCount || 0;
+                genState.extraCount = logData.extraCount || 0;
+                genState.isSubmittedToday = true;
+
+                // Format timestamp
+                let timeStr = "";
+                if (logData.submittedAt && logData.submittedAt.toDate) {
+                    timeStr = logData.submittedAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+
+                noticeCard.classList.remove('hidden');
+                document.getElementById('submittedNoticeTitle').innerText = `${targetDate} දින වාර්තාව ඇතුළත් කර ඇත!`;
+                document.getElementById('submittedNoticeSub').innerText = "ඔබට අවශ්‍ය නම් වෙනස්කම් සිදු කර නැවත යාවත්කාලීන කළ හැක.";
+                document.getElementById('submittedTimestampBadge').innerText = timeStr ? `වේලාව: ${timeStr}` : targetDate;
+                submitBtnText.innerText = `වෙනස්කම් යාවත්කාලීන කරන්න (${targetDate})`;
+
+                // Update UI elements
+                document.getElementById('wakeInput').value = genState.wakeTime;
+                updateTaskCardUI('pansil');
+                updateTaskCardUI('sathya');
+                updateTaskCardUI('audioMorn');
+                document.getElementById('counterExtraVal').innerText = genState.extraCount;
+                setNoonAudioUI(genState.noonCount);
+                setNightAudioUI(genState.nightCount);
+                recomputeGenerator();
+            } else {
+                noticeCard.classList.add('hidden');
+                submitBtnText.innerText = `වාර්තාව සුරකින්න (${targetDate})`;
+
+                // Reset form to clean default state for this unsubmitted date
+                genState.wakeTime = '05.00 AM';
+                document.getElementById('wakeInput').value = '05.00 AM';
+                genState.pansil = false;
+                genState.sathya = false;
+                genState.audioMorn = false;
+                genState.noonCount = 0;
+                genState.nightCount = 0;
+                genState.extraCount = 0;
+                genState.isSubmittedToday = false;
+                updateTaskCardUI('pansil');
+                updateTaskCardUI('sathya');
+                updateTaskCardUI('audioMorn');
+                document.getElementById('counterExtraVal').innerText = '0';
+                setNoonAudioUI(0);
+                setNightAudioUI(0);
+                recomputeGenerator();
+            }
+        } catch (e) {
+            console.error("Error fetching log for date:", e);
+        }
+    };
+
+    // Alias for compatibility
+    window.checkTodaySubmissionForCurrentUser = window.checkSubmissionForSelectedDate;
+
+    // ========================================================
+    // SUBMIT DAILY LOG TO FIRESTORE
+    // ========================================================
+    window.submitDailyLogToDatabase = async function() {
+        if (!state.currentUser) {
+            showToast("වාර්තාව සුරැකීමට කරුණාකර පළමුව පිවිසෙන්න");
+            window.openAuthModal();
+            return;
+        }
+
+        const submitBtn = document.getElementById('btnSubmitDailyLog');
+        const submitBtnText = document.getElementById('btnSubmitDailyLogText');
+        const originalText = submitBtnText.innerText;
+        const targetDate = state.selectedLogDate || state.todayDateStr;
+
+        submitBtn.disabled = true;
+        submitBtnText.innerText = "සුරකිමින් පවතී...";
+
+        try {
+            const wakeVal = document.getElementById('wakeInput').value.trim() || '05.00 AM';
+            const mornSum = (genState.pansil ? 1 : 0) + (genState.sathya ? 1 : 0) + (genState.audioMorn ? 1 : 0);
+            const isFiveAm = isFiveAmNormalized(wakeVal);
+            const wakeBonus = (isFiveAm && mornSum === 3) ? 1 : 0;
+            const extraBonus = genState.extraCount * 0.5;
+
+            const baseScore = mornSum + genState.noonCount + genState.nightCount;
+            const grandTotal = baseScore + wakeBonus + extraBonus;
+            const formattedTotal = Number.isInteger(grandTotal) ? grandTotal : Number(grandTotal.toFixed(1));
+
+            const logId = `${targetDate}_${state.currentUser.id}`;
+            const logRef = doc(db, 'daily_logs', logId);
+
+            const payload = {
+                id: logId,
+                date: targetDate,
+                memberId: state.currentUser.id,
+                memberName: state.currentUser.name,
+                wakeTime: wakeVal,
+                pansil: genState.pansil,
+                sathya: genState.sathya,
+                audioMorn: genState.audioMorn,
+                mornScore: mornSum,
+                isFiveAmBonus: wakeBonus === 1,
+                noonCount: genState.noonCount,
+                nightCount: genState.nightCount,
+                extraCount: genState.extraCount,
+                extraBonus: extraBonus,
+                baseScore: baseScore,
+                grandTotal: formattedTotal,
+                rawText: window.buildReportText(grandTotal),
+                submittedAt: serverTimestamp()
+            };
+
+            await setDoc(logRef, payload, { merge: true });
+
+            showToast(`${targetDate} දින වාර්තාව සාර්ථකව සුරැකිණි! (Saved)`);
+            genState.isSubmittedToday = true;
+            document.getElementById('memberSubmissionNotice').classList.remove('hidden');
+            document.getElementById('submittedNoticeTitle').innerText = `${targetDate} දින වාර්තාව ඇතුළත් කර ඇත!`;
+            document.getElementById('submittedTimestampBadge').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            submitBtnText.innerText = `වෙනස්කම් යාවත්කාලීන කරන්න (${targetDate})`;
+        } catch (err) {
+            console.error("Submission Error:", err);
+            showToast("වාර්තාව සුරැකීමේදී දෝෂයක් ඇතිවිය. කරුණාකර නැවත උත්සාහ කරන්න.");
+            submitBtnText.innerText = originalText;
+        } finally {
+            submitBtn.disabled = false;
+        }
+    };
+
+    // ========================================================
+    // GENERATOR LOGIC & SCORE CALCULATIONS
+    // ========================================================
+    window.isFiveAmNormalized = function(timeStr) {
         if (!timeStr) return false;
         const norm = timeStr.trim().toLowerCase().replace(/\s+/g, '').replace(':', '.');
         return norm === '05.00am' || norm === '5.00am' || norm === '05.00' || norm === '5.00';
-    }
+    };
 
-    function setMorningTime(timeStr) {
+    window.setMorningTime = function(timeStr) {
         document.getElementById('wakeInput').value = timeStr;
         genState.wakeTime = timeStr;
         recomputeGenerator();
         showToast(`වේලාව ${timeStr} ලෙස සකසන ලදී`);
-    }
+    };
 
-    function toggleTask(taskKey) {
+    window.toggleTask = function(taskKey) {
         genState[taskKey] = !genState[taskKey];
         updateTaskCardUI(taskKey);
         recomputeGenerator();
-    }
+    };
 
     function updateTaskCardUI(taskKey) {
         const isDone = genState[taskKey];
@@ -743,10 +2014,16 @@
         }
     }
 
-    function setNoonAudio(count) {
+    window.setNoonAudio = function(count) {
         genState.noonCount = count;
+        setNoonAudioUI(count);
+        recomputeGenerator();
+    };
+
+    function setNoonAudioUI(count) {
         [0, 1, 2].forEach(n => {
             const btn = document.getElementById(`noonChoice${n}`);
+            if (!btn) return;
             if (n === count) {
                 btn.classList.add('option-pill-active');
                 btn.classList.remove('bg-subCard/80', 'border-white/10', 'text-slate-400');
@@ -755,13 +2032,18 @@
                 btn.classList.add('bg-subCard/80', 'border-white/10', 'text-slate-400');
             }
         });
-        recomputeGenerator();
     }
 
-    function setNightAudio(count) {
+    window.setNightAudio = function(count) {
         genState.nightCount = count;
+        setNightAudioUI(count);
+        recomputeGenerator();
+    };
+
+    function setNightAudioUI(count) {
         [0, 1, 2, 3].forEach(n => {
             const btn = document.getElementById(`nightChoice${n}`);
+            if (!btn) return;
             if (n === count) {
                 btn.classList.add('option-pill-active');
                 btn.classList.remove('bg-subCard/80', 'border-white/10', 'text-slate-400');
@@ -770,21 +2052,19 @@
                 btn.classList.add('bg-subCard/80', 'border-white/10', 'text-slate-400');
             }
         });
-        recomputeGenerator();
     }
 
-    function stepExtraAudio(delta) {
+    window.stepExtraAudio = function(delta) {
         let val = genState.extraCount + delta;
         if (val < 0) val = 0;
         genState.extraCount = val;
         document.getElementById('counterExtraVal').innerText = val;
         recomputeGenerator();
-    }
+    };
 
-    function recomputeGenerator() {
+    window.recomputeGenerator = function() {
         genState.wakeTime = document.getElementById('wakeInput').value.trim() || '05.00 AM';
 
-        // Calculation
         const mornTasksSum = (genState.pansil ? 1 : 0) + (genState.sathya ? 1 : 0) + (genState.audioMorn ? 1 : 0);
         const hasFiveAmBonus = (isFiveAmNormalized(genState.wakeTime) && mornTasksSum === 3) ? 1 : 0;
 
@@ -795,7 +2075,6 @@
 
         const grandTotal = mornTasksSum + noonTotal + nightTotal + hasFiveAmBonus + extraTotal;
 
-        // UI Badges
         document.getElementById('genScoreMorn').innerText = `${mornTasksSum}/3`;
         document.getElementById('genScoreNoon').innerText = `${noonTotal}/2`;
         document.getElementById('genScoreNight').innerText = `${nightTotal}/3`;
@@ -819,26 +2098,23 @@
             bonusCallout.classList.add('hidden');
         }
 
-        buildReportText(grandTotal);
-        
-        // Save state to local storage
-        localStorage.setItem('adhishtana_genState', JSON.stringify(genState));
-    }
+        window.buildReportText(grandTotal);
+    };
 
-    function getNoonPattern(count) {
+    window.getNoonPattern = function(count) {
         if (count === 2) return '✅✅';
         if (count === 1) return '✅❌';
         return '❌❌';
-    }
+    };
 
-    function getNightPattern(count) {
+    window.getNightPattern = function(count) {
         if (count === 3) return '✅✅✅';
         if (count === 2) return '✅✅❌';
         if (count === 1) return '✅❌❌';
         return '❌❌❌';
-    }
+    };
 
-    function buildReportText(grandTotal) {
+    window.buildReportText = function(grandTotal) {
         const timeVal = genState.wakeTime || '05.00 AM';
         const p1 = genState.pansil ? '✅' : '❌';
         const p2 = genState.sathya ? '✅' : '❌';
@@ -848,9 +2124,11 @@
         const nightPattern = getNightPattern(genState.nightCount);
         const extraCount = genState.extraCount;
 
-        const includeScore = document.getElementById('chkIncludeScore').checked;
+        const dateVal = state.selectedLogDate || state.todayDateStr;
+        let output = `📅 ${dateVal}\n1) ${timeVal}\n    i)     ${p1}\n    ii)    ${p2}\n    iii)   ${p3}\n\n2) ${noonPattern}\n\n3) ${nightPattern}\n\n4) ${extraCount}`;
 
-        let output = `1) ${timeVal}\n    i)     ${p1}\n    ii)    ${p2}\n    iii)   ${p3}\n\n2) ${noonPattern}\n\n3) ${nightPattern}\n\n4) ${extraCount}`;
+        const chkScoreEl = document.getElementById('chkIncludeScore');
+        const includeScore = chkScoreEl ? chkScoreEl.checked : true;
 
         if (includeScore) {
             const formatted = Number.isInteger(grandTotal) ? grandTotal : grandTotal.toFixed(1);
@@ -859,17 +2137,14 @@
 
         document.getElementById('textReportOutput').innerText = output;
         return output;
-    }
+    };
 
-    function copyGeneratorOutput() {
+    window.copyGeneratorOutput = function() {
         const text = document.getElementById('textReportOutput').innerText;
         executeClipboardCopy(text, "වාර්තාව පිටපත් කරගන්නා ලදී! (Copied to Clipboard)");
-        
-        // Clear local storage so next session starts fresh after copying
-        localStorage.removeItem('adhishtana_genState');
-    }
+    };
 
-    function resetGeneratorForm() {
+    window.resetGeneratorForm = function() {
         genState.wakeTime = '05.00 AM';
         document.getElementById('wakeInput').value = '05.00 AM';
         genState.pansil = false;
@@ -883,16 +2158,1437 @@
         genState.extraCount = 0;
         document.getElementById('counterExtraVal').innerText = '0';
         recomputeGenerator();
-        
-        // Clear saved state
-        localStorage.removeItem('adhishtana_genState');
         showToast("සියලු සටහන් නැවත සකසන ලදී");
+    };
+
+    // ========================================================
+    // ADMIN DASHBOARD & REPORTS
+    // ========================================================
+    window.refreshAdminDashboard = function() {
+        loadAdminDashboardData();
+        showToast("දත්ත නැවුම් කරන ලදී");
+    };
+
+    window.setAdminFilter = function(filter) {
+        state.adminFilter = filter;
+        const allBtn = document.getElementById('btnFilterAll');
+        const subBtn = document.getElementById('btnFilterSubmitted');
+        const penBtn = document.getElementById('btnFilterPending');
+
+        const activeFilterClass = "px-3 py-1.5 rounded-xl font-bold bg-amber-500/20 text-amber-200 border border-amber-500/40";
+        const inactiveFilterClass = "px-3 py-1.5 rounded-xl font-bold text-slate-400 hover:text-white border border-transparent";
+
+        allBtn.className = filter === 'all' ? activeFilterClass : inactiveFilterClass;
+        subBtn.className = filter === 'submitted' ? activeFilterClass : inactiveFilterClass;
+        penBtn.className = filter === 'pending' ? activeFilterClass : inactiveFilterClass;
+
+        renderAdminRosterTable();
+    };
+
+    window.loadAdminDashboardData = async function() {
+        const dateInput = document.getElementById('adminDateFilter');
+        const selectedDate = dateInput.value || state.todayDateStr;
+
+        try {
+            // 1. Fetch active members from Firestore (or fallback to local cache)
+            let members = [];
+            try {
+                const membersColl = collection(db, 'members');
+                const membersSnap = await getDocs(membersColl);
+                membersSnap.forEach(d => {
+                    const data = d.data();
+                    if (data.role !== 'admin' && (data.isActive === undefined || data.isActive === true)) {
+                        members.push(data);
+                    }
+                });
+                if (members.length > 0) {
+                    localStorage.setItem('adhishtana_members_cache', JSON.stringify(members));
+                }
+            } catch (netErr) {
+                console.warn("Could not fetch remote members, using local cache:", netErr);
+            }
+
+            // Fallback to local cache if Firestore is still empty or loading
+            if (members.length === 0) {
+                const local = localStorage.getItem('adhishtana_members_cache');
+                if (local) {
+                    try {
+                        const parsed = JSON.parse(local);
+                        members = parsed.filter(m => m.role !== 'admin' && (m.isActive === undefined || m.isActive === true));
+                    } catch (e) {
+                        console.warn("Error reading members cache", e);
+                    }
+                }
+            }
+
+            // Sort members by ID naturally
+            members.sort((a, b) => (a.id || '').localeCompare(b.id || '', undefined, { numeric: true }));
+            state.membersCache = members;
+
+            // Show demo seed button if completely empty
+            const seedNotice = document.getElementById('demoSeedNoticeCard');
+            if (members.length === 0) {
+                seedNotice.classList.remove('hidden');
+            } else {
+                seedNotice.classList.add('hidden');
+            }
+
+            // 2. Fetch logs for this date
+            try {
+                const logsColl = collection(db, 'daily_logs');
+                const logsQuery = query(logsColl, where('date', '==', selectedDate));
+                const logsSnap = await getDocs(logsQuery);
+
+                state.todayLogsMap.clear();
+                let bonusAchieversCount = 0;
+
+                logsSnap.forEach(d => {
+                    const data = d.data();
+                    state.todayLogsMap.set(data.memberId, data);
+                    if (data.isFiveAmBonus) {
+                        bonusAchieversCount++;
+                    }
+                });
+            } catch (logErr) {
+                console.warn("Could not fetch logs, continuing with local state:", logErr);
+            }
+
+            // 3. Compute Metrics
+            const totalMembers = members.length;
+            const submittedCount = members.filter(m => state.todayLogsMap.has(m.id)).length;
+            const pendingCount = totalMembers - submittedCount;
+            const pct = totalMembers > 0 ? Math.round((submittedCount / totalMembers) * 100) : 0;
+            const bonusAchieversCount = Array.from(state.todayLogsMap.values()).filter(l => l.isFiveAmBonus).length;
+
+            document.getElementById('kpiTotalMembers').innerText = totalMembers;
+            document.getElementById('kpiSubmittedToday').innerText = submittedCount;
+            document.getElementById('kpiSubmittedPercent').innerText = `${pct}%`;
+            document.getElementById('kpiPendingToday').innerText = pendingCount;
+            document.getElementById('kpiBonusAchievers').innerText = bonusAchieversCount;
+
+            document.getElementById('countFilterAll').innerText = totalMembers;
+            document.getElementById('countFilterSubmitted').innerText = submittedCount;
+            document.getElementById('countFilterPending').innerText = pendingCount;
+
+            renderAdminRosterTable();
+        } catch (err) {
+            console.error("Error loading admin data:", err);
+            showToast("පරිපාලන දත්ත ලබාගැනීමේදී දෝෂයක් ඇතිවිය");
+        }
+    };
+
+    function renderAdminRosterTable() {
+        const tbody = document.getElementById('adminRosterTableBody');
+        const filter = state.adminFilter;
+
+        let filteredMembers = state.membersCache.filter(m => {
+            const hasLog = state.todayLogsMap.has(m.id);
+            if (filter === 'submitted') return hasLog;
+            if (filter === 'pending') return !hasLog;
+            return true;
+        });
+
+        document.getElementById('adminTableShowingCount').innerText = `${filteredMembers.length} පෙන්වයි`;
+
+        if (filteredMembers.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="py-8 text-center text-slate-500">
+                        තෝරාගත් කොන්දේසියට අදාළ දත්ත කිසිවක් හමුනොවිණි.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let html = '';
+        filteredMembers.forEach(m => {
+            const log = state.todayLogsMap.get(m.id);
+            const isSubmitted = !!log;
+
+            const statusBadge = isSubmitted 
+                ? `<span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 font-bold">✓ එවූ</span>`
+                : `<span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/15 border border-amber-500/35 text-amber-300 font-bold">⏳ නොඑවූ</span>`;
+
+            const wake = isSubmitted ? log.wakeTime : '--';
+            const mornPattern = isSubmitted 
+                ? `${log.pansil ? '✅' : '❌'}${log.sathya ? '✅' : '❌'}${log.audioMorn ? '✅' : '❌'}`
+                : '--';
+
+            const noonPattern = isSubmitted ? getNoonPattern(log.noonCount) : '--';
+            const nightPattern = isSubmitted ? getNightPattern(log.nightCount) : '--';
+            const extra = isSubmitted ? `+${(log.extraCount * 0.5).toFixed(1)} (${log.extraCount})` : '--';
+            const score = isSubmitted ? `<strong class="text-amber-300 font-mono text-sm">${log.grandTotal}</strong>` : `<span class="text-slate-600 font-mono">0</span>`;
+
+            html += `
+                <tr class="hover:bg-white/[0.02] transition">
+                    <td class="py-3 px-3">
+                        <div class="font-bold text-white">${m.name || m.id}</div>
+                        <div class="text-[10px] text-slate-400 font-mono">${m.id}</div>
+                    </td>
+                    <td class="py-3 px-3">${statusBadge}</td>
+                    <td class="py-3 px-3 font-mono text-slate-300">
+                        ${wake} ${isSubmitted && log.isFiveAmBonus ? '⭐' : ''}
+                    </td>
+                    <td class="py-3 px-3 text-center font-mono">${mornPattern}</td>
+                    <td class="py-3 px-3 text-center font-mono">${noonPattern}</td>
+                    <td class="py-3 px-3 text-center font-mono">${nightPattern}</td>
+                    <td class="py-3 px-3 text-center font-mono text-emerald-400">${extra}</td>
+                    <td class="py-3 px-3 text-right">${score}</td>
+                    <td class="py-3 px-3 text-center">
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button type="button" onclick="openMemberHistory('${m.id}', '${escapeHtml(m.name || m.id)}')"
+                                    class="px-2 py-1 rounded-lg bg-subCard hover:bg-subCardHover text-amber-300 border border-white/10 text-[11px] font-bold transition">
+                                ඉතිහාසය
+                            </button>
+                            <button type="button" onclick="openDeleteMemberConfirmation('${m.id}', '${escapeHtml(m.name || m.id)}')"
+                                    class="p-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-[11px] font-bold transition active:scale-95"
+                                    title="සාමාජිකයා සහ සියලු වාර්තා මකා දමන්න">
+                                🗑️
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    // WhatsApp Message Generator for Pending Members
+    window.copyPendingWhatsAppMessage = function() {
+        const dateInput = document.getElementById('adminDateFilter');
+        const selectedDate = dateInput.value || state.todayDateStr;
+
+        const pendingMembers = state.membersCache.filter(m => !state.todayLogsMap.has(m.id));
+
+        if (pendingMembers.length === 0) {
+            showToast("අද දින සියලුම සාමාජිකයින් වාර්තා සටහන් කර ඇත! 🎉");
+            return;
+        }
+
+        let msg = `📢 *අධිෂ්ඨාන දෛනික වාර්තාව (${selectedDate})*\nමෙතෙක් වාර්තාව යොමු නොකළ සාමාජිකයින්:\n\n`;
+        pendingMembers.forEach((m, idx) => {
+            msg += `${idx + 1}. ${m.id} - ${m.name || 'සාමාජික'}\n`;
+        });
+        msg += `\nකරුණාකර ඔබගේ දෛනික වාර්තාව ඉක්මනින් පද්ධතියට ඇතුළත් කරන්න. ස්තූතියි! 🙏`;
+
+        executeClipboardCopy(msg, "නොඑවූ පිරිසගේ WhatsApp පණිවිඩය පිටපත් කරගන්නා ලදී!");
+    };
+
+    // CSV / Excel Export
+    window.exportDataToCSV = function() {
+        const dateInput = document.getElementById('adminDateFilter');
+        const selectedDate = dateInput.value || state.todayDateStr;
+
+        let csv = "Member ID,Name,Date,Status,Wake Time,5AM Bonus,Morning Pansil,Morning Sathyakriya,Morning Audio,Noon Count,Night Count,Extra Count,Total Score,Submitted At\n";
+
+        state.membersCache.forEach(m => {
+            const log = state.todayLogsMap.get(m.id);
+            const isSub = !!log;
+
+            let submittedTime = "";
+            if (isSub && log.submittedAt && log.submittedAt.toDate) {
+                submittedTime = log.submittedAt.toDate().toISOString();
+            }
+
+            const row = [
+                `"${m.id}"`,
+                `"${m.name || m.id}"`,
+                `"${selectedDate}"`,
+                `"${isSub ? 'Submitted' : 'Pending'}"`,
+                `"${isSub ? log.wakeTime : ''}"`,
+                `"${isSub && log.isFiveAmBonus ? 'YES' : 'NO'}"`,
+                `"${isSub ? (log.pansil ? 'YES' : 'NO') : ''}"`,
+                `"${isSub ? (log.sathya ? 'YES' : 'NO') : ''}"`,
+                `"${isSub ? (log.audioMorn ? 'YES' : 'NO') : ''}"`,
+                isSub ? log.noonCount : 0,
+                isSub ? log.nightCount : 0,
+                isSub ? log.extraCount : 0,
+                isSub ? log.grandTotal : 0,
+                `"${submittedTime}"`
+            ];
+            csv += row.join(",") + "\n";
+        });
+
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Adhishtana_Report_${selectedDate}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast("CSV වාර්තාව බාගත කරන ලදී!");
+    };
+
+    // ========================================================
+    // MEMBER MANAGEMENT & SEEDER
+    // ========================================================
+    window.openMemberManagementModal = function() {
+        document.getElementById('modalMemberMgmt').classList.remove('hidden');
+        renderManagementMemberList();
+    };
+
+    window.closeMemberManagementModal = function() {
+        document.getElementById('modalMemberMgmt').classList.add('hidden');
+    };
+
+    function renderManagementMemberList() {
+        const listEl = document.getElementById('mgmtMemberList');
+        const countEl = document.getElementById('mgmtMemberListCount');
+        countEl.innerText = state.membersCache.length;
+
+        if (state.membersCache.length === 0) {
+            listEl.innerHTML = `<div class="text-center py-4 text-slate-500">සාමාජිකයින් නොමැත</div>`;
+            return;
+        }
+
+        let html = '';
+        state.membersCache.forEach(m => {
+            html += `
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#080B12] border border-white/5 text-xs">
+                    <div>
+                        <span class="font-bold text-white block">${escapeHtml(m.name)}</span>
+                        <span class="text-[10px] text-slate-400 font-mono">ID: ${escapeHtml(m.id)} • PIN: ${escapeHtml(m.pin)}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 text-[10px] font-bold">සක්‍රීයයි</span>
+                        <button type="button" onclick="openDeleteMemberConfirmation('${escapeHtml(m.id)}', '${escapeHtml(m.name)}')"
+                                class="px-2 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 text-[11px] font-bold transition flex items-center gap-1 active:scale-95"
+                                title="සාමාජිකයා සහ වාර්තා මකා දමන්න">
+                            🗑️ මකන්න
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        listEl.innerHTML = html;
+    }
+
+    window.handleAddNewMember = async function(event) {
+        event.preventDefault();
+        const id = document.getElementById('newMemberId').value.trim().toUpperCase();
+        const pin = document.getElementById('newMemberPin').value.trim();
+        const name = document.getElementById('newMemberName').value.trim();
+
+        if (!id || !pin || !name) {
+            showToast("කරුණාකර සියලු විස්තර සම්පූර්ණ කරන්න");
+            return;
+        }
+
+        try {
+            await setDoc(doc(db, 'members', id), {
+                id: id,
+                name: name,
+                pin: pin,
+                role: 'member',
+                isActive: true,
+                createdAt: serverTimestamp()
+            });
+
+            showToast(`සාමාජික ${name} සාර්ථකව ලියාපදිංචි කරන ලදී!`);
+            document.getElementById('newMemberId').value = '';
+            document.getElementById('newMemberPin').value = '';
+            document.getElementById('newMemberName').value = '';
+
+            loadAdminDashboardData();
+            setTimeout(renderManagementMemberList, 600);
+        } catch (e) {
+            console.error("Add Member Error:", e);
+            showToast("සාමාජිකයා එක්කිරීමේදී දෝෂයක් ඇතිවිය");
+        }
+    };
+
+    // ========================================================
+    // DELETE MEMBER & ASSOCIATED LOGS (WITH ADMIN PIN CHECK)
+    // ========================================================
+    window.openDeleteMemberConfirmation = function(memberId, memberName) {
+        if (memberId === 'ADMIN') {
+            showToast("ප්‍රධාන පරිපාලක ගිණුම (Super Admin) මකා දැමිය නොහැක!");
+            return;
+        }
+
+        state.pendingDeleteMember = { id: memberId, name: memberName || memberId };
+
+        const modal = document.getElementById('modalDeleteMemberConfirm');
+        document.getElementById('delModalMemberId').innerText = memberId;
+        document.getElementById('delModalMemberName').innerText = memberName || memberId;
+        
+        const pinInput = document.getElementById('deleteConfirmAdminPin');
+        if (pinInput) pinInput.value = '';
+
+        const errEl = document.getElementById('deleteConfirmErrorMsg');
+        if (errEl) {
+            errEl.innerText = '';
+            errEl.classList.add('hidden');
+        }
+
+        modal.classList.remove('hidden');
+        setTimeout(() => { if (pinInput) pinInput.focus(); }, 100);
+    };
+
+    window.closeDeleteMemberConfirmation = function() {
+        const modal = document.getElementById('modalDeleteMemberConfirm');
+        if (modal) modal.classList.add('hidden');
+        state.pendingDeleteMember = null;
+    };
+
+    window.executeDeleteMember = async function() {
+        if (!state.pendingDeleteMember) return;
+        const target = state.pendingDeleteMember;
+        const pinInput = document.getElementById('deleteConfirmAdminPin');
+        const errEl = document.getElementById('deleteConfirmErrorMsg');
+        const enteredPin = (pinInput ? pinInput.value : '').trim();
+
+        if (!enteredPin) {
+            if (errEl) {
+                errEl.innerText = "කරුණාකර තහවුරු කිරීම සඳහා ඔබගේ Admin PIN ඇතුළත් කරන්න.";
+                errEl.classList.remove('hidden');
+            }
+            return;
+        }
+
+        // Validate Admin Password against active admin session or Firestore
+        let expectedPin = state.currentUser?.pin;
+        if (!expectedPin) {
+            try {
+                const adminSnap = await getDoc(doc(db, 'members', 'ADMIN'));
+                if (adminSnap.exists()) {
+                    expectedPin = String(adminSnap.data().pin || adminSnap.data().password || '').trim();
+                }
+            } catch (e) {
+                console.warn("Could not query Firestore for Admin verification:", e);
+            }
+        }
+
+        if (!expectedPin || enteredPin !== expectedPin) {
+            if (errEl) {
+                errEl.innerText = "❌ පරිපාලක මුරපදය වැරදියි! මකාදැමීම සිදු කළ නොහැක.";
+                errEl.classList.remove('hidden');
+            }
+            if (pinInput) {
+                pinInput.value = '';
+                pinInput.focus();
+            }
+            return;
+        }
+
+        const delBtn = document.getElementById('btnConfirmDeleteMember');
+        if (delBtn) {
+            delBtn.disabled = true;
+            delBtn.innerHTML = `<span>⏳ මකා දමමින්...</span>`;
+        }
+
+        try {
+            // 1. Delete Member document from Firestore
+            await deleteDoc(doc(db, 'members', target.id));
+
+            // 2. Query and delete all daily logs for this member
+            const logsColl = collection(db, 'daily_logs');
+            const q = query(logsColl, where('memberId', '==', target.id));
+            const snap = await getDocs(q);
+
+            const deletePromises = [];
+            snap.forEach(d => {
+                deletePromises.push(deleteDoc(d.ref));
+            });
+            await Promise.all(deletePromises);
+
+            // 3. Update local state & caches
+            state.membersCache = (state.membersCache || []).filter(m => m.id !== target.id);
+            localStorage.setItem('adhishtana_members_cache', JSON.stringify(state.membersCache));
+            state.todayLogsMap.delete(target.id);
+            if (state.dateRangeData) {
+                state.dateRangeData = state.dateRangeData.filter(l => l.memberId !== target.id);
+            }
+            if (state.analyticsData) {
+                state.analyticsData = state.analyticsData.filter(l => l.memberId !== target.id);
+            }
+
+            closeDeleteMemberConfirmation();
+            closeMemberHistoryModal();
+
+            // 4. Refresh active views
+            renderManagementMemberList();
+            loadAdminDashboardData();
+            if (state.activeAdminSubTab === 'daterange') {
+                populateDateRangeMemberFilter(state.dateRangeData || []);
+                filterDateRangeTableLocally();
+            } else if (state.activeAdminSubTab === 'analytics') {
+                loadAnalyticsData();
+            }
+
+            showToast(`සාමාජික ${target.name} (${target.id}) සහ වාර්තා ${snap.size} සාර්ථකව මකා දමන ලදී!`);
+        } catch (err) {
+            console.error("Delete Member Error:", err);
+            if (errEl) {
+                errEl.innerText = "දත්ත මකාදැමීමේදී දෝෂයක් ඇතිවිය. කරුණාකර නැවත උත්සාහ කරන්න.";
+                errEl.classList.remove('hidden');
+            }
+            showToast("මකාදැමීමේදී දෝෂයක් ඇතිවිය");
+        } finally {
+            if (delBtn) {
+                delBtn.disabled = false;
+                delBtn.innerHTML = `<span>🗑️ ස්ථිරවම මකන්න</span>`;
+            }
+        }
+    };
+
+    // Password toggle helper for input fields
+    window.togglePasswordVisibility = function(inputId, btnEl) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            if (btnEl) btnEl.innerText = '🙈';
+        } else {
+            input.type = 'password';
+            if (btnEl) btnEl.innerText = '👁️';
+        }
+    };
+
+    // Change Admin Password Modal Handlers
+    window.openChangeAdminPasswordModal = function() {
+        if (!state.currentUser || state.currentUser.role !== 'admin') {
+            showToast("මුරපදය වෙනස් කිරීමට කරුණාකර Admin ලෙස පිවිසෙන්න");
+            window.openAuthModal('ADMIN');
+            return;
+        }
+        const curEl = document.getElementById('adminCurrentPassInput');
+        const newEl = document.getElementById('adminNewPassInput');
+        const confEl = document.getElementById('adminConfirmPassInput');
+        const errEl = document.getElementById('changeAdminPassErrorMsg');
+        if (curEl) curEl.value = '';
+        if (newEl) newEl.value = '';
+        if (confEl) confEl.value = '';
+        if (errEl) {
+            errEl.innerText = '';
+            errEl.classList.add('hidden');
+        }
+        document.getElementById('modalChangeAdminPassword').classList.remove('hidden');
+        setTimeout(() => { if (curEl) curEl.focus(); }, 100);
+    };
+
+    window.closeChangeAdminPasswordModal = function() {
+        const modal = document.getElementById('modalChangeAdminPassword');
+        if (modal) modal.classList.add('hidden');
+    };
+
+    window.handleChangeAdminPasswordSubmit = async function(event) {
+        event.preventDefault();
+        const curPass = document.getElementById('adminCurrentPassInput').value.trim();
+        const newPass = document.getElementById('adminNewPassInput').value.trim();
+        const confPass = document.getElementById('adminConfirmPassInput').value.trim();
+        const errEl = document.getElementById('changeAdminPassErrorMsg');
+        const btn = document.getElementById('btnSubmitChangeAdminPass');
+
+        const showError = (msg) => {
+            if (errEl) {
+                errEl.innerText = msg;
+                errEl.classList.remove('hidden');
+            }
+        };
+
+        if (!state.currentUser || state.currentUser.role !== 'admin') {
+            showError("පරිපාලක සැසිය කල් ඉකුත්වී ඇත. කරුණාකර නැවත පිවිසෙන්න.");
+            return;
+        }
+
+        if (curPass !== state.currentUser.pin) {
+            showError("❌ වත්මන් මුරපදය වැරදියි!");
+            return;
+        }
+
+        if (newPass.length < 6) {
+            showError("❌ නව මුරපදය සඳහා අවම වශයෙන් අකුරු 6ක්වත් ඇතුළත් කරන්න.");
+            return;
+        }
+
+        if (newPass !== confPass) {
+            showError("❌ නව මුරපදය සහ තහවුරු කිරීමේ මුරපදය නොගැලපේ!");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = `<span>⏳ යාවත්කාලීන කරමින්...</span>`;
+
+        try {
+            const adminRef = doc(db, 'members', 'ADMIN');
+            await setDoc(adminRef, {
+                id: 'ADMIN',
+                name: state.currentUser.name || 'ප්‍රධාන පරිපාලක (Super Admin)',
+                pin: newPass,
+                role: 'admin',
+                isActive: true,
+                updatedAt: serverTimestamp()
+            }, { merge: true });
+
+            state.currentUser.pin = newPass;
+            const savedStr = localStorage.getItem('adhishtana_auth_user');
+            if (savedStr) {
+                try {
+                    const parsed = JSON.parse(savedStr);
+                    if (parsed.id === 'ADMIN') {
+                        parsed.pin = newPass;
+                        localStorage.setItem('adhishtana_auth_user', JSON.stringify(parsed));
+                    }
+                } catch (e) {}
+            }
+
+            closeChangeAdminPasswordModal();
+            showToast("🔑 පරිපාලක මුරපදය සාර්ථකව වෙනස් කරන ලදී!");
+        } catch (err) {
+            console.error("Change Password Error:", err);
+            showError("මුරපදය යාවත්කාලීන කිරීමේදී දෝෂයක් ඇතිවිය. කරුණාකර නැවත උත්සාහ කරන්න.");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `<span>සුරකින්න (Update)</span>`;
+        }
+    };
+
+    // Quick Initial Member Shortcut (Opens Registration)
+    window.seedInitialDemoData = function() {
+        openMemberManagementModal();
+    };
+
+    // Member History Inspection Modal
+    window.openMemberHistory = async function(memberId, memberName) {
+        const modal = document.getElementById('modalMemberHistory');
+        document.getElementById('historyModalMemberId').innerText = memberId;
+        document.getElementById('historyModalMemberName').innerText = `${memberName} ගේ වාර්තා ඉතිහාසය`;
+        
+        const delBtn = document.getElementById('btnDeleteFromHistoryModal');
+        if (delBtn) {
+            delBtn.onclick = () => {
+                closeMemberHistoryModal();
+                openDeleteMemberConfirmation(memberId, memberName);
+            };
+        }
+
+        const listEl = document.getElementById('historyModalList');
+        listEl.innerHTML = `<div class="text-center py-6 text-slate-500">වාර්තා පූරණය වෙමින්...</div>`;
+        modal.classList.remove('hidden');
+
+        try {
+            const logsColl = collection(db, 'daily_logs');
+            const q = query(logsColl, where('memberId', '==', memberId));
+            const snap = await getDocs(q);
+
+            if (snap.empty) {
+                listEl.innerHTML = `<div class="text-center py-6 text-slate-500">පසුගිය වාර්තා කිසිවක් හමුනොවිණි.</div>`;
+                return;
+            }
+
+            const items = [];
+            snap.forEach(d => items.push(d.data()));
+            // Sort in memory by date descending - eliminates need for custom Firestore composite index!
+            items.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+            let html = '';
+            items.forEach(item => {
+                html += `
+                    <div class="p-3 rounded-2xl bg-[#080B12] border border-white/5 flex items-center justify-between">
+                        <div>
+                            <span class="font-bold text-white block">${item.date}</span>
+                            <span class="text-[11px] text-slate-400">අවදිවීම: ${item.wakeTime} ${item.isFiveAmBonus ? '⭐' : ''}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-base font-black text-amber-300 font-mono">${item.grandTotal}</span>
+                            <span class="text-[10px] text-slate-400 block">ලකුණු</span>
+                        </div>
+                    </div>
+                `;
+            });
+            listEl.innerHTML = html;
+        } catch (e) {
+            console.error("History fetch error:", e);
+            listEl.innerHTML = `<div class="text-center py-6 text-slate-500">වාර්තා ලබාගැනීමේදී දෝෂයක් ඇතිවිය.</div>`;
+        }
+    };
+
+    window.closeMemberHistoryModal = function() {
+        document.getElementById('modalMemberHistory').classList.add('hidden');
+    };
+
+    // ========================================================
+    // ADMIN SUB-TABS NAVIGATION
+    // ========================================================
+    window.switchAdminSubTab = function(subTab) {
+        state.activeAdminSubTab = subTab;
+        const rosterView = document.getElementById('adminSubViewRoster');
+        const rangeView = document.getElementById('adminSubViewDateRange');
+        const anaView = document.getElementById('adminSubViewAnalytics');
+
+        const rosterBtn = document.getElementById('adminSubBtnRoster');
+        const rangeBtn = document.getElementById('adminSubBtnDateRange');
+        const anaBtn = document.getElementById('adminSubBtnAnalytics');
+
+        const activeClass = "py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm";
+        const inactiveClass = "py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all duration-200 text-slate-400 hover:text-white border border-transparent";
+
+        if (rosterView) rosterView.classList.add('hidden');
+        if (rangeView) rangeView.classList.add('hidden');
+        if (anaView) anaView.classList.add('hidden');
+
+        if (rosterBtn) rosterBtn.className = inactiveClass;
+        if (rangeBtn) rangeBtn.className = inactiveClass;
+        if (anaBtn) anaBtn.className = inactiveClass;
+
+        if (subTab === 'roster') {
+            if (rosterView) rosterView.classList.remove('hidden');
+            if (rosterBtn) rosterBtn.className = activeClass;
+            loadAdminDashboardData();
+        } else if (subTab === 'daterange') {
+            if (rangeView) rangeView.classList.remove('hidden');
+            if (rangeBtn) rangeBtn.className = activeClass;
+            initDateRangeInputs();
+            loadDateRangeData();
+        } else if (subTab === 'analytics') {
+            if (anaView) anaView.classList.remove('hidden');
+            if (anaBtn) anaBtn.className = activeClass;
+            loadAnalyticsData();
+        }
+    };
+
+    function initDateRangeInputs() {
+        const fromInput = document.getElementById('dateRangeFrom');
+        const toInput = document.getElementById('dateRangeTo');
+        if (fromInput && !fromInput.value) {
+            const past7 = new Date();
+            past7.setDate(past7.getDate() - 6);
+            fromInput.value = getTodayDateString(past7);
+            fromInput.max = state.todayDateStr;
+        }
+        if (toInput && !toInput.value) {
+            toInput.value = state.todayDateStr;
+            toInput.max = state.todayDateStr;
+        }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function getDatesBetween(startDateStr, endDateStr) {
+        const dates = [];
+        const curr = new Date(startDateStr);
+        const end = new Date(endDateStr);
+        let count = 0;
+        while (curr <= end && count < 366) {
+            dates.push(getTodayDateString(curr));
+            curr.setDate(curr.getDate() + 1);
+            count++;
+        }
+        return dates;
     }
 
     // ========================================================
-    // ANALYZER PARSING & VISUAL RENDERING
+    // SUB-VIEW 2: DATE RANGE LOGS VIEW & EXPORT
     // ========================================================
-    function injectSample(type) {
+    window.setDateRangePreset = function(preset) {
+        initDateRangeInputs();
+        const fromInput = document.getElementById('dateRangeFrom');
+        const toInput = document.getElementById('dateRangeTo');
+        const today = new Date();
+        toInput.value = getTodayDateString(today);
+
+        if (preset === '7d') {
+            const d = new Date();
+            d.setDate(d.getDate() - 6);
+            fromInput.value = getTodayDateString(d);
+        } else if (preset === '14d') {
+            const d = new Date();
+            d.setDate(d.getDate() - 13);
+            fromInput.value = getTodayDateString(d);
+        } else if (preset === '30d') {
+            const d = new Date();
+            d.setDate(d.getDate() - 29);
+            fromInput.value = getTodayDateString(d);
+        } else if (preset === 'month') {
+            const d = new Date(today.getFullYear(), today.getMonth(), 1);
+            fromInput.value = getTodayDateString(d);
+        }
+
+        loadDateRangeData();
+    };
+
+    window.loadDateRangeData = async function() {
+        initDateRangeInputs();
+        let fromDate = document.getElementById('dateRangeFrom')?.value;
+        let toDate = document.getElementById('dateRangeTo')?.value;
+
+        if (!fromDate || !toDate) {
+            showToast("කරුණාකර දින පරාසයක් තෝරන්න");
+            return;
+        }
+
+        if (fromDate > toDate) {
+            const tmp = fromDate;
+            fromDate = toDate;
+            toDate = tmp;
+            document.getElementById('dateRangeFrom').value = fromDate;
+            document.getElementById('dateRangeTo').value = toDate;
+        }
+
+        const tbody = document.getElementById('dateRangeTableBody');
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-slate-400 animate-pulse">දත්ත පූරණය වෙමින් පවතී...</td></tr>`;
+        }
+
+        try {
+            const logsColl = collection(db, 'daily_logs');
+            const q = query(
+                logsColl,
+                where('date', '>=', fromDate),
+                where('date', '<=', toDate)
+            );
+            const snap = await getDocs(q);
+
+            const logs = [];
+            snap.forEach(d => logs.push(d.data()));
+
+            // Sort in memory by date descending, then memberId ascending
+            logs.sort((a, b) => {
+                const dateCmp = (b.date || '').localeCompare(a.date || '');
+                if (dateCmp !== 0) return dateCmp;
+                return (a.memberId || '').localeCompare(b.memberId || '', undefined, { numeric: true });
+            });
+
+            state.dateRangeData = logs;
+
+            populateDateRangeMemberFilter(logs);
+            filterDateRangeTableLocally();
+        } catch (err) {
+            console.error("Error loading date range logs:", err);
+            if (tbody) {
+                tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-red-400">වාර්තා ලබාගැනීමේදී දෝෂයක් ඇතිවිය.</td></tr>`;
+            }
+            showToast("වාර්තා ලබාගැනීමේදී දෝෂයක් ඇතිවිය");
+        }
+    };
+
+    function populateDateRangeMemberFilter(logs) {
+        const select = document.getElementById('dateRangeMemberFilter');
+        if (!select) return;
+        const currentVal = select.value;
+
+        const memberMap = new Map();
+        (state.membersCache || []).forEach(m => {
+            if (m.id && m.name) memberMap.set(m.id, m.name);
+        });
+        (logs || []).forEach(l => {
+            if (l.memberId && !memberMap.has(l.memberId)) {
+                memberMap.set(l.memberId, l.memberName || l.memberId);
+            }
+        });
+
+        const sortedMembers = Array.from(memberMap.entries()).sort((a, b) =>
+            a[0].localeCompare(b[0], undefined, { numeric: true })
+        );
+
+        let optionsHtml = `<option value="all" class="bg-[#111522] text-white">සියලු සාමාජිකයින් (සියල්ල)</option>`;
+        sortedMembers.forEach(([id, name]) => {
+            const selected = id === currentVal ? 'selected' : '';
+            optionsHtml += `<option value="${escapeHtml(id)}" class="bg-[#111522] text-white" ${selected}>${escapeHtml(id)} - ${escapeHtml(name)}</option>`;
+        });
+
+        select.innerHTML = optionsHtml;
+        if (currentVal && memberMap.has(currentVal)) {
+            select.value = currentVal;
+        } else {
+            select.value = 'all';
+        }
+    }
+
+    window.filterDateRangeTableLocally = function() {
+        const selectedMember = document.getElementById('dateRangeMemberFilter')?.value || 'all';
+        const searchQuery = (document.getElementById('dateRangeSearchInput')?.value || '').trim().toLowerCase();
+
+        const filtered = (state.dateRangeData || []).filter(log => {
+            if (selectedMember !== 'all' && log.memberId !== selectedMember) return false;
+            if (searchQuery) {
+                const name = (log.memberName || '').toLowerCase();
+                const id = (log.memberId || '').toLowerCase();
+                const date = (log.date || '').toLowerCase();
+                if (!name.includes(searchQuery) && !id.includes(searchQuery) && !date.includes(searchQuery)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        const totalLogs = filtered.length;
+        const uniqueMembers = new Set(filtered.map(l => l.memberId)).size;
+        const totalScore = filtered.reduce((sum, l) => sum + (Number(l.grandTotal) || 0), 0);
+        const avgScore = totalLogs > 0 ? (totalScore / totalLogs).toFixed(1) : '0.0';
+        const bonusCount = filtered.filter(l => l.isFiveAmBonus).length;
+
+        const kpiTotal = document.getElementById('rangeKpiTotalLogs');
+        const kpiActive = document.getElementById('rangeKpiActiveMembers');
+        const kpiAvg = document.getElementById('rangeKpiAvgScore');
+        const kpiBonus = document.getElementById('rangeKpiBonusCount');
+        const badgeCount = document.getElementById('dateRangeTableCountBadge');
+
+        if (kpiTotal) kpiTotal.innerText = totalLogs;
+        if (kpiActive) kpiActive.innerText = uniqueMembers;
+        if (kpiAvg) kpiAvg.innerText = avgScore;
+        if (kpiBonus) kpiBonus.innerText = bonusCount;
+        if (badgeCount) badgeCount.innerText = `${totalLogs} වාර්තා`;
+
+        const tbody = document.getElementById('dateRangeTableBody');
+        if (!tbody) return;
+
+        if (totalLogs === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="py-8 text-center text-slate-500">
+                        තෝරාගත් දින පරාසය සහ පෙරහන සඳහා වාර්තා කිසිවක් හමුනොවිණි.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let html = '';
+        filtered.forEach(log => {
+            const timeStr = log.submittedAt?.toDate
+                ? log.submittedAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : (typeof log.submittedAt === 'string' ? log.submittedAt : '-');
+
+            html += `
+                <tr class="hover:bg-white/[0.02] transition">
+                    <td class="py-3 px-3 font-mono font-bold text-amber-200/90">${log.date}</td>
+                    <td class="py-3 px-3">
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono text-[11px] px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold">${escapeHtml(log.memberId)}</span>
+                            <span class="font-bold text-white text-xs">${escapeHtml(log.memberName || log.memberId)}</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-3">
+                        <span class="font-mono font-medium ${log.isFiveAmBonus ? 'text-amber-300 font-bold' : 'text-slate-300'}">${log.wakeTime || '-'}</span>
+                        ${log.isFiveAmBonus ? '<span class="ml-1 text-xs" title="05:00 AM බෝනස්">⭐</span>' : ''}
+                    </td>
+                    <td class="py-3 px-3 text-center">
+                        <span class="px-2 py-0.5 rounded-lg text-[11px] font-mono font-bold ${log.mornScore === 3 ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-300'}">
+                            ${log.mornScore || 0}/3
+                        </span>
+                    </td>
+                    <td class="py-3 px-3 text-center">
+                        <span class="font-mono text-xs tracking-wider">${getNoonPattern(log.noonCount || 0)}</span>
+                    </td>
+                    <td class="py-3 px-3 text-center">
+                        <span class="font-mono text-xs tracking-wider">${getNightPattern(log.nightCount || 0)}</span>
+                    </td>
+                    <td class="py-3 px-3 text-center font-mono">
+                        ${(log.extraCount && log.extraCount > 0) ? `<span class="text-amber-300 font-bold">+${(log.extraCount * 0.5).toFixed(1)} (${log.extraCount})</span>` : '<span class="text-slate-500">0</span>'}
+                    </td>
+                    <td class="py-3 px-3 text-right">
+                        <span class="font-black text-sm font-mono text-amber-300 px-2 py-0.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                            ${log.grandTotal}
+                        </span>
+                    </td>
+                    <td class="py-3 px-3 text-center text-slate-400 font-mono text-[11px]">
+                        ${timeStr}
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    };
+
+    window.exportDateRangeCSV = function() {
+        const fromDate = document.getElementById('dateRangeFrom')?.value || 'start';
+        const toDate = document.getElementById('dateRangeTo')?.value || 'end';
+
+        const selectedMember = document.getElementById('dateRangeMemberFilter')?.value || 'all';
+        const searchQuery = (document.getElementById('dateRangeSearchInput')?.value || '').trim().toLowerCase();
+
+        const logs = (state.dateRangeData || []).filter(log => {
+            if (selectedMember !== 'all' && log.memberId !== selectedMember) return false;
+            if (searchQuery) {
+                const name = (log.memberName || '').toLowerCase();
+                const id = (log.memberId || '').toLowerCase();
+                if (!name.includes(searchQuery) && !id.includes(searchQuery)) return false;
+            }
+            return true;
+        });
+
+        if (logs.length === 0) {
+            showToast("බාගත කිරීමට වාර්තා කිසිවක් නොමැත");
+            return;
+        }
+
+        let csv = "දිනය,සාමාජික අංකය,නම,අවදිවීම,05AM_බෝනස්,උදෑසන,දහවල,රාත්‍රිය,අමතර_වරක්,මුළු_ලකුණු,වේලාව\n";
+
+        logs.forEach(l => {
+            const timeStr = l.submittedAt?.toDate
+                ? l.submittedAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : (typeof l.submittedAt === 'string' ? l.submittedAt : '-');
+
+            const row = [
+                `"${l.date}"`,
+                `"${l.memberId}"`,
+                `"${(l.memberName || '').replace(/"/g, '""')}"`,
+                `"${l.wakeTime || ''}"`,
+                l.isFiveAmBonus ? "ඔව්" : "නැත",
+                `"${l.mornScore || 0}/3"`,
+                `"${l.noonCount || 0}/2"`,
+                `"${l.nightCount || 0}/3"`,
+                l.extraCount || 0,
+                l.grandTotal || 0,
+                `"${timeStr}"`
+            ];
+            csv += row.join(",") + "\n";
+        });
+
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Adhishtana_Logs_${fromDate}_to_${toDate}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast("දින පරාස CSV වාර්තාව බාගත කරන ලදී!");
+    };
+
+    // ========================================================
+    // SUB-VIEW 3: DETAILED ANALYTICS & REPORTS
+    // ========================================================
+    let adminCharts = {
+        trend: null,
+        routine: null,
+        scoreDist: null
+    };
+
+    window.setAnalyticsPreset = function(preset) {
+        state.analyticsPreset = preset;
+        const btn7 = document.getElementById('btnAna7d');
+        const btn30 = document.getElementById('btnAna30d');
+        const btnAll = document.getElementById('btnAnaAll');
+
+        const activeClass = "px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-200 border border-amber-500/40";
+        const inactiveClass = "px-3 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white border border-transparent";
+
+        if (btn7) btn7.className = preset === '7d' ? activeClass : inactiveClass;
+        if (btn30) btn30.className = preset === '30d' ? activeClass : inactiveClass;
+        if (btnAll) btnAll.className = preset === 'all' ? activeClass : inactiveClass;
+
+        loadAnalyticsData();
+    };
+
+    window.loadAnalyticsData = async function() {
+        const preset = state.analyticsPreset || '7d';
+        const today = new Date();
+        const toDateStr = getTodayDateString(today);
+        let fromDateStr = '';
+
+        if (preset === '7d') {
+            const d = new Date();
+            d.setDate(d.getDate() - 6);
+            fromDateStr = getTodayDateString(d);
+        } else if (preset === '30d') {
+            const d = new Date();
+            d.setDate(d.getDate() - 29);
+            fromDateStr = getTodayDateString(d);
+        } else {
+            fromDateStr = '2026-01-01';
+        }
+
+        try {
+            const logsColl = collection(db, 'daily_logs');
+            const q = query(
+                logsColl,
+                where('date', '>=', fromDateStr),
+                where('date', '<=', toDateStr)
+            );
+            const snap = await getDocs(q);
+
+            const logs = [];
+            snap.forEach(d => logs.push(d.data()));
+
+            logs.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+            state.analyticsData = logs;
+
+            const totalLogs = logs.length;
+            const uniqueMembers = new Set(logs.map(l => l.memberId)).size;
+            const totalScoreSum = logs.reduce((sum, l) => sum + (Number(l.grandTotal) || 0), 0);
+            const avgScore = totalLogs > 0 ? (totalScoreSum / totalLogs).toFixed(1) : '0.0';
+            const fiveAmCount = logs.filter(l => l.isFiveAmBonus).length;
+            const fiveAmRate = totalLogs > 0 ? Math.round((fiveAmCount / totalLogs) * 100) : 0;
+            const totalExtra = logs.reduce((sum, l) => sum + (Number(l.extraCount) || 0), 0);
+            const extraBonusPts = (totalExtra * 0.5).toFixed(1);
+
+            let gradeText = "වාර්තා නොමැත";
+            if (totalLogs > 0) {
+                const numAvg = Number(avgScore);
+                if (numAvg >= 8) gradeText = "🌟 විශිෂ්ට සාමූහික ප්‍රගතියක්!";
+                else if (numAvg >= 5) gradeText = "👍 යහපත් සාමූහික මට්ටමක පවතී";
+                else gradeText = "🌱 තවදුරටත් උත්සාහවන්ත වෙමු";
+            }
+
+            const kpiTotal = document.getElementById('anaKpiTotalLogs');
+            const kpiActive = document.getElementById('anaKpiActiveSubtext');
+            const kpiAvg = document.getElementById('anaKpiAvgScore');
+            const kpiGrade = document.getElementById('anaKpiScoreGrade');
+            const kpiRate = document.getElementById('anaKpiFiveAmRate');
+            const kpiFiveAm = document.getElementById('anaKpiFiveAmCount');
+            const kpiExtra = document.getElementById('anaKpiTotalExtra');
+            const kpiExtraPts = document.getElementById('anaKpiExtraPts');
+
+            if (kpiTotal) kpiTotal.innerText = totalLogs;
+            if (kpiActive) kpiActive.innerText = `${uniqueMembers} ක්‍රියාකාරී සාමාජිකයින්`;
+            if (kpiAvg) kpiAvg.innerText = avgScore;
+            if (kpiGrade) kpiGrade.innerText = gradeText;
+            if (kpiRate) kpiRate.innerText = `${fiveAmRate}%`;
+            if (kpiFiveAm) kpiFiveAm.innerText = `${fiveAmCount} වතාවක් බෝනස් හිමිවිය`;
+            if (kpiExtra) kpiExtra.innerText = totalExtra;
+            if (kpiExtraPts) kpiExtraPts.innerText = `+${extraBonusPts} ප්‍රසාද ලකුණු`;
+
+            renderAnalyticsTrendChart(logs, fromDateStr, toDateStr);
+            renderAnalyticsRoutineChart(logs);
+            renderAnalyticsScoreDistChart(logs);
+            renderAnalyticsLeaderboard(logs);
+        } catch (err) {
+            console.error("Error loading analytics data:", err);
+            showToast("විශ්ලේෂණ දත්ත ලබාගැනීමේදී දෝෂයක් ඇතිවිය");
+        }
+    };
+
+    function renderAnalyticsTrendChart(logs, fromDateStr, toDateStr) {
+        const canvas = document.getElementById('chartDailyTrendCanvas');
+        if (!canvas || typeof Chart === 'undefined') return;
+
+        let dateList = [];
+        if (fromDateStr && toDateStr && fromDateStr <= toDateStr) {
+            dateList = getDatesBetween(fromDateStr, toDateStr);
+        } else {
+            dateList = Array.from(new Set(logs.map(l => l.date))).sort();
+            if (dateList.length === 0) dateList = [state.todayDateStr];
+        }
+
+        const subCounts = [];
+        const avgScores = [];
+
+        dateList.forEach(dStr => {
+            const dayLogs = logs.filter(l => l.date === dStr);
+            subCounts.push(dayLogs.length);
+            if (dayLogs.length > 0) {
+                const sum = dayLogs.reduce((s, l) => s + (Number(l.grandTotal) || 0), 0);
+                avgScores.push(Number((sum / dayLogs.length).toFixed(1)));
+            } else {
+                avgScores.push(0);
+            }
+        });
+
+        const formattedLabels = dateList.map(dStr => {
+            const parts = dStr.split('-');
+            return parts.length === 3 ? `${parts[1]}/${parts[2]}` : dStr;
+        });
+
+        if (adminCharts.trend) {
+            adminCharts.trend.destroy();
+            adminCharts.trend = null;
+        }
+
+        const ctx = canvas.getContext('2d');
+        adminCharts.trend = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: formattedLabels,
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: 'වාර්තා ගණන (Submissions)',
+                        data: subCounts,
+                        backgroundColor: 'rgba(245, 158, 11, 0.4)',
+                        borderColor: '#F59E0B',
+                        borderWidth: 1.5,
+                        borderRadius: 6,
+                        yAxisID: 'y'
+                    },
+                    {
+                        type: 'line',
+                        label: 'සාමාන්‍ය ලකුණු (Avg Score)',
+                        data: avgScores,
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                        tension: 0.35,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        borderWidth: 2.5,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#CBD5E1',
+                            font: { family: 'Noto Sans Sinhala, sans-serif', size: 11 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#111522',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        titleColor: '#F59E0B',
+                        bodyColor: '#FFFFFF'
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#94A3B8', font: { size: 10 } }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#F59E0B', stepSize: 1 },
+                        title: { display: true, text: 'වාර්තා ගණන', color: '#F59E0B', font: { size: 10 } }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        ticks: { color: '#10B981' },
+                        min: 0,
+                        max: 11,
+                        title: { display: true, text: 'සාමාන්‍ය ලකුණු', color: '#10B981', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+    }
+
+    function renderAnalyticsRoutineChart(logs) {
+        const canvas = document.getElementById('chartRoutineCanvas');
+        if (!canvas || typeof Chart === 'undefined') return;
+
+        const total = logs.length;
+        const pctPansil = total > 0 ? Math.round((logs.filter(l => l.pansil).length / total) * 100) : 0;
+        const pctSathya = total > 0 ? Math.round((logs.filter(l => l.sathya).length / total) * 100) : 0;
+        const pctAudioM = total > 0 ? Math.round((logs.filter(l => l.audioMorn).length / total) * 100) : 0;
+        const pctNoon = total > 0 ? Math.round((logs.filter(l => l.noonCount === 2).length / total) * 100) : 0;
+        const pctNight = total > 0 ? Math.round((logs.filter(l => l.nightCount === 3).length / total) * 100) : 0;
+        const pctBonus = total > 0 ? Math.round((logs.filter(l => l.isFiveAmBonus).length / total) * 100) : 0;
+
+        if (adminCharts.routine) {
+            adminCharts.routine.destroy();
+            adminCharts.routine = null;
+        }
+
+        const ctx = canvas.getContext('2d');
+        adminCharts.routine = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'පන්සිල් සමාදන් වීම',
+                    'සත්‍යක්‍රියාව',
+                    'උදෑසන හඬපටය',
+                    'දහවල් හඬපට (2/2)',
+                    'රාත්‍රී හඬපට (3/3)',
+                    '05:00 AM බෝනස්'
+                ],
+                datasets: [{
+                    label: 'සාධන අනුපාතය (%)',
+                    data: [pctPansil, pctSathya, pctAudioM, pctNoon, pctNight, pctBonus],
+                    backgroundColor: [
+                        'rgba(16, 185, 129, 0.75)',
+                        'rgba(16, 185, 129, 0.75)',
+                        'rgba(16, 185, 129, 0.75)',
+                        'rgba(245, 158, 11, 0.75)',
+                        'rgba(245, 158, 11, 0.75)',
+                        'rgba(234, 179, 8, 0.85)'
+                    ],
+                    borderColor: [
+                        '#10B981',
+                        '#10B981',
+                        '#10B981',
+                        '#F59E0B',
+                        '#F59E0B',
+                        '#EAB308'
+                    ],
+                    borderWidth: 1.5,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (c) => ` සාධන ප්‍රතිශතය: ${c.raw}%`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        min: 0,
+                        max: 100,
+                        ticks: { color: '#94A3B8', callback: v => `${v}%` },
+                        grid: { color: 'rgba(255,255,255,0.05)' }
+                    },
+                    y: {
+                        ticks: { color: '#CBD5E1', font: { family: 'Noto Sans Sinhala, sans-serif', size: 11 } },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    function renderAnalyticsScoreDistChart(logs) {
+        const canvas = document.getElementById('chartScoreDistCanvas');
+        if (!canvas || typeof Chart === 'undefined') return;
+
+        const total = logs.length;
+        const outstanding = logs.filter(l => Number(l.grandTotal) >= 8).length;
+        const good = logs.filter(l => Number(l.grandTotal) >= 5 && Number(l.grandTotal) < 8).length;
+        const needsEffort = logs.filter(l => Number(l.grandTotal) < 5).length;
+
+        const pctOut = total > 0 ? Math.round((outstanding / total) * 100) : 0;
+        const pctGood = total > 0 ? Math.round((good / total) * 100) : 0;
+        const pctEffort = total > 0 ? Math.round((needsEffort / total) * 100) : 0;
+
+        const distOut = document.getElementById('distOutstandingVal');
+        const distGood = document.getElementById('distGoodVal');
+        const distEffort = document.getElementById('distNeedEffortVal');
+
+        if (distOut) distOut.innerText = `${outstanding} (${pctOut}%)`;
+        if (distGood) distGood.innerText = `${good} (${pctGood}%)`;
+        if (distEffort) distEffort.innerText = `${needsEffort} (${pctEffort}%)`;
+
+        if (adminCharts.scoreDist) {
+            adminCharts.scoreDist.destroy();
+            adminCharts.scoreDist = null;
+        }
+
+        const chartData = total > 0 ? [outstanding, good, needsEffort] : [1];
+        const chartColors = total > 0 ? ['#10B981', '#F59E0B', '#64748B'] : ['rgba(255,255,255,0.1)'];
+
+        const ctx = canvas.getContext('2d');
+        adminCharts.scoreDist = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['විශිෂ්ටයි (8 - 11)', 'යහපත් (5 - 7.5)', 'උත්සාහවන්ත වෙමු (< 5)'],
+                datasets: [{
+                    data: chartData,
+                    backgroundColor: chartColors,
+                    borderColor: '#111522',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
+    function renderAnalyticsLeaderboard(logs) {
+        const tbody = document.getElementById('anaLeaderboardBody');
+        if (!tbody) return;
+
+        const memberMap = new Map();
+        logs.forEach(l => {
+            let entry = memberMap.get(l.memberId);
+            if (!entry) {
+                entry = {
+                    id: l.memberId,
+                    name: l.memberName || l.memberId,
+                    daysCount: 0,
+                    fiveAmCount: 0,
+                    totalScore: 0
+                };
+                memberMap.set(l.memberId, entry);
+            }
+            entry.daysCount += 1;
+            if (l.isFiveAmBonus) entry.fiveAmCount += 1;
+            entry.totalScore += Number(l.grandTotal) || 0;
+        });
+
+        const list = Array.from(memberMap.values()).map(m => ({
+            ...m,
+            avgScore: m.daysCount > 0 ? (m.totalScore / m.daysCount).toFixed(1) : '0.0',
+            totalFormatted: Number.isInteger(m.totalScore) ? m.totalScore : m.totalScore.toFixed(1)
+        }));
+
+        list.sort((a, b) => {
+            if (b.daysCount !== a.daysCount) return b.daysCount - a.daysCount;
+            return b.totalScore - a.totalScore;
+        });
+
+        const top10 = list.slice(0, 10);
+
+        if (top10.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="py-6 text-center text-slate-500">
+                        තෝරාගත් කාල සීමාව සඳහා වාර්තා කිසිවක් හමුනොවිණි.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let html = '';
+        top10.forEach((item, idx) => {
+            let rankBadge = `<span class="font-mono text-slate-400 font-bold">${idx + 1} වන</span>`;
+            if (idx === 0) rankBadge = `<span class="inline-flex items-center gap-1 font-bold text-amber-300">🥇 1 වන</span>`;
+            if (idx === 1) rankBadge = `<span class="inline-flex items-center gap-1 font-bold text-slate-200">🥈 2 වන</span>`;
+            if (idx === 2) rankBadge = `<span class="inline-flex items-center gap-1 font-bold text-amber-600">🥉 3 වන</span>`;
+
+            html += `
+                <tr class="hover:bg-white/[0.02] transition">
+                    <td class="py-2.5 px-3 whitespace-nowrap">${rankBadge}</td>
+                    <td class="py-2.5 px-3">
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold">${escapeHtml(item.id)}</span>
+                            <span class="font-bold text-white text-xs">${escapeHtml(item.name)}</span>
+                        </div>
+                    </td>
+                    <td class="py-2.5 px-3 text-center font-mono font-bold text-emerald-400">${item.daysCount} දින</td>
+                    <td class="py-2.5 px-3 text-center font-mono">
+                        ${item.fiveAmCount > 0 ? `<span class="text-amber-300 font-bold">⭐ ${item.fiveAmCount}</span>` : '<span class="text-slate-500">0</span>'}
+                    </td>
+                    <td class="py-2.5 px-3 text-center font-mono font-bold text-amber-400">${item.avgScore}</td>
+                    <td class="py-2.5 px-3 text-right">
+                        <span class="font-black font-mono text-amber-300 px-2 py-0.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                            ${item.totalFormatted}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    }
+
+    // ========================================================
+    // ANALYZER PARSING & VISUAL RENDERING (PRESERVED)
+    // ========================================================
+    window.injectSample = function(type) {
         let sample = '';
         if (type === 1) {
             sample = `1) 05.00 AM\n    i)     ✅\n    ii)    ✅\n    iii)   ✅\n\n2) ✅✅\n\n3) ✅✅✅\n\n4) 4\n\n🔹 මුළු ලකුණු: 11`;
@@ -900,16 +3596,16 @@
             sample = `1) 05.25 AM\n    i)     ✅\n    ii)    ❌\n    iii)   ✅\n\n2) ✅❌\n\n3) ✅✅❌\n\n4) 2`;
         }
         document.getElementById('analyzerInputArea').value = sample;
-        parseAndAnalyzeText();
+        window.parseAndAnalyzeText();
         showToast(`ආදර්ශ ${type} ඇතුළත් කරන ලදී`);
-    }
+    };
 
-    function clearAnalyzerInput() {
+    window.clearAnalyzerInput = function() {
         document.getElementById('analyzerInputArea').value = '';
         showToast("පෙළ මකා දමන ලදී");
-    }
+    };
 
-    function parseTextReport(raw) {
+    window.parseTextReport = function(raw) {
         const lines = raw.split('\n');
 
         let wakeTime = '05.00 AM';
@@ -921,7 +3617,6 @@
         let nightSuccess = 0;
         let extraCount = 0;
 
-        // Morning Header
         const mornLine = lines.find(l => /^\s*1\)/i.test(l));
         if (mornLine) {
             const timeMatch = mornLine.match(/1\)\s*([0-9.:\s]+(?:AM|PM|am|pm)?)/i);
@@ -930,7 +3625,6 @@
             }
         }
 
-        // Sub items
         lines.forEach(line => {
             if (/i\)/i.test(line) && !/ii\)/i.test(line) && !/iii\)/i.test(line)) {
                 pansil = line.includes('✅');
@@ -941,21 +3635,18 @@
             }
         });
 
-        // Daytime
         const noonLine = lines.find(l => /^\s*2\)/i.test(l));
         if (noonLine) {
             noonSuccess = (noonLine.match(/✅/g) || []).length;
             if (noonSuccess > 2) noonSuccess = 2;
         }
 
-        // Night
         const nightLine = lines.find(l => /^\s*3\)/i.test(l));
         if (nightLine) {
             nightSuccess = (nightLine.match(/✅/g) || []).length;
             if (nightSuccess > 3) nightSuccess = 3;
         }
 
-        // Extra
         const extraLine = lines.find(l => /^\s*4\)/i.test(l));
         if (extraLine) {
             const numMatch = extraLine.match(/4\)\s*([0-9]+)/);
@@ -987,18 +3678,17 @@
             totalBonus,
             grandTotal
         };
-    }
+    };
 
-    function parseAndAnalyzeText() {
+    window.parseAndAnalyzeText = function() {
         const text = document.getElementById('analyzerInputArea').value;
         if (!text.trim()) {
             showToast("විශ්ලේෂණය සඳහා කරුණාකර වාර්තාව අලවන්න");
             return;
         }
 
-        const data = parseTextReport(text);
+        const data = window.parseTextReport(text);
 
-        // Radial Circle Animation (314 is circumference for r=50)
         const circle = document.getElementById('radialScoreCircle');
         const percentage = Math.min(Math.max(data.grandTotal / 10, 0), 1);
         const offset = 314 - (percentage * 314);
@@ -1007,7 +3697,6 @@
         const formattedTotal = Number.isInteger(data.grandTotal) ? data.grandTotal : data.grandTotal.toFixed(1);
         document.getElementById('pTotalScoreDisplay').innerText = formattedTotal;
 
-        // Performance assessment
         const gradeTitle = document.getElementById('pPerformanceGrade');
         const gradeDesc = document.getElementById('pPerformanceDesc');
 
@@ -1022,12 +3711,10 @@
             gradeDesc.innerText = "දවසේ අතපසු වූ අවස්ථා හඳුනාගෙන අධිෂ්ඨානය ශක්තිමත් කරගන්න.";
         }
 
-        // Base & Bonus Stats
         document.getElementById('pBaseScoreVal').innerText = `${data.baseTotal} / 8`;
         document.getElementById('pWakeBonusVal').innerText = `+${data.wakeBonus}`;
         document.getElementById('pExtraBonusVal').innerText = `+${data.extraBonus.toFixed(1)}`;
 
-        // Bonus Callout Box
         const bonusCard = document.getElementById('pBonusStatusCard');
         if (data.wakeBonus === 1) {
             bonusCard.className = "p-4 rounded-2xl text-xs flex items-center gap-3 bg-emerald-500/10 border-emerald-500/30 text-emerald-300";
@@ -1050,31 +3737,27 @@
             `;
         }
 
-        // Morning Card Details
         document.getElementById('pWakeTimeChip').innerText = data.wakeTime;
         document.getElementById('pMorningScoreBadge').innerText = `${data.mornSum} / 3` + (data.wakeBonus ? ' (+1)' : '');
         document.getElementById('pIconPansil').innerText = data.pansil ? '✅' : '❌';
         document.getElementById('pIconSathya').innerText = data.sathya ? '✅' : '❌';
         document.getElementById('pIconAudioM').innerText = data.audioM ? '✅' : '❌';
 
-        // Daytime Card Details
         document.getElementById('pNoonScoreBadge').innerText = `${data.noonSuccess} / 2`;
         document.getElementById('pNoonSymbols').innerText = getNoonPattern(data.noonSuccess);
         document.getElementById('pNoonDesc').innerText = `${data.noonSuccess} වතාවක් ශ්‍රවණය කර ඇත`;
 
-        // Night Card Details
         document.getElementById('pNightScoreBadge').innerText = `${data.nightSuccess} / 3`;
         document.getElementById('pNightSymbols').innerText = getNightPattern(data.nightSuccess);
         document.getElementById('pNightDesc').innerText = `${data.nightSuccess} වතාවක් ශ්‍රවණය කර ඇත`;
 
-        // Extra Card Details
         document.getElementById('pExtraScoreBadge').innerText = `+${data.extraBonus.toFixed(1)}`;
         document.getElementById('pExtraCountDisplay').innerText = data.extraCount;
 
         showToast("විශ්ලේෂණය සාර්ථකව අවසන් විය!");
-    }
+    };
 
-    function copyAnalysisSummaryText() {
+    window.copyAnalysisSummaryText = function() {
         const total = document.getElementById('pTotalScoreDisplay').innerText;
         const wakeTime = document.getElementById('pWakeTimeChip').innerText;
         const mornScore = document.getElementById('pMorningScoreBadge').innerText;
@@ -1085,10 +3768,12 @@
         const text = `📊 අධිෂ්ඨාන වාර්තා විශ්ලේෂණය:\n• අවදි වූ වේලාව: ${wakeTime}\n• උදෑසන සැසිය: ${mornScore}\n• දහවල් සැසිය: ${noonScore}\n• රාත්‍රී සැසිය: ${nightScore}\n• අමතර ශ්‍රවණයන්: ${extraCount} වතාවක්\n⭐ මුළු ලකුණු: ${total}`;
 
         executeClipboardCopy(text, "විශ්ලේෂණ සාරාංශය පිටපත් කරගන්නා ලදී!");
-    }
+    };
 
-    // Fallback-safe clipboard copy function
-    function executeClipboardCopy(textToCopy, successMsg) {
+    // ========================================================
+    // UTILITY: CLIPBOARD & TOAST
+    // ========================================================
+    window.executeClipboardCopy = function(textToCopy, successMsg) {
         let isCopied = false;
         try {
             const tempEl = document.createElement("textarea");
@@ -1113,9 +3798,9 @@
                 showToast("පෙළ තෝරාගෙන පිටපත් කරගන්න");
             });
         }
-    }
+    };
 
-    function showToast(message) {
+    window.showToast = function(message) {
         const toast = document.getElementById('globalToast');
         const msgEl = document.getElementById('globalToastMsg');
         msgEl.innerText = message;
@@ -1125,42 +3810,46 @@
         setTimeout(() => {
             toast.classList.remove('opacity-100', 'translate-y-0');
             toast.classList.add('opacity-0', 'translate-y-3', 'pointer-events-none');
-        }, 2400);
-    }
+        }, 2600);
+    };
 
-    window.onload = function() {
-        const saved = localStorage.getItem('adhishtana_genState');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                genState.wakeTime = parsed.wakeTime !== undefined ? parsed.wakeTime : '05.00 AM';
-                genState.pansil = !!parsed.pansil;
-                genState.sathya = !!parsed.sathya;
-                genState.audioMorn = !!parsed.audioMorn;
-                genState.noonCount = parsed.noonCount || 0;
-                genState.nightCount = parsed.nightCount || 0;
-                genState.extraCount = parsed.extraCount || 0;
-                
-                // Update UI elements
-                document.getElementById('wakeInput').value = genState.wakeTime;
-                updateTaskCardUI('pansil');
-                updateTaskCardUI('sathya');
-                updateTaskCardUI('audioMorn');
-                document.getElementById('counterExtraVal').innerText = genState.extraCount;
-                
-                setNoonAudio(genState.noonCount);
-                setNightAudio(genState.nightCount);
-                return;
-            } catch (e) {
-                console.error("Failed to parse saved state", e);
-            }
+    // ========================================================
+    // INITIALIZATION ON LOAD
+    // ========================================================
+    window.addEventListener('DOMContentLoaded', () => {
+        // Set log entry date to today and prevent future dates
+        const logDateInput = document.getElementById('logEntryDate');
+        if (logDateInput) {
+            logDateInput.value = state.todayDateStr;
+            logDateInput.max = state.todayDateStr;
         }
 
-        // Default if nothing saved
-        setNoonAudio(0);
-        setNightAudio(0);
+        // Set date filter to today in Admin
+        const dateInput = document.getElementById('adminDateFilter');
+        if (dateInput) dateInput.value = state.todayDateStr;
+
+        // Initialize Date Range view inputs
+        initDateRangeInputs();
+
+        // Restore saved auth session if any
+        const savedUserStr = localStorage.getItem('adhishtana_auth_user');
+        if (savedUserStr) {
+            try {
+                state.currentUser = JSON.parse(savedUserStr);
+                updateUserStatusUI();
+                checkTodaySubmissionForCurrentUser();
+            } catch (e) {
+                console.error("Auth session parse error", e);
+            }
+        } else {
+            updateUserStatusUI();
+        }
+
+        // Initialize Generator UI
+        setNoonAudioUI(0);
+        setNightAudioUI(0);
         recomputeGenerator();
-    };
+    });
 </script>
 </body>
 </html>

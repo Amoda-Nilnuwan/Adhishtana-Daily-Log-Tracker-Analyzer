@@ -184,13 +184,13 @@
         </div>
 
         <!-- Main Tab Switcher -->
-        <div class="mt-6 max-w-xl mx-auto p-1.5 rounded-2xl glass-panel border border-white/10 grid grid-cols-3 gap-1.5 shadow-lg">
+        <div id="mainTabContainer" class="mt-6 max-w-xl mx-auto p-1.5 rounded-2xl glass-panel border border-white/10 grid grid-cols-2 gap-1.5 shadow-lg">
             <button id="tabBtnGenerator" onclick="switchTab('generator')"
                     class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm">
                 <span>📝 දෛනික සටහන</span>
             </button>
             <button id="tabBtnAdmin" onclick="switchTab('admin')"
-                    class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 text-slate-400 hover:text-white border border-transparent">
+                    class="hidden py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 text-slate-400 hover:text-white border border-transparent">
                 <span>🛡️ පරිපාලන පුවරුව</span>
             </button>
             <button id="tabBtnAnalyzer" onclick="switchTab('analyzer')"
@@ -515,7 +515,7 @@
             <h3 class="text-base sm:text-lg font-extrabold text-white mb-2">
                 අද දින වාර්තාව පද්ධතියට ඇතුළත් කිරීම (Submit Daily Log)
             </h3>
-            <p class="text-xs text-slate-300 mb-5 max-w-md mx-auto">
+            <p class="text-xs text-slate-300 mb-5 max-w-md mx-auto" id="subDatabaseSubmissionNotice">
                 ඔබේ ලකුණු සහ සටහන් සෘජුවම මධ්‍යම දත්ත පද්ධතියට සුරැකී පරිපාලකවරුන් වෙත වාර්තා වේ.
             </p>
 
@@ -1278,13 +1278,13 @@
 
         <form id="authForm" onsubmit="handleLoginSubmit(event)" class="space-y-4">
             <div>
-                <label class="block text-xs font-semibold text-slate-200 mb-1">සාමාජික අංකය / පරිපාලක ID (ID):</label>
+                <label class="block text-xs font-semibold text-slate-200 mb-1">සාමාජික අංකය (Member ID):</label>
                 <input type="text" id="authInputId" placeholder="උදා: AD-01" required uppercase
                        class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white font-mono uppercase focus:outline-none focus:ring-1 focus:ring-amber-500">
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-200 mb-1">රහස් අංකය / මුරපදය (PIN / Password):</label>
+                <label class="block text-xs font-semibold text-slate-200 mb-1">රහස් අංකය (PIN / Password):</label>
                 <div class="relative">
                     <input type="password" id="authInputPin" maxlength="100" placeholder="••••••••" required
                            class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3.5 py-2.5 pr-10 text-xs sm:text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-amber-500">
@@ -1617,6 +1617,8 @@
         const adminBtn = document.getElementById('tabBtnAdmin');
         const anaBtn = document.getElementById('tabBtnAnalyzer');
 
+        const isAdmin = state.currentUser && state.currentUser.role === 'admin';
+
         const activeClass = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm";
         const inactiveClass = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 text-slate-400 hover:text-white border border-transparent";
 
@@ -1625,17 +1627,17 @@
         anaView.classList.add('hidden');
 
         genBtn.className = inactiveClass;
-        adminBtn.className = inactiveClass;
+        adminBtn.className = inactiveClass + (isAdmin ? '' : ' hidden');
         anaBtn.className = inactiveClass;
 
         if (tab === 'generator') {
             genView.classList.remove('hidden');
             genBtn.className = activeClass;
+            window.checkSubmissionForSelectedDate();
         } else if (tab === 'admin') {
-            // Require Admin verification
-            if (!state.currentUser || state.currentUser.role !== 'admin') {
-                showToast("පරිපාලක පුවරුවට පිවිසීමට කරුණාකර Admin ගිණුමෙන් පිවිසෙන්න");
-                window.openAuthModal('ADMIN');
+            // Require Admin verification - hide and redirect if not admin
+            if (!isAdmin) {
+                window.switchTab('generator');
                 return;
             }
             adminView.classList.remove('hidden');
@@ -1674,7 +1676,7 @@
         const modal = document.getElementById('modalAuth');
         const idInput = document.getElementById('authInputId');
         const pinInput = document.getElementById('authInputPin');
-        if (prefillId) idInput.value = prefillId;
+        idInput.value = prefillId || '';
         pinInput.value = '';
         modal.classList.remove('hidden');
         if (prefillId) {
@@ -1758,11 +1760,10 @@
                 window.closeAuthModal();
                 showToast(`ආයුබෝවන්, ${authenticatedUser.name}!`);
 
-                if (authenticatedUser.role === 'admin' && state.activeTab === 'admin') {
-                    document.getElementById('tabAdminView').classList.remove('hidden');
-                    document.getElementById('tabBtnAdmin').className = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm";
-                    loadAdminDashboardData();
+                if (authenticatedUser.role === 'admin') {
+                    window.switchTab('admin');
                 } else {
+                    window.switchTab('generator');
                     checkTodaySubmissionForCurrentUser();
                 }
             } else {
@@ -1781,11 +1782,35 @@
         const greeting = document.getElementById('userGreetingText');
         const sub = document.getElementById('userSubText');
         const authBtn = document.getElementById('btnAuthAction');
+        const adminTabBtn = document.getElementById('tabBtnAdmin');
+        const tabContainer = document.getElementById('mainTabContainer');
+
+        const isAdmin = state.currentUser && state.currentUser.role === 'admin';
+
+        // Toggle admin controls and tab switcher columns
+        if (isAdmin) {
+            if (adminTabBtn) adminTabBtn.classList.remove('hidden');
+            if (tabContainer) {
+                tabContainer.classList.remove('grid-cols-2');
+                tabContainer.classList.add('grid-cols-3');
+            }
+        } else {
+            if (adminTabBtn) adminTabBtn.classList.add('hidden');
+            if (tabContainer) {
+                tabContainer.classList.remove('grid-cols-3');
+                tabContainer.classList.add('grid-cols-2');
+            }
+            if (state.activeTab === 'admin') {
+                window.switchTab('generator');
+            }
+        }
 
         if (state.currentUser) {
-            const roleBadge = state.currentUser.role === 'admin' ? '🛡️ Admin' : '👤 සාමාජික';
+            const roleBadge = isAdmin ? '🛡️ Admin' : '👤 සාමාජික';
             greeting.innerHTML = `ආයුබෝවන්, <span class="text-amber-300 font-extrabold">${state.currentUser.name}</span> <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono">${roleBadge}</span>`;
-            sub.innerText = `සාමාජික අංකය: ${state.currentUser.id} • අද දිනය: ${state.todayDateStr}`;
+            sub.innerText = isAdmin
+                ? `පරිපාලක ID: ${state.currentUser.id} • පරිපාලන පාලක පුවරුව සක්‍රීයයි`
+                : `සාමාජික අංකය: ${state.currentUser.id} • අද දිනය: ${state.todayDateStr}`;
             authBtn.innerHTML = `<span>🚪 ඉවත් වන්න (${state.currentUser.id})</span>`;
             authBtn.className = "px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 text-xs font-semibold transition active:scale-95";
         } else {
@@ -1849,14 +1874,39 @@
 
     window.checkSubmissionForSelectedDate = async function() {
         const noticeCard = document.getElementById('memberSubmissionNotice');
+        const submitBtn = document.getElementById('btnSubmitDailyLog');
         const submitBtnText = document.getElementById('btnSubmitDailyLogText');
+        const submitNoticeSub = document.getElementById('subDatabaseSubmissionNotice');
         const targetDate = state.selectedLogDate || state.todayDateStr;
 
         if (!state.currentUser) {
             noticeCard.classList.add('hidden');
-            submitBtnText.innerText = "වාර්තාව සුරකින්න (Submit Log)";
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+            if (submitBtnText) submitBtnText.innerText = "වාර්තාව සුරකින්න (Submit Log)";
+            if (submitNoticeSub) submitNoticeSub.innerText = "ඔබේ ලකුණු සහ සටහන් සෘජුවම මධ්‍යම දත්ත පද්ධතියට සුරැකී පරිපාලකවරුන් වෙත වාර්තා වේ.";
             return;
         }
+
+        // If logged in as ADMIN, admins should not submit logs
+        if (state.currentUser.role === 'admin' || state.currentUser.id === 'ADMIN') {
+            noticeCard.classList.add('hidden');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            if (submitBtnText) submitBtnText.innerText = "🛡️ පරිපාලක (Admin) සඳහා වාර්තා ඇතුළත් කළ නොහැක";
+            if (submitNoticeSub) submitNoticeSub.innerHTML = "<span class='text-amber-300 font-semibold'>🛡️ ඔබ පරිපාලක (Admin) ලෙස පිවිස ඇත. පරිපාලක ගිණුම් සඳහා දෛනික වාර්තා ඇතුළත් කිරීම අවශ්‍ය නොවේ.</span>";
+            return;
+        }
+
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+        if (submitNoticeSub) submitNoticeSub.innerText = "ඔබේ ලකුණු සහ සටහන් සෘජුවම මධ්‍යම දත්ත පද්ධතියට සුරැකී පරිපාලකවරුන් වෙත වාර්තා වේ.";
 
         const logId = `${targetDate}_${state.currentUser.id}`;
         try {
@@ -1934,6 +1984,12 @@
         if (!state.currentUser) {
             showToast("වාර්තාව සුරැකීමට කරුණාකර පළමුව පිවිසෙන්න");
             window.openAuthModal();
+            return;
+        }
+
+        // Prevent Admin from submitting and saving tasks
+        if (state.currentUser.role === 'admin' || state.currentUser.id === 'ADMIN') {
+            showToast("🛡️ පරිපාලක (Admin) ගිණුම් සඳහා දෛනික වාර්තා සුරැකීම සිදු කළ නොහැක.");
             return;
         }
 
@@ -2349,9 +2405,11 @@
 
                 logsSnap.forEach(d => {
                     const data = d.data();
-                    state.todayLogsMap.set(data.memberId, data);
-                    if (data.isFiveAmBonus) {
-                        bonusAchieversCount++;
+                    if (data.memberId !== 'ADMIN' && data.role !== 'admin') {
+                        state.todayLogsMap.set(data.memberId, data);
+                        if (data.isFiveAmBonus) {
+                            bonusAchieversCount++;
+                        }
                     }
                 });
             } catch (logErr) {
@@ -3057,7 +3115,12 @@
             const snap = await getDocs(q);
 
             const logs = [];
-            snap.forEach(d => logs.push(d.data()));
+            snap.forEach(d => {
+                const data = d.data();
+                if (data.memberId !== 'ADMIN' && data.role !== 'admin') {
+                    logs.push(data);
+                }
+            });
 
             // Sort in memory by date descending, then memberId ascending
             logs.sort((a, b) => {
@@ -3317,7 +3380,12 @@
             const snap = await getDocs(q);
 
             const logs = [];
-            snap.forEach(d => logs.push(d.data()));
+            snap.forEach(d => {
+                const data = d.data();
+                if (data.memberId !== 'ADMIN' && data.role !== 'admin') {
+                    logs.push(data);
+                }
+            });
 
             logs.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
             state.analyticsData = logs;
@@ -3945,7 +4013,11 @@
             try {
                 state.currentUser = JSON.parse(savedUserStr);
                 updateUserStatusUI();
-                checkTodaySubmissionForCurrentUser();
+                if (state.currentUser && state.currentUser.role === 'admin') {
+                    window.switchTab('admin');
+                } else {
+                    checkTodaySubmissionForCurrentUser();
+                }
             } catch (e) {
                 console.error("Auth session parse error", e);
             }

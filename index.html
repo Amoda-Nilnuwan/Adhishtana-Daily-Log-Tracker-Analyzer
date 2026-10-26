@@ -140,12 +140,18 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
             <!-- Sync Indicator -->
             <span id="syncIndicator" class="hidden px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 සම්බන්ධයි (Online)
             </span>
+
+            <button type="button" id="btnUserChangePassword" onclick="openChangeUserPasswordModal()"
+                    class="hidden px-2.5 sm:px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-bold transition flex items-center gap-1.5 active:scale-95 shadow-sm"
+                    title="ඔබගේ මුරපදය / PIN අංකය වෙනස් කරන්න">
+                <span>🔑 PIN වෙනස් කරන්න</span>
+            </button>
 
             <button type="button" id="btnAuthAction" onclick="handleAuthAction()"
                     class="px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 font-bold transition flex items-center gap-1.5 active:scale-95 shadow-sm">
@@ -1525,59 +1531,59 @@
 </div>
 
 <!-- ======================================================== -->
-<!-- MODAL 5: CHANGE ADMIN PASSWORD                           -->
+<!-- MODAL 5: CHANGE USER PASSWORD / PIN                      -->
 <!-- ======================================================== -->
-<div id="modalChangeAdminPassword" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+<div id="modalChangeUserPassword" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-panel-accent max-w-sm w-full rounded-3xl p-6 border border-amber-500/40 shadow-2xl relative text-left">
-        <button type="button" onclick="closeChangeAdminPasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+        <button type="button" onclick="closeChangeUserPasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
 
         <div class="flex items-center gap-3 mb-4">
             <div class="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xl text-amber-300 shrink-0">
                 🔑
             </div>
             <div>
-                <h3 class="text-base font-bold text-white">මුරපදය වෙනස් කිරීම</h3>
-                <span class="text-xs text-slate-300">පරිපාලක (Super Admin) මුරපදය</span>
+                <h3 class="text-base font-bold text-white">මුරපදය / PIN වෙනස් කිරීම</h3>
+                <span class="text-xs text-slate-300" id="changePasswordUserSubtitle">ඔබගේ පිවිසුම් තොරතුරු</span>
             </div>
         </div>
 
-        <form onsubmit="handleChangeAdminPasswordSubmit(event)" class="space-y-3.5">
+        <form onsubmit="handleChangeUserPasswordSubmit(event)" class="space-y-3.5">
             <div>
-                <label class="block text-xs font-semibold text-slate-200 mb-1">වත්මන් මුරපදය (Current Password):</label>
+                <label class="block text-xs font-semibold text-slate-200 mb-1">වත්මන් PIN / මුරපදය (Current PIN):</label>
                 <div class="relative">
-                    <input type="password" id="adminCurrentPassInput" required
+                    <input type="password" id="userCurrentPassInput" required
                            class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3.5 py-2.5 pr-10 text-xs sm:text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-amber-500">
-                    <button type="button" onclick="togglePasswordVisibility('adminCurrentPassInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">👁️</button>
+                    <button type="button" onclick="togglePasswordVisibility('userCurrentPassInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">👁️</button>
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-200 mb-1">නව සංකීර්ණ මුරපදය (New Password):</label>
+                <label class="block text-xs font-semibold text-slate-200 mb-1">නව PIN / මුරපදය (New PIN):</label>
                 <div class="relative">
-                    <input type="password" id="adminNewPassInput" minlength="6" required placeholder="අවම අකුරු 6ක් හෝ වැඩි"
+                    <input type="password" id="userNewPassInput" minlength="4" required placeholder="අවම අකුරු/ඉලක්කම් 4ක් හෝ වැඩි"
                            class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3.5 py-2.5 pr-10 text-xs sm:text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-amber-500">
-                    <button type="button" onclick="togglePasswordVisibility('adminNewPassInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">👁️</button>
+                    <button type="button" onclick="togglePasswordVisibility('userNewPassInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">👁️</button>
                 </div>
-                <span class="text-[10px] text-slate-400 mt-1 block">ඉලක්කම්, අකුරු සහ සංකේත භාවිත කිරීම වඩාත් ආරක්ෂිතය.</span>
+                <span class="text-[10px] text-slate-400 mt-1 block" id="userNewPassHelpText">ඔබට මතක තබාගත හැකි නව PIN අංකයක් හෝ මුරපදයක් ඇතුළත් කරන්න.</span>
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-200 mb-1">නව මුරපදය නැවත තහවුරු කරන්න (Confirm New):</label>
+                <label class="block text-xs font-semibold text-slate-200 mb-1">නව PIN අංකය නැවත තහවුරු කරන්න (Confirm New):</label>
                 <div class="relative">
-                    <input type="password" id="adminConfirmPassInput" minlength="6" required
+                    <input type="password" id="userConfirmPassInput" minlength="4" required
                            class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3.5 py-2.5 pr-10 text-xs sm:text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-amber-500">
-                    <button type="button" onclick="togglePasswordVisibility('adminConfirmPassInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">👁️</button>
+                    <button type="button" onclick="togglePasswordVisibility('userConfirmPassInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">👁️</button>
                 </div>
             </div>
 
-            <div id="changeAdminPassErrorMsg" class="text-xs text-red-400 font-medium hidden"></div>
+            <div id="changeUserPassErrorMsg" class="text-xs text-red-400 font-medium hidden"></div>
 
             <div class="grid grid-cols-2 gap-2 pt-2">
-                <button type="button" onclick="closeChangeAdminPasswordModal()"
+                <button type="button" onclick="closeChangeUserPasswordModal()"
                         class="py-2.5 px-4 rounded-xl bg-subCard hover:bg-subCardHover text-slate-300 text-xs font-bold border border-white/10 transition">
                     අවලංගු කරන්න
                 </button>
-                <button type="submit" id="btnSubmitChangeAdminPass"
+                <button type="submit" id="btnSubmitChangeUserPass"
                         class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-extrabold shadow-amber-soft transition flex items-center justify-center gap-1.5 active:scale-95">
                     <span>සුරකින්න (Update)</span>
                 </button>
@@ -2031,6 +2037,7 @@
         const adminTabBtn = document.getElementById('tabBtnAdmin');
         const tabContainer = document.getElementById('mainTabContainer');
         const superAdminBtns = document.getElementById('superAdminActionButtons');
+        const userPassBtn = document.getElementById('btnUserChangePassword');
 
         const canAccessAdmin = window.hasAdminAccess();
         const isSuper = window.isSuperAdmin();
@@ -2064,6 +2071,7 @@
         }
 
         if (state.currentUser) {
+            if (userPassBtn) userPassBtn.classList.remove('hidden');
             let roleBadge = '👤 සාමාජික';
             let subTitle = `සාමාජික අංකය: ${state.currentUser.id} • අද දිනය: ${state.todayDateStr}`;
 
@@ -2080,6 +2088,7 @@
             authBtn.innerHTML = `<span>🚪 ඉවත් වන්න (${state.currentUser.id})</span>`;
             authBtn.className = "px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 text-xs font-semibold transition active:scale-95";
         } else {
+            if (userPassBtn) userPassBtn.classList.add('hidden');
             greeting.innerText = "සාදරයෙන් පිළිගනිමු!";
             sub.innerText = "වාර්තා ඇතුළත් කිරීමට කරුණාකර පිවිසෙන්න";
             authBtn.innerHTML = `<span>🔐 පිවිසෙන්න (Login)</span>`;
@@ -3824,40 +3833,72 @@
         }
     };
 
-    // Change Admin Password Modal Handlers
-    window.openChangeAdminPasswordModal = function() {
-        if (!window.isSuperAdmin()) {
-            showToast("මුරපදය වෙනස් කිරීමට ප්‍රධාන පරිපාලක (Super Admin) ලෙස පිවිසෙන්න");
-            window.openAuthModal('ADMIN');
+    // ========================================================
+    // UNIVERSAL PASSWORD / PIN CHANGE HANDLERS (ALL USERS)
+    // ========================================================
+    window.openChangeUserPasswordModal = function() {
+        if (!state.currentUser) {
+            showToast("මුරපදය / PIN වෙනස් කිරීමට කරුණාකර පළමුව පිවිසෙන්න");
+            window.openAuthModal();
             return;
         }
-        const curEl = document.getElementById('adminCurrentPassInput');
-        const newEl = document.getElementById('adminNewPassInput');
-        const confEl = document.getElementById('adminConfirmPassInput');
-        const errEl = document.getElementById('changeAdminPassErrorMsg');
+
+        const isSuper = window.isSuperAdmin();
+        const subtitleEl = document.getElementById('changePasswordUserSubtitle');
+        const helpTextEl = document.getElementById('userNewPassHelpText');
+        const newPassInput = document.getElementById('userNewPassInput');
+        const confPassInput = document.getElementById('userConfirmPassInput');
+        const curEl = document.getElementById('userCurrentPassInput');
+        const errEl = document.getElementById('changeUserPassErrorMsg');
+
+        if (subtitleEl) {
+            subtitleEl.innerText = isSuper 
+                ? 'ප්‍රධාන පරිපාලක (Super Admin) මුරපදය'
+                : `${state.currentUser.name} (${state.currentUser.id}) • සාමාජික ගිණුම`;
+        }
+
+        const minLen = isSuper ? 6 : 4;
+        if (newPassInput) {
+            newPassInput.value = '';
+            newPassInput.minLength = minLen;
+            newPassInput.placeholder = isSuper ? 'අවම අකුරු 6ක් හෝ වැඩි' : 'අවම අකුරු/ඉලක්කම් 4ක් හෝ වැඩි';
+        }
+        if (confPassInput) {
+            confPassInput.value = '';
+            confPassInput.minLength = minLen;
+        }
+        if (helpTextEl) {
+            helpTextEl.innerText = isSuper
+                ? 'ඉලක්කම්, අකුරු සහ සංකේත භාවිත කිරීම වඩාත් ආරක්ෂිතය (අවම අකුරු 6).'
+                : 'ඔබට මතක තබාගත හැකි නව PIN අංකයක් හෝ මුරපදයක් ඇතුළත් කරන්න (අවම 4).';
+        }
         if (curEl) curEl.value = '';
-        if (newEl) newEl.value = '';
-        if (confEl) confEl.value = '';
         if (errEl) {
             errEl.innerText = '';
             errEl.classList.add('hidden');
         }
-        document.getElementById('modalChangeAdminPassword').classList.remove('hidden');
+
+        const modal = document.getElementById('modalChangeUserPassword');
+        if (modal) modal.classList.remove('hidden');
         setTimeout(() => { if (curEl) curEl.focus(); }, 100);
     };
 
-    window.closeChangeAdminPasswordModal = function() {
-        const modal = document.getElementById('modalChangeAdminPassword');
+    window.closeChangeUserPasswordModal = function() {
+        const modal = document.getElementById('modalChangeUserPassword');
         if (modal) modal.classList.add('hidden');
     };
 
-    window.handleChangeAdminPasswordSubmit = async function(event) {
+    // Backward compatibility aliases
+    window.openChangeAdminPasswordModal = window.openChangeUserPasswordModal;
+    window.closeChangeAdminPasswordModal = window.closeChangeUserPasswordModal;
+
+    window.handleChangeUserPasswordSubmit = async function(event) {
         event.preventDefault();
-        const curPass = document.getElementById('adminCurrentPassInput').value.trim();
-        const newPass = document.getElementById('adminNewPassInput').value.trim();
-        const confPass = document.getElementById('adminConfirmPassInput').value.trim();
-        const errEl = document.getElementById('changeAdminPassErrorMsg');
-        const btn = document.getElementById('btnSubmitChangeAdminPass');
+        const curPass = document.getElementById('userCurrentPassInput').value.trim();
+        const newPass = document.getElementById('userNewPassInput').value.trim();
+        const confPass = document.getElementById('userConfirmPassInput').value.trim();
+        const errEl = document.getElementById('changeUserPassErrorMsg');
+        const btn = document.getElementById('btnSubmitChangeUserPass');
 
         const showError = (msg) => {
             if (errEl) {
@@ -3866,18 +3907,21 @@
             }
         };
 
-        if (!window.isSuperAdmin()) {
-            showError("ප්‍රධාන පරිපාලක (Super Admin) සැසිය කල් ඉකුත්වී ඇත. කරුණාකර නැවත පිවිසෙන්න.");
+        if (!state.currentUser) {
+            showError("ඔබ පද්ධතියට පිවිස නොමැත. කරුණාකර නැවත පිවිසෙන්න.");
             return;
         }
+
+        const isSuper = window.isSuperAdmin();
+        const minLen = isSuper ? 6 : 4;
 
         if (curPass !== state.currentUser.pin) {
-            showError("❌ වත්මන් මුරපදය වැරදියි!");
+            showError("❌ වත්මන් PIN / මුරපදය වැරදියි!");
             return;
         }
 
-        if (newPass.length < 6) {
-            showError("❌ නව මුරපදය සඳහා අවම වශයෙන් අකුරු 6ක්වත් ඇතුළත් කරන්න.");
+        if (newPass.length < minLen) {
+            showError(`❌ නව මුරපදය / PIN සඳහා අවම වශයෙන් අකුරු හෝ ඉලක්කම් ${minLen}ක්වත් ඇතුළත් කරන්න.`);
             return;
         }
 
@@ -3890,30 +3934,36 @@
         btn.innerHTML = `<span>⏳ යාවත්කාලීන කරමින්...</span>`;
 
         try {
-            const adminRef = doc(db, 'members', 'ADMIN');
-            await setDoc(adminRef, {
-                id: 'ADMIN',
-                name: state.currentUser.name || 'ප්‍රධාන පරිපාලක (Super Admin)',
+            const userRef = doc(db, 'members', state.currentUser.id);
+            await setDoc(userRef, {
                 pin: newPass,
-                role: 'admin',
-                isActive: true,
                 updatedAt: serverTimestamp()
             }, { merge: true });
 
             state.currentUser.pin = newPass;
+
             const savedStr = localStorage.getItem('adhishtana_auth_user');
             if (savedStr) {
                 try {
                     const parsed = JSON.parse(savedStr);
-                    if (parsed.id === 'ADMIN') {
+                    if (parsed.id === state.currentUser.id) {
                         parsed.pin = newPass;
                         localStorage.setItem('adhishtana_auth_user', JSON.stringify(parsed));
                     }
                 } catch (e) {}
             }
 
-            closeChangeAdminPasswordModal();
-            showToast("🔑 පරිපාලක මුරපදය සාර්ථකව වෙනස් කරන ලදී!");
+            const mem = (state.membersCache || []).find(m => m.id === state.currentUser.id);
+            if (mem) {
+                mem.pin = newPass;
+                localStorage.setItem('adhishtana_members_cache', JSON.stringify(state.membersCache));
+                if (typeof renderManagementMemberList === 'function') {
+                    renderManagementMemberList();
+                }
+            }
+
+            closeChangeUserPasswordModal();
+            showToast("🔑 ඔබගේ මුරපදය / PIN අංකය සාර්ථකව වෙනස් කරන ලදී!");
         } catch (err) {
             console.error("Change Password Error:", err);
             showError("මුරපදය යාවත්කාලීන කිරීමේදී දෝෂයක් ඇතිවිය. කරුණාකර නැවත උත්සාහ කරන්න.");

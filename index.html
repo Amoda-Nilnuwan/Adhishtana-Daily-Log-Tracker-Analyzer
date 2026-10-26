@@ -2562,7 +2562,7 @@
         const extraCount = genState.extraCount;
 
         const dateVal = state.selectedLogDate || state.todayDateStr;
-        let output = `📅 ${dateVal}\n1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n2) දහවල: ${noonPattern}\n3) රාත්‍රිය: ${nightPattern}\n4) අමතර: ${extraCount}`;
+        let output = `📌 ${dateVal}\n1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n2) දහවල: ${noonPattern}\n3) රාත්‍රිය: ${nightPattern}\n4) අමතර: ${extraCount}`;
 
         const chkScoreEl = document.getElementById('chkIncludeScore');
         const includeScore = chkScoreEl ? chkScoreEl.checked : true;
@@ -2852,9 +2852,9 @@
             const extraCount = log.extraCount || 0;
             const total = log.grandTotal !== undefined ? (Number.isInteger(log.grandTotal) ? log.grandTotal : Number(log.grandTotal).toFixed(1)) : '0';
 
-            text = `📅 ${selectedDate}\n${member.id} - ${member.name || member.id}${member.groupName ? ` (${member.groupName})` : ''}\n\n1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n2) දහවල: ${noonPattern}\n3) රාත්‍රිය: ${nightPattern}\n4) අමතර: ${extraCount}\n\n🔹 මුළු ලකුණු: ${total}`;
+            text = `📌 ${selectedDate}\n${member.id} - ${member.name || member.id}${member.groupName ? ` (${member.groupName})` : ''}\n\n1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n2) දහවල: ${noonPattern}\n3) රාත්‍රිය: ${nightPattern}\n4) අමතර: ${extraCount}\n\n🔹 මුළු ලකුණු: ${total}`;
         } else {
-            text = `📅 ${selectedDate}\n${member.id} - ${member.name || member.id}${member.groupName ? ` (${member.groupName})` : ''}\n\n⏳ මෙම සාමාජිකයා විසින් ${selectedDate} දින සඳහා වාර්තාවක් මෙතෙක් ඇතුළත් කර නොමැත.`;
+            text = `📌 ${selectedDate}\n${member.id} - ${member.name || member.id}${member.groupName ? ` (${member.groupName})` : ''}\n\n⏳ මෙම සාමාජිකයා විසින් ${selectedDate} දින සඳහා වාර්තාවක් මෙතෙක් ඇතුළත් කර නොමැත.`;
         }
 
         const title = `දෛනික සාමාජික වාර්තාව - ${member.name || member.id}`;
@@ -2894,7 +2894,7 @@
         }, 0);
         const avgScore = submittedMembers.length > 0 ? (totalScore / submittedMembers.length).toFixed(1) : '0.0';
 
-        let text = `========================================\n📋 අධිෂ්ඨාන දෛනික වාර්තාව - ${targetGroupName}\n📅 දිනය: ${selectedDate}\n📊 සහභාගීත්වය: ${submittedMembers.length}/${targetMembers.length} | සාමාන්‍ය ලකුණු: ${avgScore}\n========================================\n\n`;
+        let text = `========================================\n📋 අධිෂ්ඨාන දෛනික වාර්තාව - ${targetGroupName}\n📌 දිනය: ${selectedDate}\n📊 සහභාගීත්වය: ${submittedMembers.length}/${targetMembers.length} | සාමාන්‍ය ලකුණු: ${avgScore}\n========================================\n\n`;
 
         if (submittedMembers.length === 0) {
             text += `මෙම කණ්ඩායමේ කිසිදු සාමාජිකයෙකු අද දින වාර්තාවක් මෙතෙක් සටහන් කර නොමැත.\n`;
@@ -4386,9 +4386,9 @@
             const extraCount = log.extraCount || 0;
             const total = log.grandTotal !== undefined ? (Number.isInteger(log.grandTotal) ? log.grandTotal : Number(log.grandTotal).toFixed(1)) : '0';
 
-            text = `📅 ${dateStr}\n${member.id} - ${member.name || member.id}${member.groupName ? ` (${member.groupName})` : ''}\n\n1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n2) දහවල: ${noonPattern}\n3) රාත්‍රිය: ${nightPattern}\n4) අමතර: ${extraCount}\n\n🔹 මුළු ලකුණු: ${total}`;
+            text = `📌 ${dateStr}\n${member.id} - ${member.name || member.id}${member.groupName ? ` (${member.groupName})` : ''}\n\n1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n2) දහවල: ${noonPattern}\n3) රාත්‍රිය: ${nightPattern}\n4) අමතර: ${extraCount}\n\n🔹 මුළු ලකුණු: ${total}`;
         } else {
-            text = `📅 ${dateStr}\n${member.id} - ${member.name || member.id}\n\n⏳ මෙම දිනය සඳහා වාර්තාවක් හමුනොවිණි.`;
+            text = `📌 ${dateStr}\n${member.id} - ${member.name || member.id}\n\n⏳ මෙම දිනය සඳහා වාර්තාවක් හමුනොවිණි.`;
         }
 
         const title = `දෛනික වාර්තාව - ${member.name || member.id}`;
@@ -4434,7 +4434,7 @@
             const sortedLogs = [...logs].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
             const modeLabel = mode === 'by_date' ? 'දිනය අනුව' : 'සාමාජිකයා අනුව';
 
-            let text = `========================================\n📋 අධිෂ්ඨාන දින පරාස වාර්තාව (${modeLabel})\n👤 සාමාජිකයා: ${memberObj.id} - ${memberObj.name || memberObj.id}\n🏷️ කණ්ඩායම: ${groupName}\n📅 දින පරාසය: ${fromDate} සිට ${toDate} දක්වා\n📊 සම්පූර්ණ වාර්තා: ${logs.length} | සාමාන්‍ය ලකුණු: ${avgScore}\n========================================\n\n`;
+            let text = `========================================\n📋 අධිෂ්ඨාන දින පරාස වාර්තාව (${modeLabel})\n👤 සාමාජිකයා: ${memberObj.id} - ${memberObj.name || memberObj.id}\n🏷️ කණ්ඩායම: ${groupName}\n📌 දින පරාසය: ${fromDate} සිට ${toDate} දක්වා\n📊 සම්පූර්ණ වාර්තා: ${logs.length} | සාමාන්‍ය ලකුණු: ${avgScore}\n========================================\n\n`;
 
             sortedLogs.forEach((log, idx) => {
                 const timeVal = window.formatTo12HourTime(log.wakeTime || '05:00');
@@ -4447,7 +4447,7 @@
                 const extraCount = log.extraCount || 0;
                 const total = log.grandTotal !== undefined ? (Number.isInteger(log.grandTotal) ? log.grandTotal : Number(log.grandTotal).toFixed(1)) : '0';
 
-                text += `🗓️ ${log.date} (ලකුණු: ${total})\n`;
+                text += `📌 ${log.date} (ලකුණු: ${total})\n`;
                 text += `1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n`;
                 text += `2) දහවල: ${noonPattern}\n`;
                 text += `3) රාත්‍රිය: ${nightPattern}\n`;
@@ -4492,14 +4492,14 @@
 
             const sortedDates = Array.from(dateLogsMap.keys()).sort();
 
-            let text = `========================================\n📋 අධිෂ්ඨාන දින පරාස වාර්තාව (දිනය අනුව) - ${groupTitle}\n📅 දින පරාසය: ${fromDate} සිට ${toDate} දක්වා\n📊 සහභාගීත්වය: ${uniqueMembers} සාමාජිකයින් | වාර්තා එකතුව: ${logs.length} | සාමාන්‍ය ලකුණු: ${avgScore}\n========================================\n\n`;
+            let text = `========================================\n📋 අධිෂ්ඨාන දින පරාස වාර්තාව (දිනය අනුව) - ${groupTitle}\n📌 දින පරාසය: ${fromDate} සිට ${toDate} දක්වා\n📊 සහභාගීත්වය: ${uniqueMembers} සාමාජිකයින් | වාර්තා එකතුව: ${logs.length} | සාමාන්‍ය ලකුණු: ${avgScore}\n========================================\n\n`;
 
             sortedDates.forEach((dateStr, dIdx) => {
                 const dLogs = dateLogsMap.get(dateStr) || [];
                 const dTotal = dLogs.reduce((s, l) => s + (Number(l.grandTotal) || 0), 0);
                 const dAvg = dLogs.length > 0 ? (dTotal / dLogs.length).toFixed(1) : '0';
 
-                text += `🗓️ දිනය: ${dateStr} (වාර්තා: ${dLogs.length}, සාමාන්‍යය: ${dAvg})\n`;
+                text += `📌 දිනය: ${dateStr} (වාර්තා: ${dLogs.length}, සාමාන්‍යය: ${dAvg})\n`;
                 text += `----------------------------------------\n\n`;
 
                 const sortedDLogs = [...dLogs].sort((a, b) =>
@@ -4551,7 +4551,7 @@
             memberLogsMap.get(l.memberId).push(l);
         });
 
-        let text = `========================================\n📋 අධිෂ්ඨාන දින පරාස වාර්තාව (සාමාජිකයා අනුව) - ${groupTitle}\n📅 දින පරාසය: ${fromDate} සිට ${toDate} දක්වා\n📊 සහභාගීත්වය: ${uniqueMembers} සාමාජිකයින් | වාර්තා එකතුව: ${logs.length} | සාමාන්‍ය ලකුණු: ${avgScore}\n========================================\n\n`;
+        let text = `========================================\n📋 අධිෂ්ඨාන දින පරාස වාර්තාව (සාමාජිකයා අනුව) - ${groupTitle}\n📌 දින පරාසය: ${fromDate} සිට ${toDate} දක්වා\n📊 සහභාගීත්වය: ${uniqueMembers} සාමාජිකයින් | වාර්තා එකතුව: ${logs.length} | සාමාන්‍ය ලකුණු: ${avgScore}\n========================================\n\n`;
 
         const memberEntries = Array.from(memberLogsMap.entries()).sort((a, b) =>
             a[0].localeCompare(b[0], undefined, { numeric: true })
@@ -4579,7 +4579,7 @@
                 const extra = l.extraCount || 0;
                 const score = l.grandTotal !== undefined ? (Number.isInteger(l.grandTotal) ? l.grandTotal : Number(l.grandTotal).toFixed(1)) : '0';
 
-                text += `🗓️ ${l.date} (ලකුණු: ${score})\n`;
+                text += `📌 ${l.date} (ලකුණු: ${score})\n`;
                 text += `1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n`;
                 text += `2) දහවල: ${noon}\n`;
                 text += `3) රාත්‍රිය: ${night}\n`;

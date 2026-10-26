@@ -659,47 +659,69 @@
         </div>
 
         <!-- Quick Actions & Filter Row -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl glass-panel border border-white/10 text-xs">
-            <!-- Filter Pills -->
-            <div class="flex items-center gap-1.5 w-full sm:w-auto">
-                <button type="button" onclick="setAdminFilter('all')" id="btnFilterAll"
-                        class="px-3 py-1.5 rounded-xl font-bold bg-amber-500/20 text-amber-200 border border-amber-500/40">
-                    සියල්ල (<span id="countFilterAll">0</span>)
-                </button>
-                <button type="button" onclick="setAdminFilter('submitted')" id="btnFilterSubmitted"
-                        class="px-3 py-1.5 rounded-xl font-bold text-slate-400 hover:text-white border border-transparent">
-                    එවූ (<span id="countFilterSubmitted">0</span>)
-                </button>
-                <button type="button" onclick="setAdminFilter('pending')" id="btnFilterPending"
-                        class="px-3 py-1.5 rounded-xl font-bold text-slate-400 hover:text-white border border-transparent">
-                    නොඑවූ (<span id="countFilterPending">0</span>)
-                </button>
+        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-3 rounded-2xl glass-panel border border-white/10 text-xs">
+            <!-- Filter Pills & Group Filter -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="setAdminFilter('all')" id="btnFilterAll"
+                            class="px-3 py-1.5 rounded-xl font-bold bg-amber-500/20 text-amber-200 border border-amber-500/40">
+                        සියල්ල (<span id="countFilterAll">0</span>)
+                    </button>
+                    <button type="button" onclick="setAdminFilter('submitted')" id="btnFilterSubmitted"
+                            class="px-3 py-1.5 rounded-xl font-bold text-slate-400 hover:text-white border border-transparent">
+                        එවූ (<span id="countFilterSubmitted">0</span>)
+                    </button>
+                    <button type="button" onclick="setAdminFilter('pending')" id="btnFilterPending"
+                            class="px-3 py-1.5 rounded-xl font-bold text-slate-400 hover:text-white border border-transparent">
+                        නොඑවූ (<span id="countFilterPending">0</span>)
+                    </button>
+                </div>
+
+                <!-- Group Filter Dropdown -->
+                <div class="flex items-center gap-1.5 bg-black/40 px-2.5 py-1.5 rounded-xl border border-white/10">
+                    <label for="adminRosterGroupFilter" class="text-slate-400 font-semibold text-[11px] whitespace-nowrap">කණ්ඩායම:</label>
+                    <select id="adminRosterGroupFilter" onchange="handleAdminRosterGroupFilterChange()"
+                            class="bg-transparent text-amber-300 font-bold focus:outline-none text-xs cursor-pointer">
+                        <option value="all" class="bg-[#111522] text-white">සියලු කණ්ඩායම්</option>
+                    </select>
+                </div>
             </div>
 
-            <!-- WhatsApp Pending Reminder Generator -->
-            <button type="button" onclick="copyPendingWhatsAppMessage()"
-                    class="w-full sm:w-auto px-4 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/35 font-bold transition flex items-center justify-center gap-2 active:scale-95 shadow-sm">
-                <span>💬 නොඑවූ පිරිස WhatsApp පණිවිඩයක් ලෙස පිටපත් කරන්න</span>
-            </button>
+            <!-- Group Text Export & WhatsApp Reminder Actions -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <button type="button" onclick="exportGroupRosterText()"
+                        class="px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 font-bold transition flex items-center justify-center gap-1.5 active:scale-95 shadow-sm whitespace-nowrap">
+                    <span>📋 කණ්ඩායම් Text වාර්තාව</span>
+                </button>
+                <button type="button" onclick="copyPendingWhatsAppMessage()"
+                        class="px-3.5 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/35 font-bold transition flex items-center justify-center gap-1.5 active:scale-95 shadow-sm whitespace-nowrap">
+                    <span>💬 නොඑවූ පිරිස (WhatsApp)</span>
+                </button>
+            </div>
         </div>
 
         <!-- Roster Submissions Table -->
         <section class="glass-panel rounded-3xl p-4 sm:p-6 shadow-xl overflow-hidden">
-            <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-white/10 mb-4 gap-3">
                 <h3 class="text-base font-bold text-white flex items-center gap-2">
                     <span>සාමාජික වාර්තා ලැයිස්තුව</span>
                     <span id="adminTableShowingCount" class="text-xs px-2 py-0.5 rounded-lg bg-black/40 text-slate-300 font-mono">0 පෙන්වයි</span>
                 </h3>
 
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="openChangeAdminPasswordModal()"
-                            class="px-3 py-1.5 rounded-xl bg-subCard hover:bg-subCardHover text-amber-300 border border-amber-500/30 text-xs font-bold transition flex items-center gap-1"
-                            title="පරිපාලක මුරපදය වෙනස් කරන්න">
-                        🔑 මුරපදය වෙනස් කරන්න
+                <div id="superAdminActionButtons" class="flex items-center gap-2 flex-wrap">
+                    <button type="button" onclick="openGroupManagementModal()"
+                            class="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-bold transition flex items-center gap-1"
+                            title="කණ්ඩායම් කළමනාකරණය">
+                        🏷️ කණ්ඩායම්
                     </button>
                     <button type="button" onclick="openMemberManagementModal()"
                             class="px-3 py-1.5 rounded-xl bg-subCard hover:bg-subCardHover text-amber-300 border border-amber-500/30 text-xs font-bold transition flex items-center gap-1">
                         👥 සාමාජික කළමනාකරණය
+                    </button>
+                    <button type="button" onclick="openChangeAdminPasswordModal()"
+                            class="px-3 py-1.5 rounded-xl bg-subCard hover:bg-subCardHover text-amber-300 border border-amber-500/30 text-xs font-bold transition flex items-center gap-1"
+                            title="පරිපාලක මුරපදය වෙනස් කරන්න">
+                        🔑 මුරපදය වෙනස් කරන්න
                     </button>
                 </div>
             </div>
@@ -771,6 +793,16 @@
                             class="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition flex items-center gap-1.5 active:scale-95">
                         📥 පරාසය CSV බාගන්න
                     </button>
+                    <button type="button" onclick="exportDateRangeTextSummary('by_member')"
+                            class="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 text-xs font-bold transition flex items-center gap-1.5 active:scale-95 shadow-sm"
+                            title="සාමාජිකයා අනුව කාණ්ඩ කළ Text වාර්තාව">
+                        👤 සාමාජිකයා අනුව Text
+                    </button>
+                    <button type="button" onclick="exportDateRangeTextSummary('by_date')"
+                            class="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 text-xs font-bold transition flex items-center gap-1.5 active:scale-95 shadow-sm"
+                            title="දිනය අනුව කාණ්ඩ කළ Text වාර්තාව">
+                        🗓️ දිනය අනුව Text
+                    </button>
                 </div>
             </section>
 
@@ -787,6 +819,15 @@
                         <label for="dateRangeTo" class="text-slate-400 font-semibold">දක්වා (To):</label>
                         <input type="date" id="dateRangeTo" onchange="loadDateRangeData()"
                                class="bg-transparent text-amber-300 font-mono font-bold focus:outline-none text-xs sm:text-sm">
+                    </div>
+
+                    <!-- Group Filter Dropdown -->
+                    <div class="flex items-center gap-2 bg-black/40 px-3 py-2 rounded-xl border border-white/10">
+                        <label for="dateRangeGroupFilter" class="text-slate-400 font-semibold">කණ්ඩායම:</label>
+                        <select id="dateRangeGroupFilter" onchange="handleDateRangeGroupFilterChange()"
+                                class="bg-transparent text-amber-300 font-bold focus:outline-none text-xs sm:text-sm cursor-pointer">
+                            <option value="all" class="bg-[#111522] text-white">සියලු කණ්ඩායම්</option>
+                        </select>
                     </div>
 
                     <!-- Member Filter Dropdown -->
@@ -881,11 +922,12 @@
                                 <th class="py-3 px-3 text-center">අමතර</th>
                                 <th class="py-3 px-3 text-right">මුළු ලකුණු</th>
                                 <th class="py-3 px-3 text-center">සටහන් කළ වේලාව</th>
+                                <th class="py-3 px-3 text-center">ක්‍රියා</th>
                             </tr>
                         </thead>
                         <tbody id="dateRangeTableBody" class="divide-y divide-white/5">
                             <tr>
-                                <td colspan="9" class="py-8 text-center text-slate-500">
+                                <td colspan="10" class="py-8 text-center text-slate-500">
                                     දින පරාසයක් තෝරා 'වාර්තා සොයන්න' ඔබන්න.
                                 </td>
                             </tr>
@@ -1322,18 +1364,42 @@
             </div>
         </div>
 
-        <!-- Add New Member Form -->
-        <form onsubmit="handleAddNewMember(event)" class="space-y-3 bg-subCard/80 p-4 rounded-2xl border border-white/5 mb-5">
-            <h4 class="text-xs font-bold text-amber-300 uppercase tracking-wide">නව සාමාජිකයෙකු එක් කරන්න</h4>
+        <!-- Add / Edit Member Form -->
+        <form onsubmit="handleAddNewMember(event)" class="space-y-3 bg-subCard/80 p-4 rounded-2xl border border-white/5 mb-5 relative">
+            <div class="flex items-center justify-between pb-1 border-b border-white/5">
+                <h4 id="memberFormTitle" class="text-xs font-bold text-amber-300 uppercase tracking-wide flex items-center gap-1.5">
+                    <span id="memberFormModeIcon">➕</span>
+                    <span id="memberFormModeText">නව සාමාජිකයෙකු එක් කරන්න</span>
+                </h4>
+                <button type="button" id="btnCancelEditMember" onclick="resetMemberFormToAddMode()"
+                        class="text-[11px] text-amber-400 hover:text-white hidden px-2 py-0.5 rounded-lg bg-amber-500/10 border border-amber-500/20 transition active:scale-95 font-medium">
+                    ✕ අවලංගු කරන්න (Cancel)
+                </button>
+            </div>
+
+            <!-- Quick Member Selector for Instant Autofill -->
+            <div>
+                <label class="block text-[11px] text-slate-300 font-medium mb-1 flex items-center justify-between">
+                    <span>⚡ සංස්කරණය සඳහා සාමාජිකයෙකු තෝරන්න (Auto-fill):</span>
+                    <span class="text-[10px] text-slate-500 font-mono">ඉක්මන් තේරීම</span>
+                </label>
+                <select id="quickSelectMemberEdit" onchange="handleQuickSelectMemberEdit(this.value)"
+                        class="w-full bg-[#080B12] border border-amber-500/30 focus:border-amber-500 rounded-xl px-3 py-1.5 text-xs text-amber-200 focus:outline-none">
+                    <option value="">-- නව සාමාජිකයෙකු ඇතුළත් කිරීම (New Member) --</option>
+                </select>
+            </div>
+
             <div class="grid grid-cols-2 gap-2">
                 <div>
-                    <label class="block text-[11px] text-slate-400 mb-0.5">සාමාජික ID</label>
+                    <label class="block text-[11px] text-slate-400 mb-0.5">
+                        සාමාජික ID <span id="memberIdEditNotice" class="text-[10px] text-amber-400 font-mono hidden ml-1">🔒(ස්ථාවරයි)</span>
+                    </label>
                     <input type="text" id="newMemberId" placeholder="AD-01" required
                            class="w-full bg-[#080B12] border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white uppercase font-mono">
                 </div>
                 <div>
                     <label class="block text-[11px] text-slate-400 mb-0.5">රහස් අංකය (PIN)</label>
-                    <input type="text" id="newMemberPin" placeholder="1234" required maxlength="6"
+                    <input type="text" id="newMemberPin" placeholder="1234" required maxlength="10"
                            class="w-full bg-[#080B12] border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white font-mono text-center">
                 </div>
             </div>
@@ -1342,10 +1408,26 @@
                 <input type="text" id="newMemberName" placeholder="නම සඳහන් කරන්න" required
                        class="w-full bg-[#080B12] border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
             </div>
+            <div>
+                <label class="block text-[11px] text-slate-400 mb-0.5">කණ්ඩායම (Group)</label>
+                <select id="newMemberGroup" class="w-full bg-[#080B12] border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-amber-300">
+                    <option value="">(කණ්ඩායමක් නැත - Unassigned)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[11px] text-slate-400 mb-0.5">පද්ධති අවසර / කාර්යභාරය (System Role / Access)</label>
+                <select id="newMemberRole" class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3 py-1.5 text-xs text-amber-300 font-semibold focus:outline-none">
+                    <option value="member">👤 සාමාන්‍ය සාමාජික (Normal Member)</option>
+                    <option value="team_admin">🛡️ කණ්ඩායම් පරිපාලක (Team Admin - View & Export only)</option>
+                </select>
+                <span class="text-[10px] text-slate-400 mt-1 block leading-tight">
+                    * කණ්ඩායම් පරිපාලකයින්ට සාමාන්‍ය සාමාජිකයෙකු ලෙස දෛනික වාර්තා ඇතුළත් කළ හැකි අතර පරිපාලන පාලක පුවරුව (Roster, Date Range, Analytics, Export) පමණක් පරිශීලනය කළ හැක (සාමාජිකයින්/කණ්ඩායම් Add/Edit/Delete අවසර නැත).
+                </span>
+            </div>
 
-            <button type="submit"
-                    class="w-full py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 rounded-xl text-xs font-bold transition">
-                + සාමාජිකයා ලියාපදිංචි කරන්න
+            <button type="submit" id="btnSubmitMemberForm"
+                    class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 rounded-xl text-xs font-extrabold shadow-amber-soft transition flex items-center justify-center gap-1.5 active:scale-95">
+                <span id="btnSubmitMemberFormText">➕ සාමාජිකයා ලියාපදිංචි කරන්න</span>
             </button>
         </form>
 
@@ -1504,6 +1586,149 @@
     </div>
 </div>
 
+<!-- ======================================================== -->
+<!-- MODAL 6: GROUP MANAGEMENT MODAL                          -->
+<!-- ======================================================== -->
+<div id="modalGroupMgmt" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="glass-panel-accent max-w-xl w-full rounded-3xl p-5 sm:p-6 border border-amber-500/40 shadow-2xl relative text-left max-h-[90vh] flex flex-col">
+        <button type="button" onclick="closeGroupManagementModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+        <!-- Header -->
+        <div class="flex items-center gap-3 mb-4 shrink-0">
+            <div class="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xl text-amber-300 shrink-0">
+                🏷️
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-white">කණ්ඩායම් කළමනාකරණය (Group Management)</h3>
+                <span class="text-xs text-slate-300">කණ්ඩායම් සාදන්න, සංස්කරණය කරන්න සහ සාමාජිකයින් පවරන්න</span>
+            </div>
+        </div>
+
+        <!-- Scrollable Body -->
+        <div class="overflow-y-auto space-y-5 pr-1 flex-1">
+            <!-- Add New Group Form -->
+            <div class="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-3">
+                <div class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>➕</span> නව කණ්ඩායමක් එකතු කිරීම
+                </div>
+                <form onsubmit="handleCreateGroup(event)" class="space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">කණ්ඩායම් අංකය (ID):</label>
+                            <input type="text" id="newGroupIdInput" required placeholder="උදා: GRP-01"
+                                   class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white uppercase font-mono focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">කණ්ඩායම් නම (Group Name):</label>
+                            <input type="text" id="newGroupNameInput" required placeholder="උදා: කණ්ඩායම 01"
+                                   class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                        </div>
+                    </div>
+                    <div id="createGroupErrorMsg" class="text-xs text-red-400 font-medium hidden"></div>
+                    <button type="submit" id="btnCreateGroup"
+                            class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-extrabold shadow-amber-soft transition flex items-center justify-center gap-1.5 active:scale-95">
+                        <span>➕ කණ්ඩායම සුරකින්න</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Existing Groups List -->
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-slate-200">පවතින කණ්ඩායම් ලැයිස්තුව:</span>
+                    <span id="groupMgmtCountBadge" class="text-[11px] font-mono text-amber-400/90 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">0 කණ්ඩායම්</span>
+                </div>
+                <div id="groupMgmtListContainer" class="space-y-2">
+                    <div class="text-center py-4 text-xs text-slate-400">කණ්ඩායම් පූරණය වෙමින් පවතී...</div>
+                </div>
+            </div>
+
+            <!-- Member Group Assignment Section -->
+            <div class="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>👥</span> සාමාජිකයින් කණ්ඩායම්වලට පැවරීම
+                    </span>
+                    <span id="groupAssignmentCountBadge" class="text-[11px] font-mono text-slate-400">0 සාමාජිකයින්</span>
+                </div>
+                <div class="text-[11px] text-slate-300">
+                    එක් එක් සාමාජිකයා අදාළ කණ්ඩායමට පවරා ක්ෂණිකව සුරකින්න:
+                </div>
+                <div id="memberGroupAssignmentList" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    <!-- Dynamic Member Rows with Group Selector -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="pt-3 border-t border-white/10 shrink-0 mt-3 text-right">
+            <button type="button" onclick="closeGroupManagementModal()"
+                    class="py-2 px-5 rounded-xl bg-subCard hover:bg-subCardHover text-slate-300 text-xs font-bold border border-white/10 transition">
+                වසන්න (Close)
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL 7: TEXT EXPORT PREVIEW & DOWNLOAD MODAL            -->
+<!-- ======================================================== -->
+<div id="modalTextExport" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="glass-panel-accent max-w-2xl w-full rounded-3xl p-5 sm:p-6 border border-amber-500/40 shadow-2xl relative text-left max-h-[90vh] flex flex-col">
+        <button type="button" onclick="closeTextExportModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xl text-amber-300 shrink-0">
+                    📄
+                </div>
+                <div>
+                    <h3 id="textExportTitle" class="text-base font-bold text-white">පෙළ වාර්තාව (Text Summary Export)</h3>
+                    <span id="textExportSubtitle" class="text-xs text-slate-300">WhatsApp / Viber හෝ වෙනත් පණිවිඩ සඳහා සූදානම් කළ පෙළ ආකෘතිය</span>
+                </div>
+            </div>
+
+            <!-- Mode Switcher for Date Range (Hidden for single day / single user) -->
+            <div id="textExportModeSwitcher" class="hidden flex items-center gap-1 bg-black/50 p-1 rounded-xl border border-white/10 shrink-0 self-start sm:self-auto">
+                <button type="button" id="btnExportModeMember" onclick="switchDateRangeExportMode('by_member')"
+                        class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 bg-amber-500 text-slate-950">
+                    <span>👤 සාමාජිකයා අනුව</span>
+                </button>
+                <button type="button" id="btnExportModeDate" onclick="switchDateRangeExportMode('by_date')"
+                        class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 text-slate-400 hover:text-white">
+                    <span>🗓️ දිනය අනුව</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="flex-1 overflow-hidden flex flex-col mb-4">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-1.5 px-1">
+                <span>පෙළ පෙරදසුන (Preview):</span>
+                <span id="textExportCharCount" class="font-mono text-[11px] text-amber-400"></span>
+            </div>
+            <pre id="textExportContent" class="w-full flex-1 bg-[#080B12] border border-amber-500/30 rounded-2xl p-4 text-xs font-mono text-amber-100/90 whitespace-pre-wrap overflow-y-auto select-all leading-relaxed"></pre>
+        </div>
+
+        <!-- Actions -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 shrink-0 pt-2 border-t border-white/10">
+            <button type="button" onclick="copyExportedText()"
+                    class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-extrabold shadow-amber-soft transition flex items-center justify-center gap-1.5 active:scale-95">
+                <span>📋 පෙළ පිටපත් කරන්න (Copy)</span>
+            </button>
+            <button type="button" onclick="downloadExportedText()"
+                    class="py-2.5 px-4 rounded-xl bg-subCard hover:bg-subCardHover text-amber-300 text-xs font-bold border border-amber-500/30 hover:border-amber-500/60 transition flex items-center justify-center gap-1.5 active:scale-95">
+                <span>📥 .txt ගොනුව බාගන්න</span>
+            </button>
+            <button type="button" onclick="closeTextExportModal()"
+                    class="py-2.5 px-4 rounded-xl bg-subCard hover:bg-subCardHover text-slate-300 text-xs font-bold border border-white/10 transition">
+                වසන්න (Close)
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Global Toast Notification -->
 <div id="globalToast"
      class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-xl border border-amber-500/40 text-amber-200 px-5 py-3 rounded-2xl shadow-lg flex items-center gap-3 text-xs sm:text-sm z-50 transform transition-all duration-300 opacity-0 pointer-events-none translate-y-3">
@@ -1575,13 +1800,19 @@
         todayDateStr: getTodayDateString(),
         selectedLogDate: getTodayDateString(),
         membersCache: [],
+        groupsCache: [], // [ { id: 'GRP-01', name: 'කණ්ඩායම 01' } ]
         todayLogsMap: new Map(), // memberId -> logDoc
         adminFilter: 'all', // 'all', 'submitted', 'pending'
+        adminRosterGroupFilter: 'all', // 'all', 'unassigned', or groupId
         activeAdminSubTab: 'roster',
         dateRangeData: [],
+        dateRangeGroupFilter: 'all', // 'all', 'unassigned', or groupId
         analyticsData: [],
         analyticsPreset: '7d',
-        pendingDeleteMember: null
+        pendingDeleteMember: null,
+        editingMemberId: null,
+        activeExportText: '',
+        activeExportFilename: 'Adhishtana_Report.txt'
     };
 
     // Generator Form State
@@ -1605,6 +1836,21 @@
     }
 
     // ========================================================
+    // USER ROLES & PERMISSIONS
+    // ========================================================
+    window.isSuperAdmin = function() {
+        return !!(state.currentUser && (state.currentUser.id === 'ADMIN' || (state.currentUser.role === 'admin' && state.currentUser.id === 'ADMIN')));
+    };
+
+    window.isTeamAdmin = function() {
+        return !!(state.currentUser && state.currentUser.role === 'team_admin');
+    };
+
+    window.hasAdminAccess = function() {
+        return window.isSuperAdmin() || window.isTeamAdmin();
+    };
+
+    // ========================================================
     // TAB NAVIGATION
     // ========================================================
     window.switchTab = function(tab) {
@@ -1617,7 +1863,7 @@
         const adminBtn = document.getElementById('tabBtnAdmin');
         const anaBtn = document.getElementById('tabBtnAnalyzer');
 
-        const isAdmin = state.currentUser && state.currentUser.role === 'admin';
+        const canAccessAdmin = window.hasAdminAccess();
 
         const activeClass = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-sm";
         const inactiveClass = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 text-slate-400 hover:text-white border border-transparent";
@@ -1627,7 +1873,7 @@
         anaView.classList.add('hidden');
 
         genBtn.className = inactiveClass;
-        adminBtn.className = inactiveClass + (isAdmin ? '' : ' hidden');
+        adminBtn.className = inactiveClass + (canAccessAdmin ? '' : ' hidden');
         anaBtn.className = inactiveClass;
 
         if (tab === 'generator') {
@@ -1635,8 +1881,8 @@
             genBtn.className = activeClass;
             window.checkSubmissionForSelectedDate();
         } else if (tab === 'admin') {
-            // Require Admin verification - hide and redirect if not admin
-            if (!isAdmin) {
+            // Require Admin verification - hide and redirect if not permitted
+            if (!canAccessAdmin) {
                 window.switchTab('generator');
                 return;
             }
@@ -1784,11 +2030,23 @@
         const authBtn = document.getElementById('btnAuthAction');
         const adminTabBtn = document.getElementById('tabBtnAdmin');
         const tabContainer = document.getElementById('mainTabContainer');
+        const superAdminBtns = document.getElementById('superAdminActionButtons');
 
-        const isAdmin = state.currentUser && state.currentUser.role === 'admin';
+        const canAccessAdmin = window.hasAdminAccess();
+        const isSuper = window.isSuperAdmin();
+        const isTeam = window.isTeamAdmin();
+
+        // Control Super Admin exclusive action buttons in Admin Portal
+        if (superAdminBtns) {
+            if (isSuper) {
+                superAdminBtns.classList.remove('hidden');
+            } else {
+                superAdminBtns.classList.add('hidden');
+            }
+        }
 
         // Toggle admin controls and tab switcher columns
-        if (isAdmin) {
+        if (canAccessAdmin) {
             if (adminTabBtn) adminTabBtn.classList.remove('hidden');
             if (tabContainer) {
                 tabContainer.classList.remove('grid-cols-2');
@@ -1806,11 +2064,19 @@
         }
 
         if (state.currentUser) {
-            const roleBadge = isAdmin ? '🛡️ Admin' : '👤 සාමාජික';
-            greeting.innerHTML = `ආයුබෝවන්, <span class="text-amber-300 font-extrabold">${state.currentUser.name}</span> <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono">${roleBadge}</span>`;
-            sub.innerText = isAdmin
-                ? `පරිපාලක ID: ${state.currentUser.id} • පරිපාලන පාලක පුවරුව සක්‍රීයයි`
-                : `සාමාජික අංකය: ${state.currentUser.id} • අද දිනය: ${state.todayDateStr}`;
+            let roleBadge = '👤 සාමාජික';
+            let subTitle = `සාමාජික අංකය: ${state.currentUser.id} • අද දිනය: ${state.todayDateStr}`;
+
+            if (isSuper) {
+                roleBadge = '👑 Super Admin';
+                subTitle = `ප්‍රධාන පරිපාලක ID: ${state.currentUser.id} • පූර්ණ පාලනය සක්‍රීයයි`;
+            } else if (isTeam) {
+                roleBadge = '🛡️ Team Admin';
+                subTitle = `කණ්ඩායම් පරිපාලක ID: ${state.currentUser.id} • නිරීක්ෂණ පුවරුව සක්‍රීයයි`;
+            }
+
+            greeting.innerHTML = `ආයුබෝවන්, <span class="text-amber-300 font-extrabold">${escapeHtml(state.currentUser.name)}</span> <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono">${roleBadge}</span>`;
+            sub.innerText = subTitle;
             authBtn.innerHTML = `<span>🚪 ඉවත් වන්න (${state.currentUser.id})</span>`;
             authBtn.className = "px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 text-xs font-semibold transition active:scale-95";
         } else {
@@ -1890,15 +2156,15 @@
             return;
         }
 
-        // If logged in as ADMIN, admins should not submit logs
-        if (state.currentUser.role === 'admin' || state.currentUser.id === 'ADMIN') {
+        // If logged in as Master ADMIN, admins should not submit logs
+        if (window.isSuperAdmin()) {
             noticeCard.classList.add('hidden');
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
             }
-            if (submitBtnText) submitBtnText.innerText = "🛡️ පරිපාලක (Admin) සඳහා වාර්තා ඇතුළත් කළ නොහැක";
-            if (submitNoticeSub) submitNoticeSub.innerHTML = "<span class='text-amber-300 font-semibold'>🛡️ ඔබ පරිපාලක (Admin) ලෙස පිවිස ඇත. පරිපාලක ගිණුම් සඳහා දෛනික වාර්තා ඇතුළත් කිරීම අවශ්‍ය නොවේ.</span>";
+            if (submitBtnText) submitBtnText.innerText = "🛡️ ප්‍රධාන පරිපාලක (Super Admin) සඳහා වාර්තා ඇතුළත් කළ නොහැක";
+            if (submitNoticeSub) submitNoticeSub.innerHTML = "<span class='text-amber-300 font-semibold'>🛡️ ඔබ ප්‍රධාන පරිපාලක (Super Admin) ලෙස පිවිස ඇත. පරිපාලක ගිණුම් සඳහා දෛනික වාර්තා ඇතුළත් කිරීම අවශ්‍ය නොවේ.</span>";
             return;
         }
 
@@ -1987,9 +2253,9 @@
             return;
         }
 
-        // Prevent Admin from submitting and saving tasks
-        if (state.currentUser.role === 'admin' || state.currentUser.id === 'ADMIN') {
-            showToast("🛡️ පරිපාලක (Admin) ගිණුම් සඳහා දෛනික වාර්තා සුරැකීම සිදු කළ නොහැක.");
+        // Prevent Super Admin from submitting and saving tasks
+        if (window.isSuperAdmin()) {
+            showToast("🛡️ ප්‍රධාන පරිපාලක (Super Admin) ගිණුම් සඳහා දෛනික වාර්තා සුරැකීම සිදු කළ නොහැක.");
             return;
         }
 
@@ -2273,7 +2539,11 @@
     };
 
     window.buildReportText = function(grandTotal) {
-        const timeVal = window.formatTo12HourTime(genState.wakeTime || '05:00');
+        const rawWake = document.getElementById('wakeInput')?.value || genState.wakeTime || '05:00';
+        const timeVal = window.formatTo12HourTime(rawWake);
+        const mornSum = (genState.sathya ? 1 : 0) + (genState.audioMorn ? 1 : 0);
+        const hasFiveAmBonus = (window.isFiveAmOrEarlier(rawWake) && genState.pansil && mornSum === 2) ? 1 : 0;
+        const bonus = hasFiveAmBonus ? ' ⭐' : '';
         const p1 = genState.pansil ? '✅' : '❌';
         const p2 = genState.sathya ? '✅' : '❌';
         const p3 = genState.audioMorn ? '✅' : '❌';
@@ -2283,7 +2553,7 @@
         const extraCount = genState.extraCount;
 
         const dateVal = state.selectedLogDate || state.todayDateStr;
-        let output = `📅 ${dateVal}\n1) ${timeVal}\n    i)     ${p1}\n    ii)    ${p2}\n    iii)   ${p3}\n\n2) ${noonPattern}\n\n3) ${nightPattern}\n\n4) ${extraCount}`;
+        let output = `📅 ${dateVal}\n1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n2) දහවල: ${noonPattern}\n3) රාත්‍රිය: ${nightPattern}\n4) අමතර: ${extraCount}`;
 
         const chkScoreEl = document.getElementById('chkIncludeScore');
         const includeScore = chkScoreEl ? chkScoreEl.checked : true;
@@ -2351,6 +2621,9 @@
         const selectedDate = dateInput.value || state.todayDateStr;
 
         try {
+            // Load and refresh groups data & dropdowns
+            await window.loadGroupsData();
+
             // 1. Fetch active members from Firestore (or fallback to local cache)
             let members = [];
             try {
@@ -2386,9 +2659,9 @@
             members.sort((a, b) => (a.id || '').localeCompare(b.id || '', undefined, { numeric: true }));
             state.membersCache = members;
 
-            // Show demo seed button if completely empty
+            // Show demo seed button if completely empty (Super Admin only)
             const seedNotice = document.getElementById('demoSeedNoticeCard');
-            if (members.length === 0) {
+            if (members.length === 0 && window.isSuperAdmin()) {
                 seedNotice.classList.remove('hidden');
             } else {
                 seedNotice.classList.add('hidden');
@@ -2446,8 +2719,17 @@
 
         let filteredMembers = state.membersCache.filter(m => {
             const hasLog = state.todayLogsMap.has(m.id);
-            if (filter === 'submitted') return hasLog;
-            if (filter === 'pending') return !hasLog;
+            if (filter === 'submitted' && !hasLog) return false;
+            if (filter === 'pending' && hasLog) return false;
+
+            const grpFilter = state.adminRosterGroupFilter || 'all';
+            if (grpFilter !== 'all') {
+                if (grpFilter === 'unassigned') {
+                    if (m.groupId && m.groupId !== '') return false;
+                } else {
+                    if (m.groupId !== grpFilter) return false;
+                }
+            }
             return true;
         });
 
@@ -2486,8 +2768,12 @@
             html += `
                 <tr class="hover:bg-white/[0.02] transition">
                     <td class="py-3 px-3">
-                        <div class="font-bold text-white">${m.name || m.id}</div>
-                        <div class="text-[10px] text-slate-400 font-mono">${m.id}</div>
+                        <div class="font-bold text-white flex items-center gap-1.5 flex-wrap">
+                            <span>${escapeHtml(m.name || m.id)}</span>
+                            ${m.role === 'team_admin' ? `<span class="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/35 font-bold" title="කණ්ඩායම් පරිපාලක (Team Admin)">🛡️ Team Admin</span>` : ''}
+                            ${m.groupName ? `<span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/20 font-normal">${escapeHtml(m.groupName)}</span>` : ''}
+                        </div>
+                        <div class="text-[10px] text-slate-400 font-mono">${escapeHtml(m.id)}</div>
                     </td>
                     <td class="py-3 px-3">${statusBadge}</td>
                     <td class="py-3 px-3 font-mono text-slate-300">
@@ -2500,15 +2786,21 @@
                     <td class="py-3 px-3 text-right">${score}</td>
                     <td class="py-3 px-3 text-center">
                         <div class="flex items-center justify-center gap-1.5">
-                            <button type="button" onclick="openMemberHistory('${m.id}', '${escapeHtml(m.name || m.id)}')"
-                                    class="px-2 py-1 rounded-lg bg-subCard hover:bg-subCardHover text-amber-300 border border-white/10 text-[11px] font-bold transition">
+                            <button type="button" onclick="exportSingleMemberDayText('${escapeHtml(m.id)}')"
+                                    class="px-2 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-[11px] font-bold transition flex items-center gap-1 active:scale-95"
+                                    title="දෛනික වාර්තාව පෙළ ලෙස (Text Export)">
+                                📄 Text
+                            </button>
+                            <button type="button" onclick="openMemberHistory('${escapeHtml(m.id)}', '${escapeHtml(m.name || m.id)}')"
+                                    class="px-2 py-1 rounded-lg bg-subCard hover:bg-subCardHover text-slate-300 border border-white/10 text-[11px] font-bold transition">
                                 ඉතිහාසය
                             </button>
-                            <button type="button" onclick="openDeleteMemberConfirmation('${m.id}', '${escapeHtml(m.name || m.id)}')"
+                            ${window.isSuperAdmin() ? `
+                            <button type="button" onclick="openDeleteMemberConfirmation('${escapeHtml(m.id)}', '${escapeHtml(m.name || m.id)}')"
                                     class="p-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-[11px] font-bold transition active:scale-95"
                                     title="සාමාජිකයා සහ සියලු වාර්තා මකා දමන්න">
                                 🗑️
-                            </button>
+                            </button>` : ''}
                         </div>
                     </td>
                 </tr>
@@ -2516,7 +2808,126 @@
         });
 
         tbody.innerHTML = html;
+
+        const superAdminBtns = document.getElementById('superAdminActionButtons');
+        if (superAdminBtns) {
+            if (window.isSuperAdmin()) {
+                superAdminBtns.classList.remove('hidden');
+            } else {
+                superAdminBtns.classList.add('hidden');
+            }
+        }
     }
+
+    window.handleAdminRosterGroupFilterChange = function() {
+        const select = document.getElementById('adminRosterGroupFilter');
+        state.adminRosterGroupFilter = select ? select.value : 'all';
+        renderAdminRosterTable();
+    };
+
+    window.exportSingleMemberDayText = function(memberId) {
+        const dateInput = document.getElementById('adminDateFilter');
+        const selectedDate = dateInput?.value || state.todayDateStr;
+        const member = state.membersCache.find(m => m.id === memberId) || { id: memberId, name: memberId };
+        const log = state.todayLogsMap.get(memberId);
+
+        let text = '';
+        if (log) {
+            const timeVal = window.formatTo12HourTime(log.wakeTime || '05:00');
+            const bonus = log.isFiveAmBonus ? ' ⭐' : '';
+            const p1 = log.pansil ? '✅' : '❌';
+            const p2 = log.sathya ? '✅' : '❌';
+            const p3 = log.audioMorn ? '✅' : '❌';
+            const noonPattern = getNoonPattern(log.noonCount || 0);
+            const nightPattern = getNightPattern(log.nightCount || 0);
+            const extraCount = log.extraCount || 0;
+            const total = log.grandTotal !== undefined ? (Number.isInteger(log.grandTotal) ? log.grandTotal : Number(log.grandTotal).toFixed(1)) : '0';
+
+            text = `📅 ${selectedDate}\n${member.id} - ${member.name || member.id}${member.groupName ? ` (${member.groupName})` : ''}\n\n1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n2) දහවල: ${noonPattern}\n3) රාත්‍රිය: ${nightPattern}\n4) අමතර: ${extraCount}\n\n🔹 මුළු ලකුණු: ${total}`;
+        } else {
+            text = `📅 ${selectedDate}\n${member.id} - ${member.name || member.id}${member.groupName ? ` (${member.groupName})` : ''}\n\n⏳ මෙම සාමාජිකයා විසින් ${selectedDate} දින සඳහා වාර්තාවක් මෙතෙක් ඇතුළත් කර නොමැත.`;
+        }
+
+        const title = `දෛනික සාමාජික වාර්තාව - ${member.name || member.id}`;
+        const subtitle = `සාමාජික: ${member.id} • දිනය: ${selectedDate}${member.groupName ? ` • ${member.groupName}` : ''}`;
+        const filename = `Adhishtana_${member.id}_${selectedDate}.txt`;
+        openTextExportModal(title, subtitle, text, filename);
+    };
+
+    window.exportGroupRosterText = function() {
+        const dateInput = document.getElementById('adminDateFilter');
+        const selectedDate = dateInput?.value || state.todayDateStr;
+        const grpFilter = state.adminRosterGroupFilter || 'all';
+
+        let targetGroupName = 'සියලු සාමාජිකයින්';
+        if (grpFilter !== 'all' && grpFilter !== 'unassigned') {
+            const grpObj = state.groupsCache.find(g => g.id === grpFilter);
+            if (grpObj) targetGroupName = grpObj.name;
+        } else if (grpFilter === 'unassigned') {
+            targetGroupName = 'කණ්ඩායමකට අයත් නොවන සාමාජිකයින්';
+        }
+
+        const targetMembers = state.membersCache.filter(m => {
+            if (grpFilter === 'all') return true;
+            if (grpFilter === 'unassigned') return !m.groupId;
+            return m.groupId === grpFilter;
+        });
+
+        if (targetMembers.length === 0) {
+            showToast("තෝරාගත් කණ්ඩායමේ සාමාජිකයින් කිසිවෙකු නැත");
+            return;
+        }
+
+        const submittedMembers = targetMembers.filter(m => state.todayLogsMap.has(m.id));
+        const totalScore = submittedMembers.reduce((sum, m) => {
+            const log = state.todayLogsMap.get(m.id);
+            return sum + (Number(log?.grandTotal) || 0);
+        }, 0);
+        const avgScore = submittedMembers.length > 0 ? (totalScore / submittedMembers.length).toFixed(1) : '0.0';
+
+        let text = `========================================\n📋 අධිෂ්ඨාන දෛනික වාර්තාව - ${targetGroupName}\n📅 දිනය: ${selectedDate}\n📊 සහභාගීත්වය: ${submittedMembers.length}/${targetMembers.length} | සාමාන්‍ය ලකුණු: ${avgScore}\n========================================\n\n`;
+
+        if (submittedMembers.length === 0) {
+            text += `මෙම කණ්ඩායමේ කිසිදු සාමාජිකයෙකු අද දින වාර්තාවක් මෙතෙක් සටහන් කර නොමැත.\n`;
+        } else {
+            submittedMembers.forEach((m, idx) => {
+                const log = state.todayLogsMap.get(m.id);
+                const timeVal = window.formatTo12HourTime(log.wakeTime || '05:00');
+                const bonus = log.isFiveAmBonus ? ' ⭐' : '';
+                const p1 = log.pansil ? '✅' : '❌';
+                const p2 = log.sathya ? '✅' : '❌';
+                const p3 = log.audioMorn ? '✅' : '❌';
+                const noonPattern = getNoonPattern(log.noonCount || 0);
+                const nightPattern = getNightPattern(log.nightCount || 0);
+                const extraCount = log.extraCount || 0;
+                const total = log.grandTotal !== undefined ? (Number.isInteger(log.grandTotal) ? log.grandTotal : Number(log.grandTotal).toFixed(1)) : '0';
+
+                text += `👤 ${m.id} - ${m.name || m.id} (ලකුණු: ${total})\n`;
+                text += `1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n`;
+                text += `2) දහවල: ${noonPattern}\n`;
+                text += `3) රාත්‍රිය: ${nightPattern}\n`;
+                text += `4) අමතර: ${extraCount}\n`;
+                if (idx < submittedMembers.length - 1) {
+                    text += `\n- - - - - - - - - - - - - - - - - - - -\n\n`;
+                }
+            });
+        }
+
+        const pending = targetMembers.filter(m => !state.todayLogsMap.has(m.id));
+        if (pending.length > 0) {
+            text += `\n========================================\n`;
+            text += `⏳ මෙතෙක් වාර්තා නොඑවූ සාමාජිකයින් (${pending.length}):\n`;
+            pending.forEach((m, i) => {
+                text += `${i + 1}. ${m.id} - ${m.name || m.id}\n`;
+            });
+        }
+
+        const title = `දෛනික කණ්ඩායම් වාර්තාව (Group Summary)`;
+        const subtitle = `කණ්ඩායම: ${targetGroupName} • දිනය: ${selectedDate} • වාර්තා: ${submittedMembers.length}`;
+        const cleanGrpId = grpFilter === 'all' ? 'All' : (grpFilter === 'unassigned' ? 'Unassigned' : grpFilter);
+        const filename = `Adhishtana_Roster_${cleanGrpId}_${selectedDate}.txt`;
+        openTextExportModal(title, subtitle, text, filename);
+    };
 
     // WhatsApp Message Generator for Pending Members
     window.copyPendingWhatsAppMessage = function() {
@@ -2544,7 +2955,7 @@
         const dateInput = document.getElementById('adminDateFilter');
         const selectedDate = dateInput.value || state.todayDateStr;
 
-        let csv = "Member ID,Name,Date,Status,Wake Time,5AM Bonus,Morning Pansil,Morning Sathyakriya,Morning Audio,Noon Count,Night Count,Extra Count,Total Score,Submitted At\n";
+        let csv = "Member ID,Name,Group ID,Group Name,Date,Status,Wake Time,5AM Bonus,Morning Pansil,Morning Sathyakriya,Morning Audio,Noon Count,Night Count,Extra Count,Total Score,Submitted At\n";
 
         state.membersCache.forEach(m => {
             const log = state.todayLogsMap.get(m.id);
@@ -2558,6 +2969,8 @@
             const row = [
                 `"${m.id}"`,
                 `"${m.name || m.id}"`,
+                `"${m.groupId || ''}"`,
+                `"${m.groupName || ''}"`,
                 `"${selectedDate}"`,
                 `"${isSub ? 'Submitted' : 'Pending'}"`,
                 `"${isSub ? log.wakeTime : ''}"`,
@@ -2589,18 +3002,129 @@
     // MEMBER MANAGEMENT & SEEDER
     // ========================================================
     window.openMemberManagementModal = function() {
+        if (!window.isSuperAdmin()) {
+            showToast("මෙම ක්‍රියාව සඳහා ප්‍රධාන පරිපාලක (Super Admin) අවසරය අවශ්‍යයි!");
+            return;
+        }
         document.getElementById('modalMemberMgmt').classList.remove('hidden');
+        resetMemberFormToAddMode();
         renderManagementMemberList();
     };
 
     window.closeMemberManagementModal = function() {
         document.getElementById('modalMemberMgmt').classList.add('hidden');
+        resetMemberFormToAddMode();
+    };
+
+    function populateQuickSelectMemberEdit() {
+        const select = document.getElementById('quickSelectMemberEdit');
+        if (!select) return;
+
+        const currentVal = state.editingMemberId || '';
+        let html = `<option value="">-- නව සාමාජිකයෙකු ඇතුළත් කිරීම (New Member) --</option>`;
+        (state.membersCache || []).forEach(m => {
+            const grpTag = m.groupName ? ` [${m.groupName}]` : '';
+            const roleTag = m.role === 'team_admin' ? ' 🛡️' : '';
+            const sel = m.id === currentVal ? 'selected' : '';
+            html += `<option value="${escapeHtml(m.id)}" ${sel}>${escapeHtml(m.id)} - ${escapeHtml(m.name || m.id)}${escapeHtml(grpTag)}${roleTag}</option>`;
+        });
+        select.innerHTML = html;
+        select.value = currentVal;
+    }
+
+    window.handleQuickSelectMemberEdit = function(memberId) {
+        if (!memberId) {
+            resetMemberFormToAddMode();
+        } else {
+            loadMemberIntoForm(memberId);
+        }
+    };
+
+    window.loadMemberIntoForm = function(memberId) {
+        const member = (state.membersCache || []).find(m => m.id === memberId);
+        if (!member) return;
+
+        state.editingMemberId = member.id;
+
+        const idInput = document.getElementById('newMemberId');
+        const pinInput = document.getElementById('newMemberPin');
+        const nameInput = document.getElementById('newMemberName');
+        const grpSelect = document.getElementById('newMemberGroup');
+        const roleSelect = document.getElementById('newMemberRole');
+        const quickSelect = document.getElementById('quickSelectMemberEdit');
+        const noticeEl = document.getElementById('memberIdEditNotice');
+        const modeIcon = document.getElementById('memberFormModeIcon');
+        const modeText = document.getElementById('memberFormModeText');
+        const submitBtnText = document.getElementById('btnSubmitMemberFormText');
+        const cancelBtn = document.getElementById('btnCancelEditMember');
+
+        if (idInput) {
+            idInput.value = member.id;
+            idInput.readOnly = true;
+            idInput.classList.add('bg-black/60', 'text-slate-400', 'cursor-not-allowed');
+        }
+        if (noticeEl) noticeEl.classList.remove('hidden');
+
+        if (pinInput) pinInput.value = member.pin || '';
+        if (nameInput) nameInput.value = member.name || '';
+        if (grpSelect) grpSelect.value = member.groupId || '';
+        if (roleSelect) roleSelect.value = member.role === 'team_admin' ? 'team_admin' : 'member';
+        if (quickSelect) quickSelect.value = member.id;
+
+        if (modeIcon) modeIcon.innerText = '✏️';
+        if (modeText) modeText.innerText = `සාමාජික තොරතුරු සංස්කරණය (${member.id})`;
+        if (submitBtnText) submitBtnText.innerText = '💾 වෙනස්කම් සුරකින්න (Update Member)';
+        if (cancelBtn) cancelBtn.classList.remove('hidden');
+
+        if (nameInput) {
+            nameInput.focus();
+            const formEl = idInput?.closest('form');
+            if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    };
+
+    window.resetMemberFormToAddMode = function() {
+        state.editingMemberId = null;
+
+        const idInput = document.getElementById('newMemberId');
+        const pinInput = document.getElementById('newMemberPin');
+        const nameInput = document.getElementById('newMemberName');
+        const grpSelect = document.getElementById('newMemberGroup');
+        const roleSelect = document.getElementById('newMemberRole');
+        const quickSelect = document.getElementById('quickSelectMemberEdit');
+        const noticeEl = document.getElementById('memberIdEditNotice');
+        const modeIcon = document.getElementById('memberFormModeIcon');
+        const modeText = document.getElementById('memberFormModeText');
+        const submitBtnText = document.getElementById('btnSubmitMemberFormText');
+        const cancelBtn = document.getElementById('btnCancelEditMember');
+
+        if (idInput) {
+            idInput.value = '';
+            idInput.readOnly = false;
+            idInput.classList.remove('bg-black/60', 'text-slate-400', 'cursor-not-allowed');
+        }
+        if (noticeEl) noticeEl.classList.add('hidden');
+
+        if (pinInput) pinInput.value = '';
+        if (nameInput) nameInput.value = '';
+        if (grpSelect) grpSelect.value = '';
+        if (roleSelect) roleSelect.value = 'member';
+        if (quickSelect) quickSelect.value = '';
+
+        if (modeIcon) modeIcon.innerText = '➕';
+        if (modeText) modeText.innerText = 'නව සාමාජිකයෙකු එක් කරන්න';
+        if (submitBtnText) submitBtnText.innerText = '➕ සාමාජිකයා ලියාපදිංචි කරන්න';
+        if (cancelBtn) cancelBtn.classList.add('hidden');
     };
 
     function renderManagementMemberList() {
         const listEl = document.getElementById('mgmtMemberList');
         const countEl = document.getElementById('mgmtMemberListCount');
-        countEl.innerText = state.membersCache.length;
+        if (countEl) countEl.innerText = state.membersCache.length;
+
+        populateQuickSelectMemberEdit();
+
+        if (!listEl) return;
 
         if (state.membersCache.length === 0) {
             listEl.innerHTML = `<div class="text-center py-4 text-slate-500">සාමාජිකයින් නොමැත</div>`;
@@ -2609,18 +3133,47 @@
 
         let html = '';
         state.membersCache.forEach(m => {
+            const isEditing = state.editingMemberId === m.id;
+            const isTeam = m.role === 'team_admin';
+            const roleBadge = isTeam 
+                ? `<span class="px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/35">🛡️ Team Admin</span>`
+                : `<span class="px-1.5 py-0.5 rounded-md bg-white/5 text-slate-400 text-[10px] font-medium border border-white/10">👤 සාමාජික</span>`;
+
+            const adminToggleBtn = isTeam ? `
+                <button type="button" onclick="toggleMemberAdminAccess('${escapeHtml(m.id)}', false)"
+                        class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"
+                        title="කණ්ඩායම් පරිපාලක (Team Admin) අවසර ඉවත් කරන්න">
+                    👤 සාමාන්‍ය
+                </button>
+            ` : `
+                <button type="button" onclick="toggleMemberAdminAccess('${escapeHtml(m.id)}', true)"
+                        class="px-2 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"
+                        title="කණ්ඩායම් පරිපාලක (Team Admin) අවසර ලබාදෙන්න">
+                    🛡️ Admin දෙන්න
+                </button>
+            `;
+
             html += `
-                <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#080B12] border border-white/5 text-xs">
+                <div class="flex items-center justify-between p-2.5 rounded-xl ${isEditing ? 'bg-amber-500/15 border-amber-500/50 shadow-sm' : 'bg-[#080B12] border-white/5'} border text-xs transition">
                     <div>
-                        <span class="font-bold text-white block">${escapeHtml(m.name)}</span>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="font-bold text-white block">${escapeHtml(m.name)}</span>
+                            ${roleBadge}
+                            ${m.groupName ? `<span class="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 text-[10px] font-bold border border-amber-500/20">${escapeHtml(m.groupName)}</span>` : `<span class="text-[10px] text-slate-500 italic">කණ්ඩායමක් නැත</span>`}
+                        </div>
                         <span class="text-[10px] text-slate-400 font-mono">ID: ${escapeHtml(m.id)} • PIN: ${escapeHtml(m.pin)}</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 text-[10px] font-bold">සක්‍රීයයි</span>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        ${adminToggleBtn}
+                        <button type="button" onclick="loadMemberIntoForm('${escapeHtml(m.id)}')"
+                                class="px-2 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-[11px] font-bold transition flex items-center gap-1 active:scale-95"
+                                title="මෙම සාමාජිකයාගේ තොරතුරු සංස්කරණය සඳහා පෝරමයට පුරවන්න">
+                            ✏️
+                        </button>
                         <button type="button" onclick="openDeleteMemberConfirmation('${escapeHtml(m.id)}', '${escapeHtml(m.name)}')"
-                                class="px-2 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 text-[11px] font-bold transition flex items-center gap-1 active:scale-95"
+                                class="p-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 text-[11px] font-bold transition flex items-center gap-1 active:scale-95"
                                 title="සාමාජිකයා සහ වාර්තා මකා දමන්න">
-                            🗑️ මකන්න
+                            🗑️
                         </button>
                     </div>
                 </div>
@@ -2629,14 +3182,95 @@
         listEl.innerHTML = html;
     }
 
+    window.toggleMemberAdminAccess = async function(memberId, grantAdmin) {
+        if (!window.isSuperAdmin()) {
+            showToast("මෙම ක්‍රියාව සඳහා ප්‍රධාන පරිපාලක (Super Admin) අවසරය අවශ්‍යයි!");
+            return;
+        }
+        if (memberId === 'ADMIN') {
+            showToast("ප්‍රධාන පරිපාලක ගිණුමේ අවසර වෙනස් කළ නොහැක.");
+            return;
+        }
+
+        const newRole = grantAdmin ? 'team_admin' : 'member';
+        try {
+            await updateDoc(doc(db, 'members', memberId), { role: newRole });
+
+            const mem = (state.membersCache || []).find(m => m.id === memberId);
+            if (mem) mem.role = newRole;
+            localStorage.setItem('adhishtana_members_cache', JSON.stringify(state.membersCache));
+
+            renderManagementMemberList();
+            renderAdminRosterTable();
+            showToast(grantAdmin 
+                ? `${mem?.name || memberId} හට කණ්ඩායම් පරිපාලක (Team Admin) අවසර සාර්ථකව ලබාදෙන ලදී! 🛡️` 
+                : `${mem?.name || memberId} සාමාන්‍ය සාමාජිකයෙකු බවට පත් කරන ලදී. 👤`);
+        } catch (err) {
+            console.error("Error updating member role:", err);
+            showToast("අවසර යාවත්කාලීන කිරීමේදී දෝෂයක් ඇතිවිය.");
+        }
+    };
+
     window.handleAddNewMember = async function(event) {
         event.preventDefault();
+        if (!window.isSuperAdmin()) {
+            showToast("සාමාජිකයින් එක්කිරීම හෝ සංස්කරණය සඳහා Super Admin අවසරය අවශ්‍යයි!");
+            return;
+        }
+
         const id = document.getElementById('newMemberId').value.trim().toUpperCase();
         const pin = document.getElementById('newMemberPin').value.trim();
         const name = document.getElementById('newMemberName').value.trim();
+        const groupId = document.getElementById('newMemberGroup')?.value || '';
+        const role = document.getElementById('newMemberRole')?.value || 'member';
+
+        let groupName = '';
+        if (groupId) {
+            const grp = state.groupsCache.find(g => g.id === groupId);
+            if (grp) groupName = grp.name;
+        }
 
         if (!id || !pin || !name) {
             showToast("කරුණාකර සියලු විස්තර සම්පූර්ණ කරන්න");
+            return;
+        }
+
+        // EDIT MODE: Update existing member
+        if (state.editingMemberId) {
+            try {
+                await updateDoc(doc(db, 'members', state.editingMemberId), {
+                    name: name,
+                    pin: pin,
+                    groupId: groupId,
+                    groupName: groupName,
+                    role: role
+                });
+
+                const memberObj = state.membersCache.find(m => m.id === state.editingMemberId);
+                if (memberObj) {
+                    memberObj.name = name;
+                    memberObj.pin = pin;
+                    memberObj.groupId = groupId;
+                    memberObj.groupName = groupName;
+                    memberObj.role = role;
+                }
+                localStorage.setItem('adhishtana_members_cache', JSON.stringify(state.membersCache));
+
+                showToast(`සාමාජික ${name} ගේ තොරතුරු සාර්ථකව යාවත්කාලීන විය! (Updated)`);
+                resetMemberFormToAddMode();
+                loadAdminDashboardData();
+                setTimeout(renderManagementMemberList, 400);
+            } catch (e) {
+                console.error("Update Member Error:", e);
+                showToast("සාමාජික තොරතුරු යාවත්කාලීන කිරීමේදී දෝෂයක් ඇතිවිය");
+            }
+            return;
+        }
+
+        // ADD MODE: Check if ID already exists
+        if (state.membersCache.some(m => m.id === id)) {
+            showToast(`'${id}' සාමාජික අංකය දැනටමත් පවතී! සංස්කරණය සඳහා පෝරමයට තොරතුරු පුරවන ලදී.`);
+            loadMemberIntoForm(id);
             return;
         }
 
@@ -2645,15 +3279,15 @@
                 id: id,
                 name: name,
                 pin: pin,
-                role: 'member',
+                groupId: groupId,
+                groupName: groupName,
+                role: role,
                 isActive: true,
                 createdAt: serverTimestamp()
             });
 
             showToast(`සාමාජික ${name} සාර්ථකව ලියාපදිංචි කරන ලදී!`);
-            document.getElementById('newMemberId').value = '';
-            document.getElementById('newMemberPin').value = '';
-            document.getElementById('newMemberName').value = '';
+            resetMemberFormToAddMode();
 
             loadAdminDashboardData();
             setTimeout(renderManagementMemberList, 600);
@@ -2664,9 +3298,384 @@
     };
 
     // ========================================================
+    // GROUP MANAGEMENT LOGIC & PERSISTENCE
+    // ========================================================
+    window.loadGroupsData = async function() {
+        try {
+            let groups = [];
+            try {
+                const groupsColl = collection(db, 'groups');
+                const groupsSnap = await getDocs(groupsColl);
+                groupsSnap.forEach(d => {
+                    groups.push(d.data());
+                });
+                if (groups.length > 0) {
+                    localStorage.setItem('adhishtana_groups_cache', JSON.stringify(groups));
+                }
+            } catch (netErr) {
+                console.warn("Could not fetch remote groups, using local cache:", netErr);
+            }
+
+            if (groups.length === 0) {
+                const local = localStorage.getItem('adhishtana_groups_cache');
+                if (local) {
+                    try {
+                        groups = JSON.parse(local);
+                    } catch (e) {
+                        console.warn("Error reading groups cache", e);
+                    }
+                }
+            }
+
+            // Sort groups by ID
+            groups.sort((a, b) => (a.id || '').localeCompare(b.id || '', undefined, { numeric: true }));
+            state.groupsCache = groups;
+            populateAllGroupDropdowns();
+        } catch (err) {
+            console.error("loadGroupsData error:", err);
+        }
+    };
+
+    function populateAllGroupDropdowns() {
+        const rosterSelect = document.getElementById('adminRosterGroupFilter');
+        const rangeSelect = document.getElementById('dateRangeGroupFilter');
+        const memberSelect = document.getElementById('newMemberGroup');
+
+        const groups = state.groupsCache || [];
+
+        if (rosterSelect) {
+            const curVal = rosterSelect.value || state.adminRosterGroupFilter || 'all';
+            let html = `
+                <option value="all">සියලු කණ්ඩායම් (All Groups)</option>
+                <option value="unassigned">කණ්ඩායමකට අයත් නොවන (Unassigned)</option>
+            `;
+            groups.forEach(g => {
+                const sel = g.id === curVal ? 'selected' : '';
+                html += `<option value="${escapeHtml(g.id)}" ${sel}>${escapeHtml(g.name || g.id)} (${escapeHtml(g.id)})</option>`;
+            });
+            rosterSelect.innerHTML = html;
+            rosterSelect.value = curVal;
+        }
+
+        if (rangeSelect) {
+            const curVal = rangeSelect.value || state.dateRangeGroupFilter || 'all';
+            let html = `
+                <option value="all">සියලු කණ්ඩායම් (All Groups)</option>
+                <option value="unassigned">කණ්ඩායමකට අයත් නොවන (Unassigned)</option>
+            `;
+            groups.forEach(g => {
+                const sel = g.id === curVal ? 'selected' : '';
+                html += `<option value="${escapeHtml(g.id)}" ${sel}>${escapeHtml(g.name || g.id)} (${escapeHtml(g.id)})</option>`;
+            });
+            rangeSelect.innerHTML = html;
+            rangeSelect.value = curVal;
+        }
+
+        if (memberSelect) {
+            const curVal = memberSelect.value || '';
+            let html = `<option value="">(කණ්ඩායමක් නැත - Unassigned)</option>`;
+            groups.forEach(g => {
+                const sel = g.id === curVal ? 'selected' : '';
+                html += `<option value="${escapeHtml(g.id)}" ${sel}>${escapeHtml(g.name || g.id)} (${escapeHtml(g.id)})</option>`;
+            });
+            memberSelect.innerHTML = html;
+            memberSelect.value = curVal;
+        }
+    }
+
+    window.openGroupManagementModal = function() {
+        if (!window.isSuperAdmin()) {
+            showToast("මෙම ක්‍රියාව සඳහා ප්‍රධාන පරිපාලක (Super Admin) අවසරය අවශ්‍යයි!");
+            return;
+        }
+        document.getElementById('modalGroupMgmt').classList.remove('hidden');
+        renderGroupManagementList();
+        renderMemberGroupAssignmentList();
+    };
+
+    window.closeGroupManagementModal = function() {
+        document.getElementById('modalGroupMgmt').classList.add('hidden');
+    };
+
+    window.handleCreateGroup = async function(event) {
+        event.preventDefault();
+        if (!window.isSuperAdmin()) {
+            showToast("කණ්ඩායම් සෑදීම සඳහා Super Admin අවසරය අවශ්‍යයි!");
+            return;
+        }
+
+        const idInput = document.getElementById('newGroupIdInput');
+        const nameInput = document.getElementById('newGroupNameInput');
+        const errEl = document.getElementById('createGroupErrorMsg');
+        const btn = document.getElementById('btnCreateGroup');
+
+        const id = (idInput?.value || '').trim().toUpperCase();
+        const name = (nameInput?.value || '').trim();
+
+        const showError = (msg) => {
+            if (errEl) {
+                errEl.innerText = msg;
+                errEl.classList.remove('hidden');
+            }
+        };
+
+        if (!id || !name) {
+            showError("කරුණාකර කණ්ඩායම් අංකය සහ නම ඇතුළත් කරන්න.");
+            return;
+        }
+
+        if (state.groupsCache.some(g => g.id === id)) {
+            showError(`'${id}' අංකයෙන් යුත් කණ්ඩායමක් දැනටමත් පවතී!`);
+            return;
+        }
+
+        if (errEl) errEl.classList.add('hidden');
+        if (btn) btn.disabled = true;
+
+        try {
+            const newGroup = {
+                id: id,
+                name: name,
+                createdAt: serverTimestamp()
+            };
+            await setDoc(doc(db, 'groups', id), newGroup);
+
+            state.groupsCache.push({ id, name });
+            state.groupsCache.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+            localStorage.setItem('adhishtana_groups_cache', JSON.stringify(state.groupsCache));
+
+            if (idInput) idInput.value = '';
+            if (nameInput) nameInput.value = '';
+
+            populateAllGroupDropdowns();
+            renderGroupManagementList();
+            renderMemberGroupAssignmentList();
+            showToast(`'${name}' කණ්ඩායම සාර්ථකව සාදන ලදී!`);
+        } catch (e) {
+            console.error("Create group error:", e);
+            showError("කණ්ඩායම සෑදීමේදී දෝෂයක් ඇතිවිය.");
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    };
+
+    window.openEditGroupName = async function(groupId) {
+        if (!window.isSuperAdmin()) {
+            showToast("කණ්ඩායම් නම් වෙනස් කිරීම සඳහා Super Admin අවසරය අවශ්‍යයි!");
+            return;
+        }
+
+        const group = state.groupsCache.find(g => g.id === groupId);
+        if (!group) return;
+
+        const newName = prompt(`'${group.id}' කණ්ඩායමේ නව නම ඇතුළත් කරන්න:`, group.name);
+        if (!newName || !newName.trim() || newName.trim() === group.name) return;
+
+        const trimmedName = newName.trim();
+        try {
+            await updateDoc(doc(db, 'groups', groupId), { name: trimmedName });
+
+            group.name = trimmedName;
+            localStorage.setItem('adhishtana_groups_cache', JSON.stringify(state.groupsCache));
+
+            const affectedMembers = state.membersCache.filter(m => m.groupId === groupId);
+            for (const m of affectedMembers) {
+                m.groupName = trimmedName;
+                try {
+                    await updateDoc(doc(db, 'members', m.id), { groupName: trimmedName });
+                } catch (memberErr) {
+                    console.warn(`Could not update groupName for member ${m.id}:`, memberErr);
+                }
+            }
+            localStorage.setItem('adhishtana_members_cache', JSON.stringify(state.membersCache));
+
+            populateAllGroupDropdowns();
+            renderGroupManagementList();
+            renderMemberGroupAssignmentList();
+            renderAdminRosterTable();
+            renderManagementMemberList();
+            showToast(`කණ්ඩායම් නම '${trimmedName}' ලෙස වෙනස් කරන ලදී!`);
+        } catch (e) {
+            console.error("Edit group name error:", e);
+            showToast("කණ්ඩායම් නම වෙනස් කිරීමේදී දෝෂයක් ඇතිවිය.");
+        }
+    };
+
+    window.deleteGroup = async function(groupId) {
+        if (!window.isSuperAdmin()) {
+            showToast("කණ්ඩායම් මකා දැමීම සඳහා Super Admin අවසරය අවශ්‍යයි!");
+            return;
+        }
+
+        const group = state.groupsCache.find(g => g.id === groupId);
+        if (!group) return;
+
+        const count = state.membersCache.filter(m => m.groupId === groupId).length;
+        const msg = `'${group.name}' (${groupId}) කණ්ඩායම මකා දැමීමට ඔබට විශ්වාසද?\n\nමෙම කණ්ඩායමට අයත් සාමාජිකයින් ${count} දෙනෙකු සිටී. ඔවුන්ව පද්ධතියෙන් ඉවත් නොවන අතර ඔවුන්ගේ කණ්ඩායම් පැවරුම ඉවත් වේ.`;
+
+        if (!confirm(msg)) return;
+
+        try {
+            await deleteDoc(doc(db, 'groups', groupId));
+
+            const affectedMembers = state.membersCache.filter(m => m.groupId === groupId);
+            for (const m of affectedMembers) {
+                m.groupId = '';
+                m.groupName = '';
+                try {
+                    await updateDoc(doc(db, 'members', m.id), { groupId: '', groupName: '' });
+                } catch (mErr) {
+                    console.warn(`Could not unassign group for member ${m.id}:`, mErr);
+                }
+            }
+            localStorage.setItem('adhishtana_members_cache', JSON.stringify(state.membersCache));
+
+            state.groupsCache = state.groupsCache.filter(g => g.id !== groupId);
+            localStorage.setItem('adhishtana_groups_cache', JSON.stringify(state.groupsCache));
+
+            populateAllGroupDropdowns();
+            renderGroupManagementList();
+            renderMemberGroupAssignmentList();
+            renderAdminRosterTable();
+            renderManagementMemberList();
+            showToast(`'${group.name}' කණ්ඩායම මකා දමන ලදී!`);
+        } catch (e) {
+            console.error("Delete group error:", e);
+            showToast("කණ්ඩායම මකා දැමීමේදී දෝෂයක් ඇතිවිය.");
+        }
+    };
+
+    window.handleAssignMemberGroup = async function(memberId, newGroupId) {
+        if (!window.isSuperAdmin()) {
+            showToast("කණ්ඩායම් පැවරීම සඳහා Super Admin අවසරය අවශ්‍යයි!");
+            return;
+        }
+
+        const member = state.membersCache.find(m => m.id === memberId);
+        if (!member) return;
+
+        let newGroupName = '';
+        if (newGroupId) {
+            const grp = state.groupsCache.find(g => g.id === newGroupId);
+            if (grp) newGroupName = grp.name;
+        }
+
+        try {
+            await updateDoc(doc(db, 'members', memberId), {
+                groupId: newGroupId || '',
+                groupName: newGroupName || ''
+            });
+
+            member.groupId = newGroupId || '';
+            member.groupName = newGroupName || '';
+            localStorage.setItem('adhishtana_members_cache', JSON.stringify(state.membersCache));
+
+            renderGroupManagementList();
+            renderAdminRosterTable();
+            renderManagementMemberList();
+            showToast(`${member.name || member.id} ගේ කණ්ඩායම යාවත්කාලීන විය!`);
+        } catch (e) {
+            console.error("Assign member group error:", e);
+            showToast("කණ්ඩායම පැවරීමේදී දෝෂයක් ඇතිවිය.");
+        }
+    };
+
+    function renderGroupManagementList() {
+        const container = document.getElementById('groupMgmtListContainer');
+        const countBadge = document.getElementById('groupMgmtCountBadge');
+        if (!container) return;
+
+        const groups = state.groupsCache || [];
+        if (countBadge) countBadge.innerText = `${groups.length} කණ්ඩායම්`;
+
+        if (groups.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-4 text-xs text-slate-500 bg-black/20 rounded-xl border border-white/5">
+                    කණ්ඩායම් කිසිවක් සකසා නොමැත. කරුණාකර ඉහත පෝරමයෙන් නව කණ්ඩායමක් එකතු කරන්න.
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        groups.forEach(g => {
+            const memberCount = (state.membersCache || []).filter(m => m.groupId === g.id).length;
+            html += `
+                <div class="flex items-center justify-between p-3 rounded-xl bg-[#080B12] border border-white/5 text-xs">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-white text-xs">${escapeHtml(g.name || g.id)}</span>
+                            <span class="font-mono text-[10px] text-amber-300 px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">${escapeHtml(g.id)}</span>
+                        </div>
+                        <span class="text-[11px] text-slate-400 mt-0.5 block">සාමාජිකයින්: <strong class="text-amber-200">${memberCount}</strong></span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="openEditGroupName('${escapeHtml(g.id)}')"
+                                class="px-2.5 py-1.5 rounded-lg bg-subCard hover:bg-subCardHover text-amber-300 border border-white/10 text-[11px] font-bold transition flex items-center gap-1 active:scale-95"
+                                title="නම වෙනස් කරන්න">
+                            ✏️ නම
+                        </button>
+                        <button type="button" onclick="deleteGroup('${escapeHtml(g.id)}')"
+                                class="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-[11px] font-bold transition active:scale-95"
+                                title="කණ්ඩායම මකන්න">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    function renderMemberGroupAssignmentList() {
+        const container = document.getElementById('memberGroupAssignmentList');
+        const countBadge = document.getElementById('groupAssignmentCountBadge');
+        if (!container) return;
+
+        const members = state.membersCache || [];
+        if (countBadge) countBadge.innerText = `${members.length} සාමාජිකයින්`;
+
+        if (members.length === 0) {
+            container.innerHTML = `<div class="text-center py-4 text-xs text-slate-500">සාමාජිකයින් නොමැත</div>`;
+            return;
+        }
+
+        const groups = state.groupsCache || [];
+
+        let html = '';
+        members.forEach(m => {
+            let optionsHtml = `<option value="">(කණ්ඩායමක් නැත - Unassigned)</option>`;
+            groups.forEach(g => {
+                const isSelected = m.groupId === g.id ? 'selected' : '';
+                optionsHtml += `<option value="${escapeHtml(g.id)}" ${isSelected}>${escapeHtml(g.name || g.id)} (${escapeHtml(g.id)})</option>`;
+            });
+
+            html += `
+                <div class="flex items-center justify-between p-2 rounded-xl bg-black/40 border border-white/5 text-xs">
+                    <div class="min-w-0 pr-2">
+                        <div class="font-bold text-white text-xs truncate">${escapeHtml(m.name || m.id)}</div>
+                        <span class="text-[10px] text-slate-400 font-mono">${escapeHtml(m.id)}</span>
+                    </div>
+                    <div class="shrink-0 w-44 sm:w-52">
+                        <select onchange="handleAssignMemberGroup('${escapeHtml(m.id)}', this.value)"
+                                class="w-full bg-[#080B12] border border-slate-700 focus:border-amber-500 rounded-lg px-2.5 py-1 text-[11px] text-amber-300 font-medium focus:outline-none">
+                            ${optionsHtml}
+                        </select>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    // ========================================================
     // DELETE MEMBER & ASSOCIATED LOGS (WITH ADMIN PIN CHECK)
     // ========================================================
     window.openDeleteMemberConfirmation = function(memberId, memberName) {
+        if (!window.isSuperAdmin()) {
+            showToast("සාමාජිකයින් මකා දැමීම සඳහා ප්‍රධාන පරිපාලක (Super Admin) අවසරය අවශ්‍යයි!");
+            return;
+        }
         if (memberId === 'ADMIN') {
             showToast("ප්‍රධාන පරිපාලක ගිණුම (Super Admin) මකා දැමිය නොහැක!");
             return;
@@ -2698,6 +3707,10 @@
     };
 
     window.executeDeleteMember = async function() {
+        if (!window.isSuperAdmin()) {
+            showToast("සාමාජිකයින් මකා දැමීම සඳහා ප්‍රධාන පරිපාලක (Super Admin) අවසරය අවශ්‍යයි!");
+            return;
+        }
         if (!state.pendingDeleteMember) return;
         const target = state.pendingDeleteMember;
         const pinInput = document.getElementById('deleteConfirmAdminPin');
@@ -2813,8 +3826,8 @@
 
     // Change Admin Password Modal Handlers
     window.openChangeAdminPasswordModal = function() {
-        if (!state.currentUser || state.currentUser.role !== 'admin') {
-            showToast("මුරපදය වෙනස් කිරීමට කරුණාකර Admin ලෙස පිවිසෙන්න");
+        if (!window.isSuperAdmin()) {
+            showToast("මුරපදය වෙනස් කිරීමට ප්‍රධාන පරිපාලක (Super Admin) ලෙස පිවිසෙන්න");
             window.openAuthModal('ADMIN');
             return;
         }
@@ -2853,8 +3866,8 @@
             }
         };
 
-        if (!state.currentUser || state.currentUser.role !== 'admin') {
-            showError("පරිපාලක සැසිය කල් ඉකුත්වී ඇත. කරුණාකර නැවත පිවිසෙන්න.");
+        if (!window.isSuperAdmin()) {
+            showError("ප්‍රධාන පරිපාලක (Super Admin) සැසිය කල් ඉකුත්වී ඇත. කරුණාකර නැවත පිවිසෙන්න.");
             return;
         }
 
@@ -2912,6 +3925,10 @@
 
     // Quick Initial Member Shortcut (Opens Registration)
     window.seedInitialDemoData = function() {
+        if (!window.isSuperAdmin()) {
+            showToast("මෙම ක්‍රියාව සඳහා ප්‍රධාන පරිපාලක (Super Admin) අවසරය අවශ්‍යයි!");
+            return;
+        }
         openMemberManagementModal();
     };
 
@@ -2923,10 +3940,16 @@
         
         const delBtn = document.getElementById('btnDeleteFromHistoryModal');
         if (delBtn) {
-            delBtn.onclick = () => {
-                closeMemberHistoryModal();
-                openDeleteMemberConfirmation(memberId, memberName);
-            };
+            if (window.isSuperAdmin()) {
+                delBtn.classList.remove('hidden');
+                delBtn.onclick = () => {
+                    closeMemberHistoryModal();
+                    openDeleteMemberConfirmation(memberId, memberName);
+                };
+            } else {
+                delBtn.classList.add('hidden');
+                delBtn.onclick = null;
+            }
         }
 
         const listEl = document.getElementById('historyModalList');
@@ -3102,7 +4125,7 @@
 
         const tbody = document.getElementById('dateRangeTableBody');
         if (tbody) {
-            tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-slate-400 animate-pulse">දත්ත පූරණය වෙමින් පවතී...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-slate-400 animate-pulse">දත්ත පූරණය වෙමින් පවතී...</td></tr>`;
         }
 
         try {
@@ -3136,7 +4159,7 @@
         } catch (err) {
             console.error("Error loading date range logs:", err);
             if (tbody) {
-                tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-red-400">වාර්තා ලබාගැනීමේදී දෝෂයක් ඇතිවිය.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-red-400">වාර්තා ලබාගැනීමේදී දෝෂයක් ඇතිවිය.</td></tr>`;
             }
             showToast("වාර්තා ලබාගැනීමේදී දෝෂයක් ඇතිවිය");
         }
@@ -3178,9 +4201,23 @@
     window.filterDateRangeTableLocally = function() {
         const selectedMember = document.getElementById('dateRangeMemberFilter')?.value || 'all';
         const searchQuery = (document.getElementById('dateRangeSearchInput')?.value || '').trim().toLowerCase();
+        const selectedGroup = state.dateRangeGroupFilter || 'all';
+
+        const memberGroupMap = new Map();
+        (state.membersCache || []).forEach(m => memberGroupMap.set(m.id, m.groupId || ''));
 
         const filtered = (state.dateRangeData || []).filter(log => {
             if (selectedMember !== 'all' && log.memberId !== selectedMember) return false;
+
+            if (selectedGroup !== 'all') {
+                const mGrp = memberGroupMap.get(log.memberId) || log.groupId || '';
+                if (selectedGroup === 'unassigned') {
+                    if (mGrp && mGrp !== '') return false;
+                } else {
+                    if (mGrp !== selectedGroup) return false;
+                }
+            }
+
             if (searchQuery) {
                 const name = (log.memberName || '').toLowerCase();
                 const id = (log.memberId || '').toLowerCase();
@@ -3216,7 +4253,7 @@
         if (totalLogs === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="9" class="py-8 text-center text-slate-500">
+                    <td colspan="10" class="py-8 text-center text-slate-500">
                         තෝරාගත් දින පරාසය සහ පෙරහන සඳහා වාර්තා කිසිවක් හමුනොවිණි.
                     </td>
                 </tr>
@@ -3244,9 +4281,8 @@
                         ${log.isFiveAmBonus ? '<span class="ml-1 text-xs" title="05:00 AM බෝනස්">⭐</span>' : ''}
                     </td>
                     <td class="py-3 px-3 text-center">
-                        <span class="px-2 py-0.5 rounded-lg text-[11px] font-mono font-bold ${(log.mornScore === 2 || log.mornScore === 3) ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-300'}">
-                            ${log.mornScore || 0}/2
-                        </span>
+                        <div class="font-mono text-xs tracking-wider">${log.pansil ? '✅' : '❌'}${log.sathya ? '✅' : '❌'}${log.audioMorn ? '✅' : '❌'}</div>
+                        <div class="text-[10px] text-slate-400 font-mono mt-0.5">${log.mornScore || 0}/2</div>
                     </td>
                     <td class="py-3 px-3 text-center">
                         <span class="font-mono text-xs tracking-wider">${getNoonPattern(log.noonCount || 0)}</span>
@@ -3265,10 +4301,332 @@
                     <td class="py-3 px-3 text-center text-slate-400 font-mono text-[11px]">
                         ${timeStr}
                     </td>
+                    <td class="py-3 px-3 text-center">
+                        <button type="button" onclick="exportSingleDateRangeRowText('${escapeHtml(log.memberId)}', '${escapeHtml(log.date)}')"
+                                class="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-[11px] font-bold transition flex items-center gap-1 active:scale-95 mx-auto"
+                                title="මෙම වාර්තාව පෙළ ලෙස ලබාගන්න (Text Export)">
+                            📄 Text
+                        </button>
+                    </td>
                 </tr>
             `;
         });
         tbody.innerHTML = html;
+    };
+
+    window.handleDateRangeGroupFilterChange = function() {
+        const select = document.getElementById('dateRangeGroupFilter');
+        state.dateRangeGroupFilter = select ? select.value : 'all';
+        filterDateRangeTableLocally();
+    };
+
+    window.exportSingleDateRangeRowText = function(memberId, dateStr) {
+        const log = (state.dateRangeData || []).find(l => l.memberId === memberId && l.date === dateStr);
+        const member = state.membersCache.find(m => m.id === memberId) || { id: memberId, name: log?.memberName || memberId };
+
+        let text = '';
+        if (log) {
+            const timeVal = window.formatTo12HourTime(log.wakeTime || '05:00');
+            const bonus = log.isFiveAmBonus ? ' ⭐' : '';
+            const p1 = log.pansil ? '✅' : '❌';
+            const p2 = log.sathya ? '✅' : '❌';
+            const p3 = log.audioMorn ? '✅' : '❌';
+            const noonPattern = getNoonPattern(log.noonCount || 0);
+            const nightPattern = getNightPattern(log.nightCount || 0);
+            const extraCount = log.extraCount || 0;
+            const total = log.grandTotal !== undefined ? (Number.isInteger(log.grandTotal) ? log.grandTotal : Number(log.grandTotal).toFixed(1)) : '0';
+
+            text = `📅 ${dateStr}\n${member.id} - ${member.name || member.id}${member.groupName ? ` (${member.groupName})` : ''}\n\n1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n2) දහවල: ${noonPattern}\n3) රාත්‍රිය: ${nightPattern}\n4) අමතර: ${extraCount}\n\n🔹 මුළු ලකුණු: ${total}`;
+        } else {
+            text = `📅 ${dateStr}\n${member.id} - ${member.name || member.id}\n\n⏳ මෙම දිනය සඳහා වාර්තාවක් හමුනොවිණි.`;
+        }
+
+        const title = `දෛනික වාර්තාව - ${member.name || member.id}`;
+        const subtitle = `සාමාජික: ${member.id} • දිනය: ${dateStr}`;
+        const filename = `Adhishtana_${member.id}_${dateStr}.txt`;
+        openTextExportModal(title, subtitle, text, filename);
+    };
+
+    window.exportDateRangeTextSummary = function(mode = 'by_member') {
+        const fromDate = document.getElementById('dateRangeFrom')?.value || '';
+        const toDate = document.getElementById('dateRangeTo')?.value || '';
+        const selectedMember = document.getElementById('dateRangeMemberFilter')?.value || 'all';
+        const selectedGroup = state.dateRangeGroupFilter || 'all';
+
+        const memberGroupMap = new Map();
+        (state.membersCache || []).forEach(m => memberGroupMap.set(m.id, m.groupId || ''));
+
+        const logs = (state.dateRangeData || []).filter(log => {
+            if (selectedMember !== 'all' && log.memberId !== selectedMember) return false;
+            if (selectedGroup !== 'all') {
+                const mGrp = memberGroupMap.get(log.memberId) || log.groupId || '';
+                if (selectedGroup === 'unassigned') {
+                    if (mGrp && mGrp !== '') return false;
+                } else {
+                    if (mGrp !== selectedGroup) return false;
+                }
+            }
+            return true;
+        });
+
+        if (logs.length === 0) {
+            showToast("තෝරාගත් කොන්දේසි සඳහා වාර්තා කිසිවක් හමුනොවිණි");
+            return;
+        }
+
+        // SCENARIO C: Single Person - Date Range
+        if (selectedMember !== 'all') {
+            const memberObj = state.membersCache.find(m => m.id === selectedMember) || { id: selectedMember, name: logs[0]?.memberName || selectedMember };
+            const groupName = memberObj.groupName || (state.groupsCache.find(g => g.id === memberObj.groupId)?.name) || 'කණ්ඩායමක් නැත';
+            const totalScore = logs.reduce((sum, l) => sum + (Number(l.grandTotal) || 0), 0);
+            const avgScore = (totalScore / logs.length).toFixed(1);
+
+            const sortedLogs = [...logs].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+            const modeLabel = mode === 'by_date' ? 'දිනය අනුව' : 'සාමාජිකයා අනුව';
+
+            let text = `========================================\n📋 අධිෂ්ඨාන දින පරාස වාර්තාව (${modeLabel})\n👤 සාමාජිකයා: ${memberObj.id} - ${memberObj.name || memberObj.id}\n🏷️ කණ්ඩායම: ${groupName}\n📅 දින පරාසය: ${fromDate} සිට ${toDate} දක්වා\n📊 සම්පූර්ණ වාර්තා: ${logs.length} | සාමාන්‍ය ලකුණු: ${avgScore}\n========================================\n\n`;
+
+            sortedLogs.forEach((log, idx) => {
+                const timeVal = window.formatTo12HourTime(log.wakeTime || '05:00');
+                const bonus = log.isFiveAmBonus ? ' ⭐' : '';
+                const p1 = log.pansil ? '✅' : '❌';
+                const p2 = log.sathya ? '✅' : '❌';
+                const p3 = log.audioMorn ? '✅' : '❌';
+                const noonPattern = getNoonPattern(log.noonCount || 0);
+                const nightPattern = getNightPattern(log.nightCount || 0);
+                const extraCount = log.extraCount || 0;
+                const total = log.grandTotal !== undefined ? (Number.isInteger(log.grandTotal) ? log.grandTotal : Number(log.grandTotal).toFixed(1)) : '0';
+
+                text += `🗓️ ${log.date} (ලකුණු: ${total})\n`;
+                text += `1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n`;
+                text += `2) දහවල: ${noonPattern}\n`;
+                text += `3) රාත්‍රිය: ${nightPattern}\n`;
+                text += `4) අමතර: ${extraCount}\n`;
+                if (idx < sortedLogs.length - 1) {
+                    text += `\n- - - - - - - - - - - - - - - - - - - -\n\n`;
+                }
+            });
+
+            const title = `දින පරාස වාර්තාව (${modeLabel}) - ${memberObj.name || memberObj.id}`;
+            const subtitle = `සාමාජික: ${memberObj.id} • ${fromDate} සිට ${toDate} • වාර්තා: ${logs.length}`;
+            const filePrefix = mode === 'by_date' ? 'Adhishtana_Range_ByDate' : 'Adhishtana_Range_ByMember';
+            const filename = `${filePrefix}_${memberObj.id}_${fromDate}_to_${toDate}.txt`;
+            openTextExportModal(title, subtitle, text, filename, 'dateRange', mode);
+            return;
+        }
+
+        // SCENARIO D: Group - Date Range (or All Members)
+        let groupTitle = 'සියලු කණ්ඩායම්';
+        if (selectedGroup !== 'all' && selectedGroup !== 'unassigned') {
+            const grpObj = state.groupsCache.find(g => g.id === selectedGroup);
+            if (grpObj) groupTitle = grpObj.name;
+        } else if (selectedGroup === 'unassigned') {
+            groupTitle = 'කණ්ඩායමකට අයත් නොවන';
+        }
+
+        const uniqueMembers = new Set(logs.map(l => l.memberId)).size;
+        const totalScore = logs.reduce((sum, l) => sum + (Number(l.grandTotal) || 0), 0);
+        const avgScore = (totalScore / logs.length).toFixed(1);
+        const cleanGrp = selectedGroup === 'all' ? 'All' : selectedGroup;
+
+        // VERSION B: Categorized by Date (දිනය අනුව)
+        if (mode === 'by_date') {
+            const dateLogsMap = new Map();
+            logs.forEach(l => {
+                const d = l.date || 'නොදන්නා දිනය';
+                if (!dateLogsMap.has(d)) {
+                    dateLogsMap.set(d, []);
+                }
+                dateLogsMap.get(d).push(l);
+            });
+
+            const sortedDates = Array.from(dateLogsMap.keys()).sort();
+
+            let text = `========================================\n📋 අධිෂ්ඨාන දින පරාස වාර්තාව (දිනය අනුව) - ${groupTitle}\n📅 දින පරාසය: ${fromDate} සිට ${toDate} දක්වා\n📊 සහභාගීත්වය: ${uniqueMembers} සාමාජිකයින් | වාර්තා එකතුව: ${logs.length} | සාමාන්‍ය ලකුණු: ${avgScore}\n========================================\n\n`;
+
+            sortedDates.forEach((dateStr, dIdx) => {
+                const dLogs = dateLogsMap.get(dateStr) || [];
+                const dTotal = dLogs.reduce((s, l) => s + (Number(l.grandTotal) || 0), 0);
+                const dAvg = dLogs.length > 0 ? (dTotal / dLogs.length).toFixed(1) : '0';
+
+                text += `🗓️ දිනය: ${dateStr} (වාර්තා: ${dLogs.length}, සාමාන්‍යය: ${dAvg})\n`;
+                text += `----------------------------------------\n\n`;
+
+                const sortedDLogs = [...dLogs].sort((a, b) =>
+                    (a.memberId || '').localeCompare(b.memberId || '', undefined, { numeric: true })
+                );
+
+                sortedDLogs.forEach((l, lIdx) => {
+                    const memberObj = state.membersCache.find(m => m.id === l.memberId);
+                    const mName = memberObj ? memberObj.name : (l.memberName || l.memberId);
+                    const timeVal = window.formatTo12HourTime(l.wakeTime || '05:00');
+                    const bonus = l.isFiveAmBonus ? ' ⭐' : '';
+                    const p1 = l.pansil ? '✅' : '❌';
+                    const p2 = l.sathya ? '✅' : '❌';
+                    const p3 = l.audioMorn ? '✅' : '❌';
+                    const noon = getNoonPattern(l.noonCount || 0);
+                    const night = getNightPattern(l.nightCount || 0);
+                    const extra = l.extraCount || 0;
+                    const score = l.grandTotal !== undefined ? (Number.isInteger(l.grandTotal) ? l.grandTotal : Number(l.grandTotal).toFixed(1)) : '0';
+
+                    text += `👤 ${l.memberId} - ${mName} (ලකුණු: ${score})\n`;
+                    text += `1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n`;
+                    text += `2) දහවල: ${noon}\n`;
+                    text += `3) රාත්‍රිය: ${night}\n`;
+                    text += `4) අමතර: ${extra}\n`;
+
+                    if (lIdx < sortedDLogs.length - 1) {
+                        text += `\n- - - - - - - - - - - - - - - - - - - -\n\n`;
+                    }
+                });
+
+                if (dIdx < sortedDates.length - 1) {
+                    text += `\n========================================\n\n`;
+                }
+            });
+
+            const title = `දින පරාස වාර්තාව (දිනය අනුව) - ${groupTitle}`;
+            const subtitle = `${fromDate} සිට ${toDate} • සාමාජිකයින්: ${uniqueMembers} • වාර්තා: ${logs.length}`;
+            const filename = `Adhishtana_Range_ByDate_${cleanGrp}_${fromDate}_to_${toDate}.txt`;
+            openTextExportModal(title, subtitle, text, filename, 'dateRange', 'by_date');
+            return;
+        }
+
+        // VERSION A: Categorized by User (සාමාජිකයා අනුව) - Default
+        const memberLogsMap = new Map();
+        logs.forEach(l => {
+            if (!memberLogsMap.has(l.memberId)) {
+                memberLogsMap.set(l.memberId, []);
+            }
+            memberLogsMap.get(l.memberId).push(l);
+        });
+
+        let text = `========================================\n📋 අධිෂ්ඨාන දින පරාස වාර්තාව (සාමාජිකයා අනුව) - ${groupTitle}\n📅 දින පරාසය: ${fromDate} සිට ${toDate} දක්වා\n📊 සහභාගීත්වය: ${uniqueMembers} සාමාජිකයින් | වාර්තා එකතුව: ${logs.length} | සාමාන්‍ය ලකුණු: ${avgScore}\n========================================\n\n`;
+
+        const memberEntries = Array.from(memberLogsMap.entries()).sort((a, b) =>
+            a[0].localeCompare(b[0], undefined, { numeric: true })
+        );
+
+        memberEntries.forEach(([mId, mLogs], mIdx) => {
+            const memberObj = state.membersCache.find(m => m.id === mId);
+            const mName = memberObj ? memberObj.name : (mLogs[0]?.memberName || mId);
+            const mTotal = mLogs.reduce((s, l) => s + (Number(l.grandTotal) || 0), 0);
+            const mAvg = (mTotal / mLogs.length).toFixed(1);
+
+            text += `👤 ${mId} - ${mName}\n`;
+            text += `📊 වාර්තා: ${mLogs.length} | සාමාන්‍යය: ${mAvg}\n`;
+            text += `----------------------------------------\n\n`;
+
+            const sorted = [...mLogs].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+            sorted.forEach((l, lIdx) => {
+                const timeVal = window.formatTo12HourTime(l.wakeTime || '05:00');
+                const bonus = l.isFiveAmBonus ? ' ⭐' : '';
+                const p1 = l.pansil ? '✅' : '❌';
+                const p2 = l.sathya ? '✅' : '❌';
+                const p3 = l.audioMorn ? '✅' : '❌';
+                const noon = getNoonPattern(l.noonCount || 0);
+                const night = getNightPattern(l.nightCount || 0);
+                const extra = l.extraCount || 0;
+                const score = l.grandTotal !== undefined ? (Number.isInteger(l.grandTotal) ? l.grandTotal : Number(l.grandTotal).toFixed(1)) : '0';
+
+                text += `🗓️ ${l.date} (ලකුණු: ${score})\n`;
+                text += `1) අවදිවීම: ${timeVal}${bonus}\n   • i:${p1}  ii:${p2}  iii:${p3}\n`;
+                text += `2) දහවල: ${noon}\n`;
+                text += `3) රාත්‍රිය: ${night}\n`;
+                text += `4) අමතර: ${extra}\n`;
+
+                if (lIdx < sorted.length - 1) {
+                    text += `\n- - - - - - - - - - - - - - - - - - - -\n\n`;
+                }
+            });
+
+            if (mIdx < memberEntries.length - 1) {
+                text += `\n========================================\n\n`;
+            }
+        });
+
+        const title = `දින පරාස වාර්තාව (සාමාජිකයා අනුව) - ${groupTitle}`;
+        const subtitle = `${fromDate} සිට ${toDate} • සාමාජිකයින්: ${uniqueMembers} • වාර්තා: ${logs.length}`;
+        const filename = `Adhishtana_Range_ByMember_${cleanGrp}_${fromDate}_to_${toDate}.txt`;
+        openTextExportModal(title, subtitle, text, filename, 'dateRange', 'by_member');
+    };
+
+    // ========================================================
+    // MODAL: TEXT EXPORT CONTROLLERS
+    // ========================================================
+    window.openTextExportModal = function(title, subtitle, textContent, filename, source = 'other', activeMode = 'by_member') {
+        state.activeExportText = textContent;
+        state.activeExportFilename = filename || 'Adhishtana_Report.txt';
+        state.activeExportSource = source;
+        state.activeExportMode = activeMode;
+
+        const modal = document.getElementById('modalTextExport');
+        const titleEl = document.getElementById('textExportTitle');
+        const subEl = document.getElementById('textExportSubtitle');
+        const preEl = document.getElementById('textExportContent');
+        const charEl = document.getElementById('textExportCharCount');
+        const switcherEl = document.getElementById('textExportModeSwitcher');
+        const btnMember = document.getElementById('btnExportModeMember');
+        const btnDate = document.getElementById('btnExportModeDate');
+
+        if (titleEl) titleEl.innerText = title;
+        if (subEl) subEl.innerText = subtitle;
+        if (preEl) preEl.innerText = textContent;
+        if (charEl) charEl.innerText = `${textContent.length} අකුරු (Characters)`;
+
+        if (switcherEl) {
+            if (source === 'dateRange') {
+                switcherEl.classList.remove('hidden');
+                if (activeMode === 'by_date') {
+                    btnDate?.classList.add('bg-amber-500', 'text-slate-950');
+                    btnDate?.classList.remove('text-slate-400');
+                    btnMember?.classList.remove('bg-amber-500', 'text-slate-950');
+                    btnMember?.classList.add('text-slate-400');
+                } else {
+                    btnMember?.classList.add('bg-amber-500', 'text-slate-950');
+                    btnMember?.classList.remove('text-slate-400');
+                    btnDate?.classList.remove('bg-amber-500', 'text-slate-950');
+                    btnDate?.classList.add('text-slate-400');
+                }
+            } else {
+                switcherEl.classList.add('hidden');
+            }
+        }
+
+        if (modal) modal.classList.remove('hidden');
+    };
+
+    window.switchDateRangeExportMode = function(mode) {
+        window.exportDateRangeTextSummary(mode);
+    };
+
+    window.closeTextExportModal = function() {
+        const modal = document.getElementById('modalTextExport');
+        if (modal) modal.classList.add('hidden');
+    };
+
+    window.copyExportedText = function() {
+        if (!state.activeExportText) return;
+        executeClipboardCopy(state.activeExportText, "පෙළ සාර්ථකව පිටපත් කරගන්නා ලදී! (Copied to Clipboard)");
+    };
+
+    window.downloadExportedText = function() {
+        if (!state.activeExportText) return;
+        try {
+            const blob = new Blob(["\uFEFF" + state.activeExportText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = state.activeExportFilename || 'Adhishtana_Report.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("වාර්තා ගොනුව බාගත කරන ලදී! (.txt Downloaded)");
+        } catch (e) {
+            console.error("Download error:", e);
+            showToast("ගොනුව බාගත කිරීමේදී දෝෂයක් ඇතිවිය");
+        }
     };
 
     window.exportDateRangeCSV = function() {
@@ -3277,9 +4635,21 @@
 
         const selectedMember = document.getElementById('dateRangeMemberFilter')?.value || 'all';
         const searchQuery = (document.getElementById('dateRangeSearchInput')?.value || '').trim().toLowerCase();
+        const selectedGroup = state.dateRangeGroupFilter || 'all';
+
+        const memberGroupMap = new Map();
+        (state.membersCache || []).forEach(m => memberGroupMap.set(m.id, { id: m.groupId || '', name: m.groupName || '' }));
 
         const logs = (state.dateRangeData || []).filter(log => {
             if (selectedMember !== 'all' && log.memberId !== selectedMember) return false;
+            if (selectedGroup !== 'all') {
+                const mGrp = memberGroupMap.get(log.memberId)?.id || log.groupId || '';
+                if (selectedGroup === 'unassigned') {
+                    if (mGrp && mGrp !== '') return false;
+                } else {
+                    if (mGrp !== selectedGroup) return false;
+                }
+            }
             if (searchQuery) {
                 const name = (log.memberName || '').toLowerCase();
                 const id = (log.memberId || '').toLowerCase();
@@ -3293,17 +4663,20 @@
             return;
         }
 
-        let csv = "දිනය,සාමාජික අංකය,නම,අවදිවීම,05AM_බෝනස්,උදෑසන,දහවල,රාත්‍රිය,අමතර_වරක්,මුළු_ලකුණු,වේලාව\n";
+        let csv = "දිනය,සාමාජික අංකය,නම,කණ්ඩායම,අවදිවීම,05AM_බෝනස්,උදෑසන,දහවල,රාත්‍රිය,අමතර_වරක්,මුළු_ලකුණු,වේලාව\n";
 
         logs.forEach(l => {
             const timeStr = l.submittedAt?.toDate
                 ? l.submittedAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 : (typeof l.submittedAt === 'string' ? l.submittedAt : '-');
 
+            const grpName = memberGroupMap.get(l.memberId)?.name || '';
+
             const row = [
                 `"${l.date}"`,
                 `"${l.memberId}"`,
                 `"${(l.memberName || '').replace(/"/g, '""')}"`,
+                `"${grpName.replace(/"/g, '""')}"`,
                 `"${l.wakeTime || ''}"`,
                 l.isFiveAmBonus ? "ඔව්" : "නැත",
                 `"${l.mornScore || 0}/2"`,
@@ -3764,9 +5137,9 @@
     window.injectSample = function(type) {
         let sample = '';
         if (type === 1) {
-            sample = `1) 05.00 AM\n    i)     ✅\n    ii)    ✅\n    iii)   ✅\n\n2) ✅✅\n\n3) ✅✅✅\n\n4) 4\n\n🔹 මුළු ලකුණු: 10`;
+            sample = `1) අවදිවීම: 05.00 AM ⭐\n   • i:✅  ii:✅  iii:✅\n\n2) දහවල: ✅✅\n\n3) රාත්‍රිය: ✅✅✅\n\n4) අමතර: 4\n\n🔹 මුළු ලකුණු: 10`;
         } else {
-            sample = `1) 05.25 AM\n    i)     ✅\n    ii)    ❌\n    iii)   ✅\n\n2) ✅❌\n\n3) ✅✅❌\n\n4) 2`;
+            sample = `1) අවදිවීම: 05.25 AM\n   • i:✅  ii:❌  iii:✅\n\n2) දහවල: ✅❌\n\n3) රාත්‍රිය: ✅✅❌\n\n4) අමතර: 2`;
         }
         document.getElementById('analyzerInputArea').value = sample;
         window.parseAndAnalyzeText();
@@ -3792,21 +5165,32 @@
 
         const mornLine = lines.find(l => /^\s*1\)/i.test(l));
         if (mornLine) {
-            const timeMatch = mornLine.match(/1\)\s*([0-9.:\s]+(?:AM|PM|am|pm)?)/i);
+            const timeMatch = mornLine.match(/1\)[^\d]*([0-9.:\s]+(?:AM|PM|am|pm)?)/i);
             if (timeMatch && timeMatch[1]) {
                 wakeTime = timeMatch[1].trim();
             }
         }
 
-        lines.forEach(line => {
-            if (/i\)/i.test(line) && !/ii\)/i.test(line) && !/iii\)/i.test(line)) {
-                pansil = line.includes('✅');
-            } else if (/ii\)/i.test(line) && !/iii\)/i.test(line)) {
-                sathya = line.includes('✅');
-            } else if (/iii\)/i.test(line)) {
-                audioM = line.includes('✅');
-            }
-        });
+        // Support both Option 2 inline pattern (• i:✅  ii:✅  iii:✅) and classic multiline (i) ✅)
+        const inlineMornLine = lines.find(l => /i[:\)]/i.test(l) && /ii[:\)]/i.test(l) && /iii[:\)]/i.test(l));
+        if (inlineMornLine) {
+            const p1Match = inlineMornLine.match(/i[:\)]\s*(✅|❌)/i);
+            const p2Match = inlineMornLine.match(/ii[:\)]\s*(✅|❌)/i);
+            const p3Match = inlineMornLine.match(/iii[:\)]\s*(✅|❌)/i);
+            if (p1Match) pansil = p1Match[1] === '✅';
+            if (p2Match) sathya = p2Match[1] === '✅';
+            if (p3Match) audioM = p3Match[1] === '✅';
+        } else {
+            lines.forEach(line => {
+                if (/i\)/i.test(line) && !/ii\)/i.test(line) && !/iii\)/i.test(line)) {
+                    pansil = line.includes('✅');
+                } else if (/ii\)/i.test(line) && !/iii\)/i.test(line)) {
+                    sathya = line.includes('✅');
+                } else if (/iii\)/i.test(line)) {
+                    audioM = line.includes('✅');
+                }
+            });
+        }
 
         const noonLine = lines.find(l => /^\s*2\)/i.test(l));
         if (noonLine) {
@@ -3822,7 +5206,7 @@
 
         const extraLine = lines.find(l => /^\s*4\)/i.test(l));
         if (extraLine) {
-            const numMatch = extraLine.match(/4\)\s*([0-9]+)/);
+            const numMatch = extraLine.match(/4\)[^\d]*([0-9]+)/);
             if (numMatch && numMatch[1]) {
                 extraCount = parseInt(numMatch[1], 10);
             }
@@ -4006,6 +5390,9 @@
 
         // Initialize Date Range view inputs
         initDateRangeInputs();
+
+        // Load Groups Data & Dropdowns
+        window.loadGroupsData();
 
         // Restore saved auth session if any
         const savedUserStr = localStorage.getItem('adhishtana_auth_user');

@@ -948,28 +948,40 @@
         <!-- ======================================================== -->
         <div id="adminSubViewAnalytics" class="space-y-6 hidden">
             <!-- Analytics Header Bar -->
-            <section class="glass-panel-accent rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <section class="glass-panel-accent rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-bold mb-1">
                         📈 සාධන විශ්ලේෂණය සහ ප්‍රස්ථාර (Analytics Dashboard)
                     </span>
-                    <h2 class="text-xl sm:text-2xl font-black text-white">සමස්ත සාධන විශ්ලේෂණ වාර්තාව</h2>
-                    <p class="text-xs text-slate-300">සාමාජිකයින්ගේ දෛනික අධිෂ්ඨාන පුරුදු සහ සාධන ප්‍රවණතා</p>
+                    <h2 class="text-xl sm:text-2xl font-black text-white" id="anaReportHeading">සමස්ත සාධන විශ්ලේෂණ වාර්තාව</h2>
+                    <p class="text-xs text-slate-300" id="anaReportSubheading">සාමාජිකයින්ගේ දෛනික අධිෂ්ඨාන පුරුදු සහ සාධන ප්‍රවණතා</p>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="setAnalyticsPreset('7d')" id="btnAna7d"
-                            class="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-200 border border-amber-500/40">
-                        පසුගිය දින 7
-                    </button>
-                    <button type="button" onclick="setAnalyticsPreset('30d')" id="btnAna30d"
-                            class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white border border-transparent">
-                        පසුගිය දින 30
-                    </button>
-                    <button type="button" onclick="setAnalyticsPreset('all')" id="btnAnaAll"
-                            class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white border border-transparent">
-                        සමස්තය
-                    </button>
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <!-- Group Filter Dropdown -->
+                    <div class="flex items-center gap-1.5 bg-[#0C101A] border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-300 shadow-inner">
+                        <label for="analyticsGroupFilter" class="text-slate-400 font-semibold text-[11px] whitespace-nowrap">🏷️ කණ්ඩායම:</label>
+                        <select id="analyticsGroupFilter" onchange="handleAnalyticsGroupFilterChange()"
+                                class="bg-transparent text-amber-300 font-bold focus:outline-none cursor-pointer text-xs">
+                            <option value="all">සියලු කණ්ඩායම් (All Groups)</option>
+                        </select>
+                    </div>
+
+                    <!-- Date Presets -->
+                    <div class="flex items-center gap-1 bg-[#0C101A] border border-slate-700/80 rounded-xl p-1">
+                        <button type="button" onclick="setAnalyticsPreset('7d')" id="btnAna7d"
+                                class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-200 border border-amber-500/40 transition active:scale-95">
+                            පසුගිය දින 7
+                        </button>
+                        <button type="button" onclick="setAnalyticsPreset('30d')" id="btnAna30d"
+                                class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white border border-transparent transition active:scale-95">
+                            පසුගිය දින 30
+                        </button>
+                        <button type="button" onclick="setAnalyticsPreset('all')" id="btnAnaAll"
+                                class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white border border-transparent transition active:scale-95">
+                            සමස්තය
+                        </button>
+                    </div>
                 </div>
             </section>
 
@@ -1814,7 +1826,9 @@
         dateRangeData: [],
         dateRangeGroupFilter: 'all', // 'all', 'unassigned', or groupId
         analyticsData: [],
+        rawAnalyticsLogs: [],
         analyticsPreset: '7d',
+        analyticsGroupFilter: 'all',
         pendingDeleteMember: null,
         editingMemberId: null,
         activeExportText: '',
@@ -3348,6 +3362,7 @@
     function populateAllGroupDropdowns() {
         const rosterSelect = document.getElementById('adminRosterGroupFilter');
         const rangeSelect = document.getElementById('dateRangeGroupFilter');
+        const analyticsSelect = document.getElementById('analyticsGroupFilter');
         const memberSelect = document.getElementById('newMemberGroup');
 
         const groups = state.groupsCache || [];
@@ -3378,6 +3393,20 @@
             });
             rangeSelect.innerHTML = html;
             rangeSelect.value = curVal;
+        }
+
+        if (analyticsSelect) {
+            const curVal = analyticsSelect.value || state.analyticsGroupFilter || 'all';
+            let html = `
+                <option value="all">සියලු කණ්ඩායම් (All Groups)</option>
+                <option value="unassigned">කණ්ඩායමකට අයත් නොවන (Unassigned)</option>
+            `;
+            groups.forEach(g => {
+                const sel = g.id === curVal ? 'selected' : '';
+                html += `<option value="${escapeHtml(g.id)}" ${sel}>${escapeHtml(g.name || g.id)} (${escapeHtml(g.id)})</option>`;
+            });
+            analyticsSelect.innerHTML = html;
+            analyticsSelect.value = curVal;
         }
 
         if (memberSelect) {
@@ -4083,6 +4112,7 @@
         } else if (subTab === 'analytics') {
             if (anaView) anaView.classList.remove('hidden');
             if (anaBtn) anaBtn.className = activeClass;
+            populateAllGroupDropdowns();
             loadAnalyticsData();
         }
     };
@@ -4775,6 +4805,12 @@
         loadAnalyticsData();
     };
 
+    window.handleAnalyticsGroupFilterChange = function() {
+        const select = document.getElementById('analyticsGroupFilter');
+        state.analyticsGroupFilter = select ? select.value : 'all';
+        applyAnalyticsFiltersAndRender();
+    };
+
     window.loadAnalyticsData = async function() {
         const preset = state.analyticsPreset || '7d';
         const today = new Date();
@@ -4792,6 +4828,9 @@
         } else {
             fromDateStr = '2026-01-01';
         }
+
+        state.analyticsFromDateStr = fromDateStr;
+        state.analyticsToDateStr = toDateStr;
 
         try {
             const logsColl = collection(db, 'daily_logs');
@@ -4811,52 +4850,97 @@
             });
 
             logs.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
-            state.analyticsData = logs;
+            state.rawAnalyticsLogs = logs;
 
-            const totalLogs = logs.length;
-            const uniqueMembers = new Set(logs.map(l => l.memberId)).size;
-            const totalScoreSum = logs.reduce((sum, l) => sum + (Number(l.grandTotal) || 0), 0);
-            const avgScore = totalLogs > 0 ? (totalScoreSum / totalLogs).toFixed(1) : '0.0';
-            const fiveAmCount = logs.filter(l => l.isFiveAmBonus).length;
-            const fiveAmRate = totalLogs > 0 ? Math.round((fiveAmCount / totalLogs) * 100) : 0;
-            const totalExtra = logs.reduce((sum, l) => sum + (Number(l.extraCount) || 0), 0);
-            const extraBonusPts = (totalExtra * 0.5).toFixed(1);
-
-            let gradeText = "වාර්තා නොමැත";
-            if (totalLogs > 0) {
-                const numAvg = Number(avgScore);
-                if (numAvg >= 8) gradeText = "🌟 විශිෂ්ට සාමූහික ප්‍රගතියක්!";
-                else if (numAvg >= 5) gradeText = "👍 යහපත් සාමූහික මට්ටමක පවතී";
-                else gradeText = "🌱 තවදුරටත් උත්සාහවන්ත වෙමු";
-            }
-
-            const kpiTotal = document.getElementById('anaKpiTotalLogs');
-            const kpiActive = document.getElementById('anaKpiActiveSubtext');
-            const kpiAvg = document.getElementById('anaKpiAvgScore');
-            const kpiGrade = document.getElementById('anaKpiScoreGrade');
-            const kpiRate = document.getElementById('anaKpiFiveAmRate');
-            const kpiFiveAm = document.getElementById('anaKpiFiveAmCount');
-            const kpiExtra = document.getElementById('anaKpiTotalExtra');
-            const kpiExtraPts = document.getElementById('anaKpiExtraPts');
-
-            if (kpiTotal) kpiTotal.innerText = totalLogs;
-            if (kpiActive) kpiActive.innerText = `${uniqueMembers} ක්‍රියාකාරී සාමාජිකයින්`;
-            if (kpiAvg) kpiAvg.innerText = avgScore;
-            if (kpiGrade) kpiGrade.innerText = gradeText;
-            if (kpiRate) kpiRate.innerText = `${fiveAmRate}%`;
-            if (kpiFiveAm) kpiFiveAm.innerText = `${fiveAmCount} වතාවක් බෝනස් හිමිවිය`;
-            if (kpiExtra) kpiExtra.innerText = totalExtra;
-            if (kpiExtraPts) kpiExtraPts.innerText = `+${extraBonusPts} ප්‍රසාද ලකුණු`;
-
-            renderAnalyticsTrendChart(logs, fromDateStr, toDateStr);
-            renderAnalyticsRoutineChart(logs);
-            renderAnalyticsScoreDistChart(logs);
-            renderAnalyticsLeaderboard(logs);
+            applyAnalyticsFiltersAndRender();
         } catch (err) {
             console.error("Error loading analytics data:", err);
             showToast("විශ්ලේෂණ දත්ත ලබාගැනීමේදී දෝෂයක් ඇතිවිය");
         }
     };
+
+    function applyAnalyticsFiltersAndRender() {
+        const selectedGroup = state.analyticsGroupFilter || 'all';
+        const rawLogs = state.rawAnalyticsLogs || [];
+
+        // Build member to group mapping
+        const memberGroupMap = new Map();
+        (state.membersCache || []).forEach(m => {
+            memberGroupMap.set(m.id, m.groupId || '');
+        });
+
+        // Filter logs by selected group
+        const filteredLogs = rawLogs.filter(log => {
+            if (selectedGroup !== 'all') {
+                const mGrp = memberGroupMap.get(log.memberId) || log.groupId || '';
+                if (selectedGroup === 'unassigned') {
+                    if (mGrp && mGrp !== '') return false;
+                } else {
+                    if (mGrp !== selectedGroup) return false;
+                }
+            }
+            return true;
+        });
+
+        state.analyticsData = filteredLogs;
+
+        // Update Report Heading & Subheading
+        const headingEl = document.getElementById('anaReportHeading');
+        const subheadingEl = document.getElementById('anaReportSubheading');
+
+        if (selectedGroup === 'all') {
+            if (headingEl) headingEl.innerText = "සමස්ත සාධන විශ්ලේෂණ වාර්තාව";
+            if (subheadingEl) subheadingEl.innerText = "සියලු සාමාජිකයින්ගේ දෛනික අධිෂ්ඨාන පුරුදු සහ සාධන ප්‍රවණතා";
+        } else if (selectedGroup === 'unassigned') {
+            if (headingEl) headingEl.innerText = "සාධන විශ්ලේෂණ වාර්තාව - කණ්ඩායමකට අයත් නොවන";
+            if (subheadingEl) subheadingEl.innerText = "කිසිදු කණ්ඩායමකට නොපැවරුණු සාමාජිකයින්ගේ සාධන ප්‍රවණතා";
+        } else {
+            const grp = (state.groupsCache || []).find(g => g.id === selectedGroup);
+            const grpName = grp ? grp.name : selectedGroup;
+            if (headingEl) headingEl.innerText = `සාධන විශ්ලේෂණ වාර්තාව - ${grpName}`;
+            if (subheadingEl) subheadingEl.innerText = `${grpName} කණ්ඩායමේ සාමාජිකයින්ගේ දෛනික අධිෂ්ඨාන පුරුදු සහ සාධන ප්‍රවණතා`;
+        }
+
+        const totalLogs = filteredLogs.length;
+        const uniqueMembers = new Set(filteredLogs.map(l => l.memberId)).size;
+        const totalScoreSum = filteredLogs.reduce((sum, l) => sum + (Number(l.grandTotal) || 0), 0);
+        const avgScore = totalLogs > 0 ? (totalScoreSum / totalLogs).toFixed(1) : '0.0';
+        const fiveAmCount = filteredLogs.filter(l => l.isFiveAmBonus).length;
+        const fiveAmRate = totalLogs > 0 ? Math.round((fiveAmCount / totalLogs) * 100) : 0;
+        const totalExtra = filteredLogs.reduce((sum, l) => sum + (Number(l.extraCount) || 0), 0);
+        const extraBonusPts = (totalExtra * 0.5).toFixed(1);
+
+        let gradeText = "වාර්තා නොමැත";
+        if (totalLogs > 0) {
+            const numAvg = Number(avgScore);
+            if (numAvg >= 8) gradeText = "🌟 විශිෂ්ට සාමූහික ප්‍රගතියක්!";
+            else if (numAvg >= 5) gradeText = "👍 යහපත් සාමූහික මට්ටමක පවතී";
+            else gradeText = "🌱 තවදුරටත් උත්සාහවන්ත වෙමු";
+        }
+
+        const kpiTotal = document.getElementById('anaKpiTotalLogs');
+        const kpiActive = document.getElementById('anaKpiActiveSubtext');
+        const kpiAvg = document.getElementById('anaKpiAvgScore');
+        const kpiGrade = document.getElementById('anaKpiScoreGrade');
+        const kpiRate = document.getElementById('anaKpiFiveAmRate');
+        const kpiFiveAm = document.getElementById('anaKpiFiveAmCount');
+        const kpiExtra = document.getElementById('anaKpiTotalExtra');
+        const kpiExtraPts = document.getElementById('anaKpiExtraPts');
+
+        if (kpiTotal) kpiTotal.innerText = totalLogs;
+        if (kpiActive) kpiActive.innerText = `${uniqueMembers} ක්‍රියාකාරී සාමාජිකයින්`;
+        if (kpiAvg) kpiAvg.innerText = avgScore;
+        if (kpiGrade) kpiGrade.innerText = gradeText;
+        if (kpiRate) kpiRate.innerText = `${fiveAmRate}%`;
+        if (kpiFiveAm) kpiFiveAm.innerText = `${fiveAmCount} වතාවක් බෝනස් හිමිවිය`;
+        if (kpiExtra) kpiExtra.innerText = totalExtra;
+        if (kpiExtraPts) kpiExtraPts.innerText = `+${extraBonusPts} ප්‍රසාද ලකුණු`;
+
+        renderAnalyticsTrendChart(filteredLogs, state.analyticsFromDateStr, state.analyticsToDateStr);
+        renderAnalyticsRoutineChart(filteredLogs);
+        renderAnalyticsScoreDistChart(filteredLogs);
+        renderAnalyticsLeaderboard(filteredLogs);
+    }
 
     function renderAnalyticsTrendChart(logs, fromDateStr, toDateStr) {
         const canvas = document.getElementById('chartDailyTrendCanvas');
@@ -5111,9 +5195,13 @@
         logs.forEach(l => {
             let entry = memberMap.get(l.memberId);
             if (!entry) {
+                const memberObj = (state.membersCache || []).find(m => m.id === l.memberId);
+                const memberName = memberObj ? memberObj.name : (l.memberName || l.memberId);
+                const groupName = memberObj ? memberObj.groupName : (l.groupName || '');
                 entry = {
                     id: l.memberId,
-                    name: l.memberName || l.memberId,
+                    name: memberName,
+                    groupName: groupName,
                     daysCount: 0,
                     fiveAmCount: 0,
                     totalScore: 0
@@ -5142,7 +5230,7 @@
             tbody.innerHTML = `
                 <tr>
                     <td colspan="6" class="py-6 text-center text-slate-500">
-                        තෝරාගත් කාල සීමාව සඳහා වාර්තා කිසිවක් හමුනොවිණි.
+                        තෝරාගත් කොන්දේසියට අදාළ වාර්තා කිසිවක් හමුනොවිණි.
                     </td>
                 </tr>
             `;
@@ -5160,9 +5248,10 @@
                 <tr class="hover:bg-white/[0.02] transition">
                     <td class="py-2.5 px-3 whitespace-nowrap">${rankBadge}</td>
                     <td class="py-2.5 px-3">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
                             <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold">${escapeHtml(item.id)}</span>
                             <span class="font-bold text-white text-xs">${escapeHtml(item.name)}</span>
+                            ${item.groupName && state.analyticsGroupFilter === 'all' ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">${escapeHtml(item.groupName)}</span>` : ''}
                         </div>
                     </td>
                     <td class="py-2.5 px-3 text-center font-mono font-bold text-emerald-400">${item.daysCount} දින</td>
